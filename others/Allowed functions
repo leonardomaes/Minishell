@@ -1,0 +1,43 @@
+readline, rl_clear_history, rl_on_new_line,
+rl_replace_line, rl_redisplay, add_history,
+
+signal,
+sigaction, sigemptyset, sigaddset, kill
+getcwd, chdir, stat, lstat, fstat, unlink,
+
+isatty, ttyname, ttyslot, ioctl, getenv
+
+tputs - tgoto - tgetstr - tgetnum - tgetflag
+tgetent - tcgetattr - tcsetattr
+
+----------------------------------------------BASICS
+
+printf - malloc - free - write - open - read - close - exit
+
+---------------------------------------------- PIPEX
+
+access - fork - pipe - strerror - perror - execve
+wait - waitpid - wait3 - wait4 - dup - dup2
+
+---------------------------------------------- DIRECTORY
+opendir - readdir - closedir
+Abrir, ler e fechar conteudo do diretorio
+
+int main()
+{
+	DIR* dir = opendir("../pipex");
+	if (dir == NULL)
+	{
+		return (1);
+	}
+	struct dirent* entity;
+	entity = readdir(dir);
+	while (entity != NULL)
+	{
+		printf("%s\n", entity->d_name);
+		entity = readdir(dir);
+	}
+
+	closedir(dir);
+	return (0);
+}
