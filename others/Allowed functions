@@ -69,7 +69,7 @@ Funcoes:
 
 <--------------->
 -> int tgetent(char *bp, const chat *termtype);  -- Terminal Get Entry
-// Carega as informacoes do banco de dados para o tipo de terminal atual
+// Carrega as informacoes do banco de dados para o tipo de terminal atual
 -bp: buffer para armazenar a descricao do terminal (NULL para uso interno)
 -termtype: Tipo do terminal (obtido atraves da variabel e ambiente 'TERM') (ex: xterm-256color)
 
@@ -92,7 +92,7 @@ int main() {
 
 <--------------->
 -> int tgetnum(const char *id);
-// Obtem a dimensao do terminal, deve ser usada apos a chamada da func tgetent();
+// Obtem valores numericos do terminal (Ex: dimensoes), deve ser usada apos a chamada da func tgetent();
 -id: Identificador da capacidade numerica (ex: "co" para n de colunas, "li" para n de linhas).
 Return: Valor numerico da capacidade, ou -1 se nao suportado
 
