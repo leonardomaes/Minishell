@@ -19,12 +19,6 @@ The rl_clear_line() function clears the history list by deleting all of the entr
 
 
 3.
-
-
-
-
-
-
 Some Terminal keys:
 
 C-a = go to begin

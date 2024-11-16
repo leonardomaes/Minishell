@@ -1,14 +1,14 @@
 #Compile Options
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 # Directories
 LIBFT = includes/libft/libft.a
 PRINTF = includes/ft_printf/libftprintf.a
 
 #
-SRC =	sources/main.c
+SRC =	sources/main.c commands/ls/utils_ls.c
 #
 
 # Commands
@@ -27,7 +27,7 @@ $(PRINTF):
 			@make --silent -C includes/ft_printf
 
 $(NAME) : $(OBJ) $(PRINTF) $(LIBFT)
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT) $(PRINTF)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT) $(PRINTF) -ltinfo
 
 clean:
 			$(RM) $(OBJ)

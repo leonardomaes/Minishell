@@ -1,35 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   utils_ls.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/07 12:50:16 by lmaes            ###   ########.fr       */
+/*   Created: 2024/11/08 12:57:49 by lmaes             #+#    #+#             */
+/*   Updated: 2024/11/08 12:57:50 by lmaes            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHEL_H
-# define MINISHEL_H
+#include "../../minishell.h"
 
-#include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <sys/ioctl.h>
-#include <dirent.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <signal.h>
-#include <termcap.h>
-#include <termios.h>
-#include "includes/libft/libft.h"
+void    print_path(char *str)
+{
+	DIR* dir;
 
+	dir = opendir(str);
+	if (dir == NULL)
+		return ;
+	struct dirent* entity;
+	entity = readdir(dir);
+	while (entity != NULL)
+	{
+		if (ft_strncmp(entity->d_name, ".", 1))
+			printf("%s  ", entity->d_name);
+		entity = readdir(dir);
+	}
+	printf("\n");
+	closedir(dir);
+}
 
-
-
-void    print_path(char *str);
-
-
-#endif
