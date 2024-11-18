@@ -29,7 +29,6 @@
 
 
 
-void    print_path(char *str);
 
 
 #endif
