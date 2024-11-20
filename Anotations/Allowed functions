@@ -231,6 +231,54 @@ TCSANOW: Aplica imediatamente.
 TCSADRAIN: Espera esvaziar a saída antes de aplicar.
 TCSAFLUSH: Descarrega entrada e saída pendentes antes de aplicar.
 
+---------------------------------------------- READLINE
+readline - add_history - rl_clear_history - 
+rl_on_new_line - rl_replace_line - rl_redisplay
+
+-> char *readline(const char *prompt);
+// Recebe do terminal um input e retorna-a com memoria dinamicamente alocada
+- Prompt: String exibida como o prompt (Ex: "Diigte algo")
+Return: 
+- Ponteiro para a linha digitada pelo user. Deve ser liberada com o 'free'
+- 'NULL' caso user pressionar 'Ctrl+D'(EOF)
+
+
+-> void add_history(const char *line);
+// Adiciona a linha lida a um historico de comandos (fd)
+// Apos ler uma linha com 'readline' adiciona-la ao historico para futura navegacao 
+- Line: Comando a ser adicionado ao historico
+
+
+-> void clear_history(void);
+// Remove todos os caminhos salvos no historico
+
+
+-> void rl_on_new_line(void);
+// Deve ser usada antes de reimprimir a linha (geralmente combinada com 'rl_redisplay')
+// Atualiza o estado interno da Readline para indicar que a linha de entrada foi reiniciada
+
+
+-> void rl_replace_line(const char *text, int clear_undo);
+// Substitui o texto da linha de entrada com o texto fornecido
+// Nao atualiza a exibição no terminal imediatamente- é necessário chamar 'rl_redisplay' após 'rl_replace_line' para refletir as mudanças.
+- Text: String que substituira o conteudo atual da linha e entrada
+- clear_undo:
+    1: Limpa o historico dde actions de desfazer (undo) associado a linha
+    0: Mantem o historico de actions de desfazer
+Ex:
+    rl_replace_line("Texto substituído!", 1);
+    rl_redisplay();
+
+
+-> void rl_redisplay(void);
+// Atualiza a linha visivel no terminal com base no estado interno da Readline
+// Deve ser chamado após mudanças no texto ou na posição do cursor 
+// (por exemplo, após rl_replace_line ou rl_on_new_line).
+Ex:
+    rl_replace_line("Novo texto", 1);
+    rl_redisplay();
+
+
 ---------------------------------------------- IOCTL - Control Device
 ioctl
 
@@ -272,12 +320,6 @@ printf - malloc - free - write - open - read - close - exit
 
 access - fork - pipe - strerror - perror - execve
 wait - waitpid - wait3 - wait4 - dup - dup2
-
-
----------------------------------------------- READLINE
-
-readline - rl_clear_history - rl_on_new_line - rl_replace_line - rl_redisplay - add_history
-
 
 ----------------------------------------------
 

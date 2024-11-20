@@ -11,3 +11,15 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+int main() {
+	while (1)
+	{
+		char *input = readline("Digite um comando: ");
+		if (input) {
+			printf("Você digitou: %s\n", input);
+			free(input);
+		}
+	}
+	return 0;
+}
