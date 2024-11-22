@@ -282,6 +282,33 @@ Ex:
 ---------------------------------------------- IOCTL - Control Device
 ioctl
 
+-> int ioctl(int fd, unsigned long request, ...); -- (input/output control)
+// Permite enviar comandos especificos para dispositivos, terminais ou interfaces de rede
+// Amplamente utilizada para operações de controle que não são padronizadas por outras funções do sistema,
+// Envia um comando especifico para o driver ou dispositivo associado ao 'fd'
+// Comportamento depende do disposivito e do comando fornecido em 'request'
+- fd (file descriptor):
+    Descritor de arquivo aberto que identifica o recurso a ser controlado
+- request (comando):
+    Codigo que especifica a operacao a ser realizada
+    Comandos variam de acordo com o tipo de dispositivo
+Return:
+    0: Sucesso
+    -1: Erro com 'errno' configurado para indicar motivo (ex: 'EINVAL' para um comando invalido)
+Exemplos:
+
+    -Obter o tamanho da janela do terminal
+    Usando comando 'TIOCGWINSZ', é possível obter o número de colunas e linhas de um terminal.
+        struct winsize ws;
+        ioctl(fd, TIOCGWINSZ, &ws);
+        printf("Linhas: %d, Colunas: %d\n", ws.ws_row, ws.ws_col);
+    Modificar o tamanho da janela do terminal.
+        ws.ws_row = 50;
+        ws.ws_col = 120;
+        ioctl(fd, TIOCSWINSZ, &ws);
+
+    
+    .....
 
 ---------------------------------------------- NAVEGAR POR DIRETORIOS
 opendir - readdir - closedir
@@ -311,7 +338,6 @@ int main()
 signal - sigaction - sigemptyset - sigaddset - kill
 
 
-
 ---------------------------------------------- BASICOS
 
 printf - malloc - free - write - open - read - close - exit
@@ -329,3 +355,6 @@ getcwd, chdir, stat, lstat, fstat, unlink,
 
 isatty, ttyname, ttyslot
 
+
+
+https://github.com/winash1618/Minishell/tree/main
