@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/07 12:50:00 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/07 12:50:02 by lmaes            ###   ########.fr       */
+/*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
+/*   Updated: 2024/11/25 19:03:46 by lmaes            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,12 @@
 
 
 
-void free_all(t_msh *msh)
+t_data  *ft_readline(void)
 {
-	free(msh->envp);
-	free(msh);
-}
+	t_data *dat;
 
-int main(int argc, char *argv[], char **envp)
-{
-	t_msh *msh;
-
-	argv = NULL;
-	argc = 0;
-	msh = init_shell(envp);				// Inicia struct principal
-	//print_envp(msh->envp);			// Imprimir variavel ambiente
-	while (1)							// Ciclo do terminal
-	{
-		msh->data = ft_readline();		// Recebe os dados na struct e faz o parser
-		
-	}
-	//free_all(&msh);
-	return (0);
+	dat = malloc(sizeof(t_data *));
+	dat->argv = readline(" % ");
+	
+	return (dat);
 }

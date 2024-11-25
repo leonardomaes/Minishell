@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "allowed functions": "cpp"
+        "allowed functions": "cpp",
+        "minishell.h": "c"
     }
 }

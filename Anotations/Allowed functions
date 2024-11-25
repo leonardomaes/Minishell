@@ -203,8 +203,9 @@ if (clear_screen) {  -- Limpa a tela
     tputs(clear_screen, 1, putchar); // Limpa a tela
 }
 
-------------------------------------------------------------------------------------------------------------------------------------- TERMIOS
-tcgetattr - tcsetattr
+------------------------------------------------------------------------------------------------------------------------------------- 
+TERMIOS
+tcgetattr - tcsetattr   
 Controlar as configuracoes do terminal Unix, manipula o comportamento, como
 desativar modo canonico(leitura linha a linha) ou desabilitar o eco de entrada no terminal
 
@@ -421,7 +422,8 @@ int main()
 
 -> https://www.youtube.com/watch?v=j9yL30R6npk
 
-------------------------------------------------------------------------------------------------------------------------------------- SIGNALS
+------------------------------------------------------------------------------------------------------------------------------------- 
+SIGNALS
 
 signal - sigaction - sigemptyset - sigaddset - kill
 

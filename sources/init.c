@@ -1,38 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/07 12:50:00 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/07 12:50:02 by lmaes            ###   ########.fr       */
+/*   Created: 2024/11/25 18:07:51 by lmaes             #+#    #+#             */
+/*   Updated: 2024/11/25 18:07:52 by lmaes            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-
-
-void free_all(t_msh *msh)
+char	**get_env(char **envp)
 {
-	free(msh->envp);
-	free(msh);
+	char	**env_copy;
+	int		i;
+
+	i = 0;
+	while (envp[i])
+		i++;
+	env_copy = malloc(sizeof(char *) * (i + 1));
+	if (!env_copy)
+		return (NULL);
+	i = 0;
+	while (envp[i])
+	{
+		env_copy[i] = ft_strdup(envp[i]);
+		if (!env_copy)
+			return (NULL);
+		i++;
+	}
+	env_copy[i] = NULL;
+	return (env_copy);
 }
 
-int main(int argc, char *argv[], char **envp)
+t_msh	*init_shell(char **envp)
 {
-	t_msh *msh;
+	t_msh	*msh;
 
-	argv = NULL;
-	argc = 0;
-	msh = init_shell(envp);				// Inicia struct principal
-	//print_envp(msh->envp);			// Imprimir variavel ambiente
-	while (1)							// Ciclo do terminal
-	{
-		msh->data = ft_readline();		// Recebe os dados na struct e faz o parser
-		
-	}
-	//free_all(&msh);
-	return (0);
+	msh = malloc(sizeof(t_msh *));
+	msh->envp = get_env(envp);
+	return (msh);
 }

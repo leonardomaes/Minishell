@@ -26,9 +26,37 @@
 #include <termios.h>
 #include "includes/libft/libft.h"
 
+typedef struct s_data
+{
+	char	*argv;
+}				t_data;
+
+typedef struct s_msh
+{
+	char	**envp;
+	t_data	*data;
+}               t_msh;
 
 
 
+
+/************* FUNCTIONS *************/
+
+/* MAIN */
+
+
+/* INIT */
+char	**get_env(char **envp);
+t_msh	*init_shell(char **envp);
+
+/* READLINE */
+t_data  *ft_readline(void);
+
+
+
+
+/* TRASH */
+void	print_envp(char **envp);
 
 
 #endif
