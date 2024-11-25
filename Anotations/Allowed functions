@@ -1,5 +1,6 @@
-----------------------------------------------
--- Variavel de ambiente --
+-------------------------------------------------------------------------------------------------------------------------------------
+                        
+                        -- VARIAVEL DE AMBIENTE --
 getenv
 
 Variaveis do OS que armazenam informacoes de configuracao e estado que podem ser acessaods
@@ -54,8 +55,9 @@ int main() {
     return 0;
 }
 
-----------------------------------------------
---TERMCAPS - Caracteristicas do terminal / controle de string / manipulacao do terminal--
+-------------------------------------------------------------------------------------------------------------------------------------
+
+        --TERMCAPS - Caracteristicas do terminal / controle de string / manipulacao do terminal--
 
 tputs - tgoto - tgetstr - tgetnum - tgetflag - tgetent
 
@@ -201,7 +203,7 @@ if (clear_screen) {  -- Limpa a tela
     tputs(clear_screen, 1, putchar); // Limpa a tela
 }
 
----------------------------------------------- TERMIOS
+------------------------------------------------------------------------------------------------------------------------------------- TERMIOS
 tcgetattr - tcsetattr
 Controlar as configuracoes do terminal Unix, manipula o comportamento, como
 desativar modo canonico(leitura linha a linha) ou desabilitar o eco de entrada no terminal
@@ -231,7 +233,7 @@ TCSANOW: Aplica imediatamente.
 TCSADRAIN: Espera esvaziar a saída antes de aplicar.
 TCSAFLUSH: Descarrega entrada e saída pendentes antes de aplicar.
 
----------------------------------------------- READLINE
+------------------------------------------------------------------------------------------------------------------------------------- READLINE
 readline - add_history - rl_clear_history - 
 rl_on_new_line - rl_replace_line - rl_redisplay
 
@@ -279,14 +281,14 @@ Ex:
     rl_redisplay();
 
 
----------------------------------------------- IOCTL - Control Device
+------------------------------------------------------------------------------------------------------------------------------------- IOCTL - Control Device
 ioctl
 
 -> int ioctl(int fd, unsigned long request, ...); -- (input/output control)
 // Permite enviar comandos especificos para dispositivos, terminais ou interfaces de rede
 // Amplamente utilizada para operações de controle que não são padronizadas por outras funções do sistema,
 // Envia um comando especifico para o driver ou dispositivo associado ao 'fd'
-// Comportamento depende do disposivito e do comando fornecido em 'request'
+// Comportamento depende do disposivito e do comando fornecido em 'request' - geralmente definidas nos headers <termios.h> ou <sys/ioctl.h>
 - fd (file descriptor):
     Descritor de arquivo aberto que identifica o recurso a ser controlado
 - request (comando):
@@ -297,20 +299,104 @@ Return:
     -1: Erro com 'errno' configurado para indicar motivo (ex: 'EINVAL' para um comando invalido)
 Exemplos:
 
-    -Obter o tamanho da janela do terminal
-    Usando comando 'TIOCGWINSZ', é possível obter o número de colunas e linhas de um terminal.
-        struct winsize ws;
-        ioctl(fd, TIOCGWINSZ, &ws);
-        printf("Linhas: %d, Colunas: %d\n", ws.ws_row, ws.ws_col);
-    Modificar o tamanho da janela do terminal.
-        ws.ws_row = 50;
-        ws.ws_col = 120;
-        ioctl(fd, TIOCSWINSZ, &ws);
 
+            -- Controle de Atributos do terminal
+    - TCGETS
+        // Retorna uma struct termios contendo as configuraçoes do terminal
+          ioctl(fd, TCGETS, &termios_struct);
+    - TCSETS
+        // Define os atributos do terminal / Aplica as configuraçoes fornecidas em uma "struct termios"
+         ioctl(fd, TCSETS, &termios_struct);
+    - TCSANOW
+         // Aplica configuraçoes imediatamente
+    - TCSADRAIN
+         // Aplica configuraçoes apos esvaziamento do buffer de saida
+    - TCSAFLUSH
+         // Aplica configuraçoes apos esvaziar os buffers de entrada e saida
+
+            -- Controle de Modos de E/S
+    - TIOCGETA
+         // Obtem a configuraçao do modo de terminal - equivalente a TCGETS
+    - TIOCSETA
+         // Define a configuraçao do modo de terminal - equivalente a TCSETS
+
+            -- Tamanho da Janela
+    - TIOCGWINSZ
+         // Obtem o tamanho da janela do terminal - Retorna uma "struct winsinze" com o numero de linhas e colunas
+         struct winsize ws;
+         ioctl(fd, TIOCGWINSZ, &ws);
+         printf("Linhas: %d, Colunas: %d\n", ws.ws_row, ws.ws_col);
+    - TIOCSWINSZ
+         // Define o tamanho da janela do terminal - Modifica os valores de uma "struct winsize"
+         ws.ws_row = 50;
+         ws.ws_col = 120;
+         ioctl(fd, TIOCSWINSZ, &ws);
+
+            -- Sinalizaçao de controle // Configura como terminal lida com sinais de bloqueio
+    - TIOCSCTTY
+         // Configura o terminal como controlador para o processo atual - util ao criar shells personalizados
+         ioctl(fd, TIOCSCTTY);
+    - TIOCNOTTY
+         // Remove o terminal como controlador de processo - comum em daemons ou processos que desejam se dissociar do terminal
     
-    .....
+            -- Controle de Entrada/Teclado
+    - TIOCSTI
+         // Insere uma sequencia de caracteres na entrada do terminal
+         char c = 'A';
+         ioctl(fd, TIOCSTI, &c);
+    - TIOCEXCL
+         // Coloca o terminal em modo exclusivo (impede acesso por outros processos)
+    - TIOCNXCL
+         // Remove o modo exclusivo
 
----------------------------------------------- NAVEGAR POR DIRETORIOS
+            -- Limpeza e controle de buffers
+    - TIOCFLUSH
+         // Esvazia os buffers de entrada ou saida
+         Pode usar:
+         - TCIFLUSH: Limpa o buffer de entrada
+         - TCOFLUSH: Limpa o buffer de saida
+         - TCIOFLUSH Limpa os buffers de entrada e saida
+        ioctl(fd, TIOCFLUSH, TCIOFLUSH);
+
+            -- Estado de Controle do Terminal
+    - TIOCMGET
+         // Obtem o estado dos sinais de controle do terminal
+    - TIOCMSET
+         // Define o estado dos sinais de controle do terminal
+
+
+            -- STRUCTS ASSOCIADAS --
+
+    - Struct winsize // Tamanho do terminal
+    struct winsize {
+        unsigned short ws_row;      // Numero de linhas
+        unsigned short ws_col;      // Numero de colunas
+        unsigned short ws_xpixel;   // Tamanho horizontal em pixels (opcional)
+        unsigned short ws_ypixel;   // Tamanho vertical em pixels (opcional)
+    }
+
+    - Struct termios // Atributos do terminal
+    struct termios {
+        tcflag_t c_iflag;   // Modos de entrada
+        tcflag_t c_oflag;   // Modos de saida
+        tcflag_t c_cflag;   // Modos de controle
+        tcflag_t c_lflag;   // Modos locais
+        cc_t c_cc[NCCS];    // Caracteres de controle
+    }
+
+    c_lflag (modos locais):
+        - ECHO: Habilita o eco de entrada
+        - ICANON: Ativa o modo canonico
+        - ISIG: Ativa a geraçao de sinais como 'Ctrl+c'
+    c_iflag (modos de entrada):
+        - IGNBRK: Ignora condiçoes de quebra de linha
+        - ICRNL:  Converte '\r' em '\n'
+    c_oflag (modos de saida):
+        - OPOST: Processa saida de dados
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------- NAVEGAR POR DIRETORIOS
 opendir - readdir - closedir
 Abrir, ler e fechar conteudo do diretorio
 
@@ -333,7 +419,9 @@ int main()
 	return (0);
 }
 
----------------------------------------------- SIGNALS
+-> https://www.youtube.com/watch?v=j9yL30R6npk
+
+------------------------------------------------------------------------------------------------------------------------------------- SIGNALS
 
 signal - sigaction - sigemptyset - sigaddset - kill
 
