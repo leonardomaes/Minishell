@@ -35,11 +35,10 @@ char	**get_env(char **envp)
 	return (env_copy);
 }
 
-t_msh	*init_shell(char **envp)
+void init_shell(t_msh **msh, char **envp)
 {
-	t_msh	*msh;
-
-	msh = malloc(sizeof(t_msh *));
-	msh->envp = get_env(envp);
-	return (msh);
+	(*msh) = malloc(sizeof(t_msh *));
+	if (!*msh)
+		return ;
+	(*msh)->envp = get_env(envp);
 }

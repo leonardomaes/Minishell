@@ -12,10 +12,19 @@
 
 #include "../minishell.h"
 
-
+void free_data(t_msh *msh)
+{
+	free(msh->data->argv);
+	free(msh->data);
+}
 
 void free_all(t_msh *msh)
 {
+	int i;
+
+	i = 0;
+	while (msh->envp[i])
+		free(msh->envp[i++]);
 	free(msh->envp);
 	free(msh);
 }
@@ -26,13 +35,12 @@ int main(int argc, char *argv[], char **envp)
 
 	argv = NULL;
 	argc = 0;
-	msh = init_shell(envp);				// Inicia struct principal
+	init_shell(&msh, envp);				// Inicia struct principal
 	//print_envp(msh->envp);			// Imprimir variavel ambiente
-	while (1)							// Ciclo do terminal
-	{
-		msh->data = ft_readline();		// Recebe os dados na struct e faz o parser
-		
-	}
-	//free_all(&msh);
+	msh->data = ft_readline();
+	if (msh->data && msh->data->argv)
+		printf("%s\n", msh->data->argv);
+	free_data(msh);
+	free_all(msh);
 	return (0);
 }

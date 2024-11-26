@@ -12,14 +12,28 @@
 
 #include "../minishell.h"
 
+char *prompt()
+{
+	char *line;
 
+	line = readline(" % ");
+	if (!line)
+	{
+		free(line);
+		return (NULL);
+	}
+	return (line);
+}
 
 t_data  *ft_readline(void)
 {
-	t_data *dat;
+	t_data *data;
+	char	*line;
 
-	dat = malloc(sizeof(t_data *));
-	dat->argv = readline(" % ");
-	
-	return (dat);
-}
+	data = malloc(sizeof(t_data));
+	if (!data)
+		return (NULL);
+	line = prompt();		// Le o input
+	// Start parser
+	return (data);
+}	

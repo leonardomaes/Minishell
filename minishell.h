@@ -28,12 +28,13 @@
 
 typedef struct s_data
 {
-	char	*argv;
+	char	**cmds;
 }				t_data;
 
 typedef struct s_msh
 {
 	char	**envp;
+	char	*argv;
 	t_data	*data;
 }               t_msh;
 
@@ -47,7 +48,7 @@ typedef struct s_msh
 
 /* INIT */
 char	**get_env(char **envp);
-t_msh	*init_shell(char **envp);
+void init_shell(t_msh **msh, char **envp);
 
 /* READLINE */
 t_data  *ft_readline(void);

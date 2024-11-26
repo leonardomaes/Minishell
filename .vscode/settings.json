@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "allowed functions": "cpp",
-        "minishell.h": "c"
+        "minishell.h": "c",
+        "libft.h": "c"
     }
 }
