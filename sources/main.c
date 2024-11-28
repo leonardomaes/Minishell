@@ -14,7 +14,7 @@
 
 void free_data(t_msh *msh)
 {
-	free(msh->data->argv);
+	free(msh->data->cmds);
 	free(msh->data);
 }
 
@@ -33,13 +33,11 @@ int main(int argc, char *argv[], char **envp)
 {
 	t_msh *msh;
 
-	argv = NULL;
-	argc = 0;
+	(void)argv;
+	(void)argc;
 	init_shell(&msh, envp);				// Inicia struct principal
 	//print_envp(msh->envp);			// Imprimir variavel ambiente
 	msh->data = ft_readline();
-	if (msh->data && msh->data->argv)
-		printf("%s\n", msh->data->argv);
 	free_data(msh);
 	free_all(msh);
 	return (0);
