@@ -16,7 +16,7 @@ char *prompt()
 {
 	char *line;
 
-	line = readline(" % ");
+	line = readline("\001\033[1;36m\002cmd>\001\033[0m\002");
 	if (!line)
 	{
 		free(line);
@@ -29,22 +29,32 @@ t_data  *ft_readline(void)
 {
 	t_data *data;
 	char	*line;
+	char	**args;
 
 	data = malloc(sizeof(t_data));
 	if (!data)
 		return (NULL);
 	line = prompt();		// Le o input
+	if (line && *line)
+		add_history(line);
+	args = ft_split(line, ' ');
+	if (!args || !(*args))
+		return (NULL);
+	data->tokens = parsing(args);
 	// Ler quantidade de pipes e dividir os tokens
+	// Primeiro fazer splits pelos espacos 
 	// Start parser
+	free(line);
 	return (data);
 }
 /*
 Separar os tokens em tipos e ordem de entrada
-Integers
-Chars
-Id
+Input
+Output
+CMD
 Pipes
 Simbols
+BLANK
 ...
 
 Ex: -(x + 5) * 2
@@ -81,8 +91,8 @@ if nextToken == ID
 	return (nextToken)
 else if nextToken == Int
 	return (nextToken)
-else if nextToken == "("
-	a = parseE()				// Expressao dentro dos parenteses
+else if nextToken == "("				// Expressao dentro dos parenteses
+	a = parseE()
 	if (a == null)
 		return (NULL)
 	if nextToken == ")"

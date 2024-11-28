@@ -28,7 +28,8 @@
 
 typedef struct s_data
 {
-	char	**cmds;
+	int		pipes;
+	t_tokens	*tokens;
 }				t_data;
 
 typedef struct s_msh
@@ -37,6 +38,14 @@ typedef struct s_msh
 	char	*argv;
 	t_data	*data;
 }               t_msh;
+
+typedef struct s_tokens
+{
+	char		*name;
+	char		*type;
+	t_tokens 	*left;
+	t_tokens 	*right;
+}				t_tokens;
 
 
 
@@ -58,6 +67,10 @@ t_data  *ft_readline(void);
 
 /* TRASH */
 void	print_envp(char **envp);
+
+
+/* PARSER */
+t_tokens *parsing(char **args);
 
 
 #endif

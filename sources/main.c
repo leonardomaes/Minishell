@@ -15,7 +15,6 @@
 void free_data(t_msh *msh)
 {
 	free(msh->data->cmds);
-	free(msh->data);
 }
 
 void free_all(t_msh *msh)
@@ -26,6 +25,7 @@ void free_all(t_msh *msh)
 	while (msh->envp[i])
 		free(msh->envp[i++]);
 	free(msh->envp);
+	free(msh->data);
 	free(msh);
 }
 
@@ -37,8 +37,13 @@ int main(int argc, char *argv[], char **envp)
 	(void)argc;
 	init_shell(&msh, envp);				// Inicia struct principal
 	//print_envp(msh->envp);			// Imprimir variavel ambiente
-	msh->data = ft_readline();
-	free_data(msh);
+	while (1)
+	{
+		msh->data = ft_readline();
+		
+	}
+
+	//free_data(msh);
 	free_all(msh);
 	return (0);
 }

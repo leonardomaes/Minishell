@@ -37,7 +37,7 @@ char	**get_env(char **envp)
 
 void init_shell(t_msh **msh, char **envp)
 {
-	(*msh) = malloc(sizeof(t_msh *));
+	(*msh) = malloc(sizeof(t_msh));
 	if (!*msh)
 		return ;
 	(*msh)->envp = get_env(envp);

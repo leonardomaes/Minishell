@@ -9,7 +9,8 @@ LIBFT = includes/libft/libft.a
 PRINTF = includes/ft_printf/libftprintf.a
 
 #
-SRC =	sources/main.c sources/init.c sources/readline.c sources/trash.c
+SRC =	sources/main.c sources/init.c sources/readline.c sources/trash.c \
+		sources/parser.c
 #
 
 # Commands
