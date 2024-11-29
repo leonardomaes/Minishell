@@ -12,10 +12,19 @@
 
 #include "../minishell.h"
 
-void	print_envp(char **envp)
+void	ft_print_splitargs(char **args)
 {
 	int i;
 	i = 0;
-	while (envp[i])
-		printf("%s\n", envp[i++]);
+	while (args[i])
+		printf("%s\n", args[i++]);
+}
+
+void	ft_print_params(t_msh *msh, t_data *data)
+{
+	ft_print_splitargs(data->args);
+	printf("argc = %i\n", data->argc);
+	printf("\n <-CMD PATHS->\n");
+	ft_print_splitargs(msh->cmd_paths);
+	printf("<--------->\n\n");
 }

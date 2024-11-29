@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-char *prompt()
+char *ft_prompt()
 {
 	char *line;
 
@@ -25,25 +25,30 @@ char *prompt()
 	return (line);
 }
 
-t_data  *ft_readline(void)
+t_data  *ft_readline(t_msh *msh)
 {
 	t_data *data;
 	char	*line;
-	char	**args;
 
+	(void)msh;
 	data = malloc(sizeof(t_data));
 	if (!data)
 		return (NULL);
-	line = prompt();		// Le o input
+	line = ft_prompt();						// Lê o input
 	if (line && *line)
-		add_history(line);
-	args = ft_split(line, ' ');
-	if (!args || !(*args))
+		add_history(line);					// Add ao historico
+	data->args = ft_split(line, ' '); 		// Primeiro fazer splits pelos espacos
+	if (!data->args)
 		return (NULL);
-	data->tokens = parsing(args);
+	data->argc = ft_countargs(data->args);	//Lê a quantidade de args
+
+	ft_print_params(msh, data);				// remover
+
+	ft_parsing(msh);
 	// Ler quantidade de pipes e dividir os tokens
-	// Primeiro fazer splits pelos espacos 
 	// Start parser
+	// Talvez fazer tokens diferentes, para casos:
+	// Sem pipe - Sem input/output - Com pipe - Com input/output
 	free(line);
 	return (data);
 }

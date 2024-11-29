@@ -26,51 +26,56 @@
 #include <termios.h>
 #include "includes/libft/libft.h"
 
-typedef struct s_data
+typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
 {
-	int		pipes;
+	char				*name;
+	char				*type;
+	struct s_tokens		*left;
+	struct s_tokens		*right;
+}				t_tokens;
+
+typedef struct s_data			// Info sobre argumentos recebidos
+{
+	int			pipes;
+	int			argc;
+	char		**args;
 	t_tokens	*tokens;
 }				t_data;
 
-typedef struct s_msh
+typedef struct s_msh			// Main struct que contem tudo
 {
-	char	**envp;
 	char	*argv;
+	char	**envp;
+	char	**cmd_paths;
 	t_data	*data;
 }               t_msh;
-
-typedef struct s_tokens
-{
-	char		*name;
-	char		*type;
-	t_tokens 	*left;
-	t_tokens 	*right;
-}				t_tokens;
-
-
 
 
 /************* FUNCTIONS *************/
 
 /* MAIN */
-
+void		ft_free_all(t_msh *msh);
 
 /* INIT */
-char	**get_env(char **envp);
-void init_shell(t_msh **msh, char **envp);
+char		**ft_get_env(char **envp);
+void		ft_init_shell(t_msh **msh, char **envp);
 
 /* READLINE */
-t_data  *ft_readline(void);
+t_data		*ft_readline(t_msh *msh);
 
 
+/* ENVIRON */
+char		*ft_get_path(char **envp);
+char		**ft_get_env(char **envp);
+char		*ft_get_command(char *cmd, char **path);
+
+/* PARSER */
+int			ft_countargs(char **args);
+void 		ft_parsing(t_msh *msh);
 
 
 /* TRASH */
-void	print_envp(char **envp);
-
-
-/* PARSER */
-t_tokens *parsing(char **args);
-
+void		ft_print_splitargs(char **args);
+void		ft_print_params(t_msh *msh, t_data *data);
 
 #endif

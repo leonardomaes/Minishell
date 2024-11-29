@@ -12,12 +12,7 @@
 
 #include "../minishell.h"
 
-void free_data(t_msh *msh)
-{
-	free(msh->data->cmds);
-}
-
-void free_all(t_msh *msh)
+void ft_free_all(t_msh *msh)
 {
 	int i;
 
@@ -25,8 +20,27 @@ void free_all(t_msh *msh)
 	while (msh->envp[i])
 		free(msh->envp[i++]);
 	free(msh->envp);
+	i = 0;
+	while (msh->cmd_paths[i])
+		free(msh->cmd_paths[i++]);
+	free(msh->cmd_paths);
+	i = 0;
+	while (msh->data->args[i])
+		free(msh->data->args[i++]);
+	free(msh->data->args);
 	free(msh->data);
 	free(msh);
+}
+
+void ft_free_data(t_msh	*msh)
+{
+	int i;
+
+	i = 0;
+	while (msh->data->args[i])
+		free(msh->data->args[i++]);
+	free(msh->data->args);
+	free(msh->data);
 }
 
 int main(int argc, char *argv[], char **envp)
@@ -35,15 +49,14 @@ int main(int argc, char *argv[], char **envp)
 
 	(void)argv;
 	(void)argc;
-	init_shell(&msh, envp);				// Inicia struct principal
-	//print_envp(msh->envp);			// Imprimir variavel ambiente
+	ft_init_shell(&msh, envp);				// Inicia struct principal
 	while (1)
 	{
-		msh->data = ft_readline();
-		
+		msh->data = ft_readline(msh);
+		if (!ft_strncmp(msh->data->args[0], "exit", 4))
+			break;
+		ft_free_data(msh);
 	}
-
-	//free_data(msh);
-	free_all(msh);
+	ft_free_all(msh);
 	return (0);
 }

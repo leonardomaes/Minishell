@@ -10,7 +10,7 @@ PRINTF = includes/ft_printf/libftprintf.a
 
 #
 SRC =	sources/main.c sources/init.c sources/readline.c sources/trash.c \
-		sources/parser.c
+		sources/parser.c sources/environ.c
 #
 
 # Commands

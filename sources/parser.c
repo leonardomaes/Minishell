@@ -12,7 +12,16 @@
 
 #include "../minishell.h"
 
-t_tokens *parsing(char **args)
+int ft_countargs(char **args)
 {
-	
+	int i;
+	i = 0;
+	while (args[i])
+		i++;
+	return (i);
+}
+
+void ft_parsing(t_msh *msh)
+{
+	(void)msh;
 }
