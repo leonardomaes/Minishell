@@ -26,12 +26,31 @@
 #include <termios.h>
 #include "includes/libft/libft.h"
 
+/************* DEFINES *************/
+#define PIPE
+#define CMD
+#define IN
+#define OUT
+#define BUILTIN
+
+
+#define BLT_ECHO 101
+#define BLT_CD 102
+#define BLT_PWD 103
+#define BLT_EXPORT 104
+#define BLT_UNSET 105
+#define BLT_ENV 106
+#define BLT_EXIT 107
+
+/************* FUNCTIONS *************/
+
 typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
 {
 	char				*name;
-	char				*type;
-	struct s_tokens		*left;
-	struct s_tokens		*right;
+	int					type;
+	int					count;
+	struct s_tokens		*prev;
+	struct s_tokens		*next;
 }				t_tokens;
 
 typedef struct s_data			// Info sobre argumentos recebidos
@@ -54,14 +73,14 @@ typedef struct s_msh			// Main struct que contem tudo
 /************* FUNCTIONS *************/
 
 /* MAIN */
-void		ft_free_all(t_msh *msh);
+
 
 /* INIT */
-char		**ft_get_env(char **envp);
 void		ft_init_shell(t_msh **msh, char **envp);
 
 /* READLINE */
-t_data		*ft_readline(t_msh *msh);
+char		*ft_prompt();
+void		ft_readline(t_msh *msh);
 
 
 /* ENVIRON */
@@ -69,13 +88,28 @@ char		*ft_get_path(char **envp);
 char		**ft_get_env(char **envp);
 char		*ft_get_command(char *cmd, char **path);
 
-/* PARSER */
+/* FREE */
+void		ft_free_tokens(t_tokens *tokens);
+void		ft_free_all(t_msh *msh);
+void		ft_free_data(t_msh	*msh);
+
+/* PARSER AND TOKENS */
 int			ft_countargs(char **args);
 void 		ft_parsing(t_msh *msh);
 
 
+int			get_builtin_type(char *name);
+int			get_type(char *name);
+
+
+void		split_tokens(t_msh *msh, t_tokens **token, int i);
+
+
 /* TRASH */
 void		ft_print_splitargs(char **args);
-void		ft_print_params(t_msh *msh, t_data *data);
+void		ft_print_params(t_msh *msh);
+void	ft_print_tokens(t_msh *msh);
+
+
 
 #endif

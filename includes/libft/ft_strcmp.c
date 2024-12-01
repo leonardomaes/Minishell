@@ -1,31 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_strcmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/07 12:50:00 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/07 12:50:02 by lmaes            ###   ########.fr       */
+/*   Created: 2024/04/10 16:45:16 by lmaes             #+#    #+#             */
+/*   Updated: 2024/05/03 14:28:16 by lmaes            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "libft.h"
 
-int main(int argc, char *argv[], char **envp)
+int	ft_strcmp(const char *s1, const char *s2)
 {
-	t_msh *msh;
+	size_t	i;
 
-	(void)argv;
-	(void)argc;
-	ft_init_shell(&msh, envp);				// Inicia struct principal
-	while (1)
+	i = 0;
+	while (s1[i] || s2[i])
 	{
-		ft_readline(msh);
-		if (msh->data->args[0] && !ft_strncmp(msh->data->args[0], "exit", 4))
-			break;
-		ft_free_data(msh);
+		if (s1[i] != s2[i])
+			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+		i++;
 	}
-	ft_free_all(msh);
 	return (0);
 }

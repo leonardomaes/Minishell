@@ -9,8 +9,9 @@ LIBFT = includes/libft/libft.a
 PRINTF = includes/ft_printf/libftprintf.a
 
 #
-SRC =	sources/main.c sources/init.c sources/readline.c sources/trash.c \
-		sources/parser.c sources/environ.c
+SRC =	sources/main.c sources/init.c sources/readline.c sources/environ.c sources/trash.c \
+		sources/free.c sources/Parser_and_tokens/parser.c sources/Parser_and_tokens/tokenizer.c \
+		sources/Parser_and_tokens/token_type.c
 #
 
 # Commands
@@ -23,7 +24,7 @@ all: $(NAME)
 			$(CC) $(CFLAGS) -c $*.c -o $*.o
 
 $(LIBFT):
-			@make --silent -C includes/libft
+			@make bonus --silent -C includes/libft
 
 $(PRINTF):
 			@make --silent -C includes/ft_printf

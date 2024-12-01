@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,18 +10,24 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
 
-int ft_countargs(char **args)
+void	split_tokens(t_msh *msh, t_tokens **token, int i)
 {
-	int i;
-	i = 0;
-	while (args[i])
+	t_tokens	*temp;
+	
+	if (i < msh->data->argc)
+	{
+		*token = NULL;
+		*token = malloc(sizeof(t_tokens));
+		temp = *token;
+		temp->count = i;
+		temp->name = msh->data->args[i];
+		temp->type = get_type(msh->data->args[i]);
+		/* if (i < msh->data->argc - 1)
+			temp->next->prev = temp; */
 		i++;
-	return (i);
-}
-
-void ft_parsing(t_msh *msh)
-{
-	(void)msh;
+		temp->next = NULL;
+		split_tokens(msh, &temp->next, i);
+	}
 }

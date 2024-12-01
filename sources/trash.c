@@ -20,11 +20,25 @@ void	ft_print_splitargs(char **args)
 		printf("%s\n", args[i++]);
 }
 
-void	ft_print_params(t_msh *msh, t_data *data)
+void	ft_print_params(t_msh *msh)
 {
-	ft_print_splitargs(data->args);
-	printf("argc = %i\n", data->argc);
+	ft_print_splitargs(msh->data->args);
+	printf("argc = %i\n", msh->data->argc);
 	printf("\n <-CMD PATHS->\n");
 	ft_print_splitargs(msh->cmd_paths);
 	printf("<--------->\n\n");
+}
+
+void	ft_print_tokens(t_msh *msh)
+{
+	t_tokens *temp;
+
+	temp = msh->data->tokens;
+	while (temp != NULL)
+	{
+		printf("\nCount - %i", temp->count);
+		printf("\nName - %s", temp->name);
+		printf("\nType - %i\n", temp->type);
+		temp = temp->next;
+	}
 }

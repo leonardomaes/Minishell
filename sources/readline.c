@@ -22,40 +22,39 @@ char *ft_prompt()
 		free(line);
 		return (NULL);
 	}
+	else if (*line != '\0')
+		add_history(line);					// Add ao historico
 	return (line);
 }
 
-t_data  *ft_readline(t_msh *msh)
+void	ft_readline(t_msh *msh)
 {
-	t_data *data;
 	char	*line;
 
-	(void)msh;
-	data = malloc(sizeof(t_data));
-	if (!data)
-		return (NULL);
-	line = ft_prompt();						// Lê o input
-	if (line && *line)
-		add_history(line);					// Add ao historico
-	data->args = ft_split(line, ' '); 		// Primeiro fazer splits pelos espacos
-	if (!data->args)
-		return (NULL);
-	data->argc = ft_countargs(data->args);	//Lê a quantidade de args
-
-	ft_print_params(msh, data);				// remover
-
+	msh->data = malloc(sizeof(t_data));
+	if (!msh->data)
+		return ;
+	line = ft_prompt();									// Lê o input
+	msh->data->args = ft_split(line, ' '); 				// Primeiro fazer splits pelos espaços !! Trocar futuramente / caso de argumentos com espaços
+	if (!msh->data->args || !msh->data->args[0] || *msh->data->args[0] == '\0')
+		return free(line);
+	
 	ft_parsing(msh);
+
+	ft_print_params(msh); // Remover
+	ft_print_tokens(msh); // Remover
+
 	// Ler quantidade de pipes e dividir os tokens
 	// Start parser
 	// Talvez fazer tokens diferentes, para casos:
 	// Sem pipe - Sem input/output - Com pipe - Com input/output
 	free(line);
-	return (data);
 }
 /*
 Separar os tokens em tipos e ordem de entrada
 Input
 Output
+Builtin
 CMD
 Pipes
 Simbols
