@@ -36,9 +36,9 @@ void	ft_print_tokens(t_msh *msh)
 	temp = msh->data->tokens;
 	while (temp != NULL)
 	{
-		printf("\nCount - %i", temp->count);
-		printf("\nName - %s", temp->name);
-		printf("\nType - %i\n", temp->type);
+		printf("\nCount - %i<", temp->count);
+		printf("\nName - %s<", temp->name);
+		printf("\nType - %i<\n", temp->type);
 		temp = temp->next;
 	}
 }

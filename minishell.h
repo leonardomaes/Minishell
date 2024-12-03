@@ -101,7 +101,7 @@ void 		ft_parsing(t_msh *msh);
 int			get_builtin_type(char *name);
 int			get_type(char *name);
 
-
+char		**ft_split_args(const char *s);
 void		split_tokens(t_msh *msh, t_tokens **token, int i);
 
 

@@ -34,8 +34,10 @@ void	ft_readline(t_msh *msh)
 	msh->data = malloc(sizeof(t_data));
 	if (!msh->data)
 		return ;
+	printf("<--------------------------------->\n"); // Remover
 	line = ft_prompt();									// Lê o input
-	msh->data->args = ft_split(line, ' '); 				// Primeiro fazer splits pelos espaços !! Trocar futuramente / caso de argumentos com espaços
+	//msh->data->args = ft_split(line, ' ');
+	msh->data->args = ft_split_args(line);
 	if (!msh->data->args || !msh->data->args[0] || *msh->data->args[0] == '\0')
 		return free(line);
 	

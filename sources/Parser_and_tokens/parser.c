@@ -21,6 +21,8 @@ int	ft_countargs(char **args)
 	return (i);
 }
 
+
+
 void ft_parsing(t_msh *msh)
 {
 	int i;
