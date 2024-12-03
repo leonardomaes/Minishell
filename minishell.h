@@ -42,6 +42,9 @@
 #define BLT_ENV 106
 #define BLT_EXIT 107
 
+#define DBL_QUOTES 108
+#define SNG_QUOTES 109
+
 /************* FUNCTIONS *************/
 
 typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
@@ -55,8 +58,9 @@ typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
 
 typedef struct s_data			// Info sobre argumentos recebidos
 {
-	int			pipes;
+	int			error;
 	int			argc;
+	int			pipes;
 	char		**args;
 	t_tokens	*tokens;
 }				t_data;
@@ -95,20 +99,20 @@ void		ft_free_data(t_msh	*msh);
 
 /* PARSER AND TOKENS */
 int			ft_countargs(char **args);
-void 		ft_parsing(t_msh *msh);
+int			ft_parsing(t_msh *msh, char *line);
 
 
 int			get_builtin_type(char *name);
 int			get_type(char *name);
 
 char		**ft_split_args(const char *s);
-void		split_tokens(t_msh *msh, t_tokens **token, int i);
+void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
 
 
 /* TRASH */
 void		ft_print_splitargs(char **args);
 void		ft_print_params(t_msh *msh);
-void	ft_print_tokens(t_msh *msh);
+void		ft_print_tokens(t_msh *msh);
 
 
 

@@ -115,7 +115,7 @@ char	**ft_split_args(const char *s)
 	if (!str)
 		return (NULL);
 	i = 0;
-	while (i < words)
+	while (i < words)				// Trocar por uma func para alocar 'str'
 	{
 		str[i] = (char *)malloc(sizeof(char) * (len[i] + 1));
 		if (!str[i])
@@ -134,7 +134,7 @@ char	**ft_split_args(const char *s)
 			s++;
 		if (*s == '\0')
 			break ;
-		if (*s == '"')
+		if (*s == '"')				// Trocar por um handle double quotes e single quotes
 		{
 			s++;
 			while (*s != '"')
@@ -155,7 +155,7 @@ char	**ft_split_args(const char *s)
 	return (str);
 }
 
-void	split_tokens(t_msh *msh, t_tokens **token, int i)
+void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)
 {
 	t_tokens	*temp;
 	
@@ -167,10 +167,10 @@ void	split_tokens(t_msh *msh, t_tokens **token, int i)
 		temp->count = i;
 		temp->name = msh->data->args[i];
 		temp->type = get_type(msh->data->args[i]);
-		/* if (i < msh->data->argc - 1)
-			temp->next->prev = temp; */
 		i++;
 		temp->next = NULL;
-		split_tokens(msh, &temp->next, i);
+		if (prev != NULL)
+			temp->prev = prev;
+		split_tokens(msh, &temp->next, temp, i);
 	}
 }

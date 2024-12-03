@@ -18,40 +18,20 @@ int	ft_countargs(char **args)
 	i = 0;
 	while (args[i])
 		i++;
-	return (i);
+	return (i);	
 }
 
-
-
-void ft_parsing(t_msh *msh)
+int ft_parsing(t_msh *msh, char *line)
 {
 	int i;
 	i = 0;
+
+	msh->data->args = ft_split_args(line);				// Split dos argumentos em vetor de strings
+	if (!msh->data->args || !msh->data->args[0] || *msh->data->args[0] == '\0')
+		return (1);
+	
 	msh->data->argc = ft_countargs(msh->data->args);	// Lê a quantidade de args
-	split_tokens(msh, &msh->data->tokens, i);			// Passa os parametros para structs de tokens
+	split_tokens(msh, &msh->data->tokens, NULL, i);			// Passa os parametros para structs de tokens
+	// Syntax check	
+	return (0);
 }
-
-
-/*
-ECHO:
-echo [option] [string]
-echo [string]
-
-flag:
--n -> print without a new line after
--e -> Habilita interpretaçao da contrabarra
-\b -> remove spaces in between the text
-\c -> omitted trailing new line
-\n -> create a new line where it is used
-\t -> horizontal tab spaces
-\r -> text before \r is not printed
-\v -> vertical tabs
-\a -> will produce an alert sound
-
-"echo *" is similar to ls command
-
-echo "Hello World" > output.txt
-">" to overwrite
-">>" to append
-
-*/
