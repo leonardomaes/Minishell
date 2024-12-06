@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/07 12:50:16 by lmaes            ###   ########.fr       */
+/*   Updated: 2024/12/06 19:31:37 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <signal.h>
 #include <termcap.h>
 #include <termios.h>
+#include <signal.h>
 #include "includes/libft/libft.h"
 
 /************* DEFINES *************/
@@ -44,6 +45,16 @@
 
 #define DBL_QUOTES 108
 #define SNG_QUOTES 109
+
+//macros for signal modes
+#define SHELL_MODE		1
+#define	COMMAND_MODE	2
+#define EXIT			3
+#define HEREDOC			4
+#define HEREDOC_PAUSE	5
+
+/********** GLOBAL VARIABLE **********/
+extern int	g_signal;
 
 /************* FUNCTIONS *************/
 
@@ -106,8 +117,13 @@ int			get_builtin_type(char *name);
 int			get_type(char *name);
 
 char		**ft_split_args(const char *s);
-void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
+void		split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
 
+/* SIGNAL HANDLING */
+void		ft_sigint_shell(int sig);
+void		ft_sigint_command(int sig);
+void		ft_sigquit(int sig);
+void		set_signal(int sg, t_msh *msg);
 
 /* TRASH */
 void		ft_print_splitargs(char **args);

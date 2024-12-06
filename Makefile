@@ -11,7 +11,7 @@ PRINTF = includes/ft_printf/libftprintf.a
 #
 SRC =	sources/main.c sources/init.c sources/readline.c sources/environ.c sources/trash.c \
 		sources/free.c sources/Parser_and_tokens/parser.c sources/Parser_and_tokens/tokenizer.c \
-		sources/Parser_and_tokens/token_type.c
+		sources/Parser_and_tokens/token_type.c sources/signals.c
 #
 
 # Commands
