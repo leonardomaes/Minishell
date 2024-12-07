@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:00 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/06 19:25:43 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/07 18:37:48 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,11 @@ int main(int argc, char *argv[], char **envp)
 	while (1)
 	{
 		ft_readline(msh);
+		if (!msh->data) //included this check to implement EOF signal (Ctr+D)
+		{
+			set_signal(EXIT, msh);
+			break; 
+		}
 		if (msh->data->args[0] && !ft_strncmp(msh->data->args[0], "exit", 4))
 			break;
 		ft_free_data(msh);

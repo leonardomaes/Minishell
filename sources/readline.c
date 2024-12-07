@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/25 19:03:46 by lmaes            ###   ########.fr       */
+/*   Updated: 2024/12/07 19:11:47 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char *ft_prompt()
 	line = readline("\001\033[1;36m\002cmd>\001\033[0m\002");
 	if (!line)
 	{
-		free(line);
+//		free(line);      //RM: validate do eliminate this free with Leo
 		return (NULL);
 	}
 	else if (*line != '\0')
@@ -36,6 +36,12 @@ void	ft_readline(t_msh *msh)
 		return ;
 	printf("<--------------------------------->\n"); 	// Remover
 	line = ft_prompt();									// Lê o input
+	if (!line) //RM: included this because noticed missing EOF handling
+	{
+		free(msh->data); //THIS IS CAUSING A SEGFAULT !!!
+		msh->data = NULL;
+		return ;
+	}
 
 	if (ft_parsing(msh, line) != 0)						// Comeca a tratar os dados
 		return free(line);

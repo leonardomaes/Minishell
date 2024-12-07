@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 00:39:31 by rda-cunh          #+#    #+#             */
-/*   Updated: 2024/12/06 19:40:03 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/07 18:17:50 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 //process signal handlers
 
-//used in interactive/shell mode to deal with SIGINT (ctr+c)
+//used in interactive/shell mode to deal with SIGINT (Ctr+C)
 void	ft_sigint_shell(int sig)
 {
 	g_signal = 130;
@@ -25,7 +25,7 @@ void	ft_sigint_shell(int sig)
 	(void) sig;
 }
 
-//handler in command execution to deal with SIGINT (ctr+c) 
+//handler in command execution to deal with SIGINT (Ctr+C) 
 void	ft_sigint_command(int sig)
 {
 	g_signal = 130;
@@ -33,7 +33,7 @@ void	ft_sigint_command(int sig)
 	(void) sig; //do not have to deal with prompt
 }
 
-//handler to deal with SIGQUIT (ctr+\)
+//handler to deal with SIGQUIT (Ctr+\)
 void	ft_sigquit(int sig)
 {
 	g_signal = 131;
@@ -41,16 +41,12 @@ void	ft_sigquit(int sig)
 	(void) sig;
 }
 
-//child signal handlers
-
-
-//heredoc signal handlers
+//child signal handlers | heredoc signal handlers
 
 
 //manage different signals according with with operation mode
-void	set_signal(int sg, t_msh *msg)
+void	set_signal(int sg, t_msh *msh)
 {
-	(void) msg; //change this when we use it; 
 	if (sg == SHELL_MODE)
 	{
 		signal(SIGINT, ft_sigint_shell);
@@ -61,11 +57,13 @@ void	set_signal(int sg, t_msh *msg)
 		signal(SIGINT, ft_sigint_command);
 		signal(SIGQUIT, ft_sigquit);
 	}
-/* //to do 
-	if (sg == EXIT)
+	if (sg == EXIT) //handles EOF (Ctrl+D) in main and EOF in Heredoc or input file
 	{
-
+		write(1, "exit\n", 5);
+		ft_free_all(msh);
+		exit(EXIT_SUCCESS); //to decide later if we can include the exit a proper free and exit functions
 	}
+/* //to do 
 	if (sg == HEREDOC)
 	{
 
