@@ -33,10 +33,24 @@ int	get_builtin_type(char *name)
 	
 }
 
+int get_quote_type(char *name)
+{
+	if (name[0] == '"')
+		return (DBL_QUOTES);
+	else if (name[0] == '\'')
+		return (SNG_QUOTES);
+	else if (name[0] == '|')
+		return (TKN_PIPE);
+	else
+		return (0);
+}
+
 int	get_type(char *name)
 {
 	if (get_builtin_type(name) != 0) // Check if it is a builtin cmd
 		return (get_builtin_type(name));
+	else if (get_quote_type(name) != 0)
+		return (get_quote_type(name));
 	else
 		return (1);
 }

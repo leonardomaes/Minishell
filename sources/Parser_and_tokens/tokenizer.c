@@ -76,6 +76,7 @@ int	*calculate_lengths(const char *s, int words)
             break;
         if (s[i] == '"')
         {
+			len[word]++;
             i++;
             while (s[i] && s[i] != '"')
             {
@@ -83,7 +84,10 @@ int	*calculate_lengths(const char *s, int words)
                 i++;
             }
             if (s[i] == '"')
-                i++;
+                {
+					len[word]++;
+					i++;
+				}
         }
         else
         {
@@ -96,6 +100,61 @@ int	*calculate_lengths(const char *s, int words)
         word++;
     }
     return len;
+}
+
+void handle_single_quote(const char **s, char *str)		// Nao deve interpretar metachars
+{
+    int i = 0;
+
+    str[i++] = **s;
+    (*s)++;
+    while (**s && **s != '\'')
+    {
+        str[i++] = **s;
+        (*s)++;
+    }
+    if (**s == '\'')
+        str[i++] = **s;
+    (*s)++;
+    str[i] = '\0';
+}
+
+void handle_double_quote(const char **s, char *str)		// Nao deve interpretar metachars, apenas '$'
+{
+    int i = 0;
+
+    str[i++] = **s;
+    (*s)++;
+    while (**s && **s != '"')
+    {
+        str[i++] = **s;
+        (*s)++;
+    }
+    if (**s == '"')
+        str[i++] = **s;
+    (*s)++;
+    str[i] = '\0';
+}
+
+char **alloc_args(int words, int *len)
+{
+	char **str;
+	int i;
+	
+	str = (char **)malloc(sizeof(char *) * (words + 1));
+	i = 0;
+	while (i < words)
+	{
+		str[i] = (char *)malloc(sizeof(char) * (len[i] + 1));
+		if (!str[i])
+		{
+			free_array(str, i);
+			free(len);
+			return (NULL);
+		}
+		i++;
+	}
+	return (str);
 }
 
 char	**ft_split_args(const char *s)
@@ -111,21 +170,11 @@ char	**ft_split_args(const char *s)
 	if (!s || words < 0)
 		return (NULL);
 	len = calculate_lengths(s, words);
-	str = (char **)malloc(sizeof(char *) * (words + 1));
+	if (!len)
+		return (NULL);
+	str = alloc_args(words, len);
 	if (!str)
 		return (NULL);
-	i = 0;
-	while (i < words)				// Trocar por uma func para alocar 'str'
-	{
-		str[i] = (char *)malloc(sizeof(char) * (len[i] + 1));
-		if (!str[i])
-		{
-			free_array(str, i);
-			free(len);
-			return (NULL);
-		}
-		i++;
-	}
 	i = 0;
 	while (*s)
 	{
@@ -134,20 +183,22 @@ char	**ft_split_args(const char *s)
 			s++;
 		if (*s == '\0')
 			break ;
-		if (*s == '"')				// Trocar por um handle double quotes e single quotes
+		if (*s == '"')
 		{
-			s++;
-			while (*s != '"')
-				str[i][j++] = *s++;
-			if (*s == '"')
-				s++;
+			handle_double_quote(&s, str[i]);
+			j = ft_strlen(str[i]);
 		}
-		else
+		else if(*s == '\'')
+		{
+			handle_single_quote(&s, str[i]);
+			j = ft_strlen(str[i]);
+		}
+		else			// Adicionar else if em caso de ser um $ para acessar a environ
 		{
 			while (*s && !ft_isspace(*s))
 				str[i][j++] = *s++;
+			str[i][j] = '\0';
 		}
-		str[i][j] = '\0';
 		i++;
 	}
 	str[i] = NULL;

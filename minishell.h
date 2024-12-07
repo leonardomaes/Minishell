@@ -27,12 +27,9 @@
 #include "includes/libft/libft.h"
 
 /************* DEFINES *************/
-#define PIPE
 #define CMD
 #define IN
 #define OUT
-#define BUILTIN
-
 
 #define BLT_ECHO 101
 #define BLT_CD 102
@@ -44,6 +41,7 @@
 
 #define DBL_QUOTES 108
 #define SNG_QUOTES 109
+#define TKN_PIPE 110
 
 /************* FUNCTIONS *************/
 
