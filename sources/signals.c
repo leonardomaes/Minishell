@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 00:39:31 by rda-cunh          #+#    #+#             */
-/*   Updated: 2024/12/09 18:49:24 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/09 19:14:48 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	ft_sigint_command(int sig)
 void	ft_sigquit(int sig)
 {
 	g_signal = 131;
-	write(1, "Quit (core dumped)\n", 19); //check with Leo about ft_printf | prints a standard message 
+	printf("Quit (core dumped)\n");
 	(void) sig;
 }
 
@@ -76,7 +76,7 @@ void	set_signal(int sg, t_msh *msh)
 	}
 	if (sg == EXIT) //handles EOF (Ctrl+D) in main and EOF in Heredoc or input file | palaced after the readline function
 	{
-		write(1, "exit\n", 5);
+		printf("exit\n");
 		ft_free_all(msh);
 		exit(EXIT_SUCCESS); //to decide later if we can include the exit a proper free and exit functions
 	}
