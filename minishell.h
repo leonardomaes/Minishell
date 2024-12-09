@@ -42,6 +42,7 @@
 #define DBL_QUOTES 108
 #define SNG_QUOTES 109
 #define TKN_PIPE 110
+#define VAR_ENVIRON 111
 
 /************* FUNCTIONS *************/
 
@@ -86,6 +87,7 @@ void		ft_readline(t_msh *msh);
 
 
 /* ENVIRON */
+char		*expand_env(char **envp, char *name);
 char		*ft_get_path(char **envp);
 char		**ft_get_env(char **envp);
 char		*ft_get_command(char *cmd, char **path);
@@ -98,13 +100,15 @@ void		ft_free_data(t_msh	*msh);
 /* PARSER AND TOKENS */
 int			ft_countargs(char **args);
 int			ft_parsing(t_msh *msh, char *line);
-
-
 int			get_builtin_type(char *name);
 int			get_type(char *name);
-
 char		**ft_split_args(const char *s);
-void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
+void		split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
+void		handle_environ(const char **s, char *str);
+
+
+/* BUILTINS */
+void		exec_env(char **envp);
 
 
 /* TRASH */

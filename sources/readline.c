@@ -64,8 +64,8 @@ void	ft_readline(t_msh *msh)
 	split_tokens(msh, &msh->data->tokens, NULL, i);			// Passa os parametros para structs de tokens
 	if (syntax_check(msh->data) != 0)						// Verificaçao de sintaxe
 		return free(line);
-
-
+	
+	//printf("\n%s\n", expand_env(msh->envp, "PATH"));
 	ft_print_params(msh); 	// Remover
 	ft_print_tokens(msh); 	// Remover
 	printf("<--------------------------------->\n"); 	// Remover

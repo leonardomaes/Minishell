@@ -65,75 +65,75 @@ int	*calculate_lengths(const char *s, int words)
 	i = 0;
 	word = 0;
 	len = (int *)malloc(sizeof(int) * words);
-    if (!len)
-        return NULL;
-    while (s[i] && word < words)
-    {
-        len[word] = 0;
-        while (s[i] && ft_isspace(s[i]))
-            i++;
-        if (s[i] == '\0')
-            break;
-        if (s[i] == '"')
-        {
+	if (!len)
+		return NULL;
+	while (s[i] && word < words)
+	{
+		len[word] = 0;
+		while (s[i] && ft_isspace(s[i]))
+			i++;
+		if (s[i] == '\0')
+			break;
+		if (s[i] == '"')
+		{
 			len[word]++;
-            i++;
-            while (s[i] && s[i] != '"')
-            {
-                len[word]++;
-                i++;
-            }
-            if (s[i] == '"')
-                {
+			i++;
+			while (s[i] && s[i] != '"')
+			{
+				len[word]++;
+				i++;
+			}
+			if (s[i] == '"')
+				{
 					len[word]++;
 					i++;
 				}
-        }
-        else
-        {
-            while (s[i] && !ft_isspace(s[i]))
-            {
-                len[word]++;
-                i++;
-            }
-        }
-        word++;
-    }
-    return len;
+		}
+		else
+		{
+			while (s[i] && !ft_isspace(s[i]))
+			{
+				len[word]++;
+				i++;
+			}
+		}
+		word++;
+	}
+	return len;
 }
 
 void handle_single_quote(const char **s, char *str)		// Nao deve interpretar metachars
 {
-    int i = 0;
+	int i = 0;
 
-    str[i++] = **s;
-    (*s)++;
-    while (**s && **s != '\'')
-    {
-        str[i++] = **s;
-        (*s)++;
-    }
-    if (**s == '\'')
-        str[i++] = **s;
-    (*s)++;
-    str[i] = '\0';
+	str[i++] = **s;
+	(*s)++;
+	while (**s && **s != '\'')
+	{
+		str[i++] = **s;
+		(*s)++;
+	}
+	if (**s == '\'')
+		str[i++] = **s;
+	(*s)++;
+	str[i] = '\0';
 }
 
 void handle_double_quote(const char **s, char *str)		// Nao deve interpretar metachars, apenas '$'
 {
-    int i = 0;
+	int i = 0;
 
-    str[i++] = **s;
-    (*s)++;
-    while (**s && **s != '"')
-    {
-        str[i++] = **s;
-        (*s)++;
-    }
-    if (**s == '"')
-        str[i++] = **s;
-    (*s)++;
-    str[i] = '\0';
+	str[i++] = **s;
+	(*s)++;
+	while (**s && **s != '"')
+	{
+		str[i++] = **s;
+		(*s)++;
+	}
+	if (**s == '"')
+		str[i++] = **s;
+	(*s)++;
+	str[i] = '\0';
 }
 
 char **alloc_args(int words, int *len)
@@ -191,6 +191,11 @@ char	**ft_split_args(const char *s)
 		else if(*s == '\'')
 		{
 			handle_single_quote(&s, str[i]);
+			j = ft_strlen(str[i]);
+		}
+		else if (*s == '$')
+		{
+			// Add handle environ
 			j = ft_strlen(str[i]);
 		}
 		else			// Adicionar else if em caso de ser um $ para acessar a environ

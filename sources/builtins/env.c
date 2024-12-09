@@ -1,34 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/07 12:50:00 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/07 12:50:02 by lmaes            ###   ########.fr       */
+/*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
+/*   Updated: 2024/11/25 19:03:46 by lmaes            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
 
-int main(int argc, char *argv[], char **envp)
+void    exec_env(char **envp)
 {
-	t_msh *msh;
+	int i;
 
-	(void)argv;
-	(void)argc;
-	ft_init_shell(&msh, envp);				// Inicia struct principal
-	while (1)
+	i = 0;
+	while (envp[i])
 	{
-		ft_readline(msh);
-		if (msh->data->args[0] && !ft_strncmp(msh->data->args[0], "exit", 4))
-			break;
-		if (!ft_strncmp(msh->data->args[0], "env", 3))
-			exec_env(msh->envp);
-		
-		ft_free_data(msh);
+		printf("%s\n", envp[i]);
+		i++;
 	}
-	ft_free_all(msh);
-	return (0);
 }

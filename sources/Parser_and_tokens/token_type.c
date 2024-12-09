@@ -41,6 +41,8 @@ int get_quote_type(char *name)
 		return (SNG_QUOTES);
 	else if (name[0] == '|')
 		return (TKN_PIPE);
+	else if (name[0] == '$')
+		return (VAR_ENVIRON);
 	else
 		return (0);
 }

@@ -12,6 +12,15 @@
 
 #include "../minishell.h"
 
+char *expand_env(char **envp, char *name)		// Expandir de acordo com variavel apos '$'
+{
+	if (!*envp)
+    	return (NULL);
+	while (ft_strncmp(name, *envp, 4))
+		envp++;
+	return (*envp + ft_strlen(name));
+}
+
 char	**ft_get_env(char **envp)
 {
 	char	**env_copy;
