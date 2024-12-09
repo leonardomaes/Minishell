@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 00:39:31 by rda-cunh          #+#    #+#             */
-/*   Updated: 2024/12/07 18:17:50 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/09 18:49:24 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,24 @@ void	ft_sigquit(int sig)
 }
 
 //child signal handlers | heredoc signal handlers
+void	child_signal_handler(int sig)
+{
+	if (sig == HEREDOC)
+	{
+		g_signal = 130;
+		write(1, "\n", 1);
+		exit(g_signal);
+	}
+}
 
+void	child_signal_handler2(int sig)
+{
+	if (sig == HEREDOC_PAUSE)
+	{
+		g_signal = 130;
+		signal(SIGINT, SIG_IGN);
+	}
+}
 
 //manage different signals according with with operation mode
 void	set_signal(int sg, t_msh *msh)
@@ -52,25 +69,19 @@ void	set_signal(int sg, t_msh *msh)
 		signal(SIGINT, ft_sigint_shell);
 		signal(SIGQUIT, SIG_IGN);
 	}
-	if (sg == COMMAND_MODE)
+	if (sg == COMMAND_MODE) //must call set_signal(COMMAND_MODE, msh) right before executing commands (before fork) and got back to SHELL MODE after execution - TO DO!
 	{
 		signal(SIGINT, ft_sigint_command);
 		signal(SIGQUIT, ft_sigquit);
 	}
-	if (sg == EXIT) //handles EOF (Ctrl+D) in main and EOF in Heredoc or input file
+	if (sg == EXIT) //handles EOF (Ctrl+D) in main and EOF in Heredoc or input file | palaced after the readline function
 	{
 		write(1, "exit\n", 5);
 		ft_free_all(msh);
 		exit(EXIT_SUCCESS); //to decide later if we can include the exit a proper free and exit functions
 	}
-/* //to do 
-	if (sg == HEREDOC)
-	{
-
-	}
-	if (sg == HEREDOC_PAUSE)
-	{
-
-	}
-*/
+	if (sg == HEREDOC) //call set_signal(HEREDOC, msh) before starting HEREDOC and return do SHELL_MODE after - TO DO!
+		signal(SIGINT, child_signal_handler);
+	if (sg == HEREDOC_PAUSE) //call set_signal(HEREDOC_PAUSE, msh) when pausing HEREDOC - TO DO!
+		signal(SIGINT, child_signal_handler2);
 }

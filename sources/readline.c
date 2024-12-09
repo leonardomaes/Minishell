@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/07 19:11:47 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/09 18:02:56 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ void	ft_readline(t_msh *msh)
 		return ;
 	printf("<--------------------------------->\n"); 	// Remover
 	line = ft_prompt();									// Lê o input
-	if (!line) //RM: included this because noticed missing EOF handling
+	if (!line) //RM: included this because noticed missing EOF handling (Ctrl+D)
 	{
-		free(msh->data); //THIS IS CAUSING A SEGFAULT !!!
+		free(msh->data); //RM: this can cause SEGFAULT if we do not adapt the ft_free_all function (made a change proposal)
 		msh->data = NULL;
 		return ;
 	}

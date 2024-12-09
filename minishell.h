@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/06 19:31:37 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/09 18:45:58 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,13 +123,13 @@ void		split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
 void		ft_sigint_shell(int sig);
 void		ft_sigint_command(int sig);
 void		ft_sigquit(int sig);
+void		child_signal_handler(int sig);
+void		child_signal_handler2(int sig);
 void		set_signal(int sg, t_msh *msg);
 
 /* TRASH */
 void		ft_print_splitargs(char **args);
 void		ft_print_params(t_msh *msh);
 void		ft_print_tokens(t_msh *msh);
-
-
 
 #endif
