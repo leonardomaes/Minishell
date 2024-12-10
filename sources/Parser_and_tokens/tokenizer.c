@@ -136,6 +136,22 @@ void handle_double_quote(const char **s, char *str)		// Nao deve interpretar met
 	str[i] = '\0';
 }
 
+/* char		*handle_environ(const char **s)
+{
+	char *extended;
+	char *name;
+	int i;
+
+	i = 0;
+	while (**s && (**s != ' ' || **s != '\0'))
+	{
+		name[i++] = **s;
+		(*s)++;
+	}
+	
+	return (extended);
+} */
+
 char **alloc_args(int words, int *len)
 {
 	char **str;
@@ -196,6 +212,8 @@ char	**ft_split_args(const char *s)
 		else if (*s == '$')
 		{
 			// Add handle environ
+			//free(str[i]);
+			//str[i] = handle_environ(&s);
 			j = ft_strlen(str[i]);
 		}
 		else			// Adicionar else if em caso de ser um $ para acessar a environ

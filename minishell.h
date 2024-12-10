@@ -104,8 +104,9 @@ int			get_builtin_type(char *name);
 int			get_type(char *name);
 char		**ft_split_args(const char *s);
 void		split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
-void		handle_environ(const char **s, char *str);
-
+void		handle_single_quote(const char **s, char *str);
+void		handle_double_quote(const char **s, char *str);
+char		*handle_environ(const char **s);
 
 /* BUILTINS */
 void		exec_env(char **envp);
