@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/25 19:03:46 by lmaes            ###   ########.fr       */
+/*   Updated: 2024/12/09 18:02:56 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char *ft_prompt()
 	line = readline("\001\033[1;36m\002cmd>\001\033[0m\002");
 	if (!line)
 	{
-		free(line);
+//		free(line);      //RM: validate do eliminate this free with Leo
 		return (NULL);
 	}
 	else if (*line != '\0')
@@ -56,7 +56,13 @@ void	ft_readline(t_msh *msh)
 	msh->data = malloc(sizeof(t_data));
 	if (!msh->data)
 		return ;
-	line = ft_prompt();										// Lê o input
+	line = ft_prompt();									// Lê o input
+	if (!line) //RM: included this because noticed missing EOF handling (Ctrl+D)
+	{
+		free(msh->data); //RM: this can cause SEGFAULT if we do not adapt the ft_free_all function (made a change proposal)
+		msh->data = NULL;
+		return ;
+	}
 	msh->data->args = ft_split_args(line);					// Faz split em vetores
 	if (!msh->data->args || !msh->data->args[0] || *msh->data->args[0] == '\0')
 		return free(line);

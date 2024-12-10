@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/07 12:50:16 by lmaes            ###   ########.fr       */
+/*   Updated: 2024/12/07 19:16:04 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,19 @@ void ft_free_all(t_msh *msh)
 	while (msh->cmd_paths[i])
 		free(msh->cmd_paths[i++]);
 	free(msh->cmd_paths);
-	ft_free_tokens(msh->data->tokens);
-	msh->data->tokens = NULL;
-	i = 0;
-	while (msh->data->args[i])
-		free(msh->data->args[i++]);
-	free(msh->data->args);
-	free(msh->data);
+	if (msh->data) //RM: need to review this function to avoid SEGFAULT, because i need to free msh->data dealing with EOF in readline
+	{
+		if (msh->data->tokens)
+			ft_free_tokens(msh->data->tokens);
+        if (msh->data->args)
+		{
+			i = 0;
+			while (msh->data->args[i])
+				free(msh->data->args[i++]);
+			free(msh->data->args);
+		}
+		free(msh->data);
+	}
 	free(msh);
 }
 
