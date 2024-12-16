@@ -6,31 +6,29 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/15 00:28:28 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/15 15:05:05 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-int pwd(void)
+int	execute_pwd(void)
 {
-    char    *cwd;
+	char	*cwd;
 
-    cwd = getcwd(NULL, 0);
-    if (!cwd)
-    {
-        perror("pwd error");
-        return (1);
-    }
-    printf("%s\n", cwd);
-    free(cwd);
-    return (0); 
+	cwd = getcwd(NULL, 0);
+	if (!cwd)
+	{
+		perror("pwd error");
+		return (1);
+	}
+	printf("%s\n", cwd);
+	free(cwd);
+	return (0);
 }
 /*
 int main()
 {
-    pwd();
+    execute_pwd();
     return 0;
-}
-/*
-
+}*/
