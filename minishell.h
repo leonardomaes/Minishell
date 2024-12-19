@@ -53,7 +53,7 @@
 #define HEREDOC_PAUSE	5
 
 /********** GLOBAL VARIABLE **********/
-extern int	g_signal;
+extern int	g_exit;
 
 /************* FUNCTIONS *************/
 

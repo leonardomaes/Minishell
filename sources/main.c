@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-int	g_signal;
+int	g_exit;
 
 int main(int argc, char *argv[], char **envp)
 {
