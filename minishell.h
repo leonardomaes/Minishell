@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/19 18:33:37 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/20 00:20:06 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <termcap.h>
 #include <termios.h>
 #include <signal.h>
+#include <limits.h>
 #include "includes/libft/libft.h"
 
 /************* DEFINES *************/
