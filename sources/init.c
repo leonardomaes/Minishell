@@ -22,5 +22,4 @@ void ft_init_shell(t_msh **msh, char **envp)
 		return ;
 	(*msh)->envp = ft_get_env(envp);
 	(*msh)->cmd_paths = ft_split(ft_get_path((*msh)->envp), ':');
-	
 }

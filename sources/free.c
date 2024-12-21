@@ -65,3 +65,15 @@ void ft_free_data(t_msh	*msh)
 	free(msh->data);
 }
 
+void	free_array(char **str, unsigned int n)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < n)
+	{
+		free(str[i]);
+		i++;
+	}
+	free(str);
+}

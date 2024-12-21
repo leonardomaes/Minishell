@@ -33,7 +33,7 @@ int	get_builtin_type(char *name)
 	
 }
 
-int get_quote_type(char *name)
+int get_meta_type(char *name)
 {
 	if (name[0] == '"')
 		return (DBL_QUOTES);
@@ -51,8 +51,8 @@ int	get_type(char *name)
 {
 	if (get_builtin_type(name) != 0) // Check if it is a builtin cmd
 		return (get_builtin_type(name));
-	else if (get_quote_type(name) != 0)
-		return (get_quote_type(name));
+	else if (get_meta_type(name) != 0)	// check for metachars
+		return (get_meta_type(name));
 	else
 		return (1);
 }

@@ -63,6 +63,10 @@ void	ft_readline(t_msh *msh)
 		msh->data = NULL;
 		return ;
 	}
+	else if (*line == '\0')	// Erro ao enviar readline com string vazia, precisa corrigir
+		return free(line);
+
+	
 	msh->data->args = ft_split_args(line);					// Faz split em vetores
 	if (!msh->data->args || !msh->data->args[0] || *msh->data->args[0] == '\0')
 		return free(line);
@@ -72,9 +76,9 @@ void	ft_readline(t_msh *msh)
 		return free(line);
 	
 	//printf("\n%s\n", expand_env(msh->envp, "PATH"));
-	ft_print_params(msh); 	// Remover
-	ft_print_tokens(msh); 	// Remover
-	printf("<--------------------------------->\n"); 	// Remover
+	//ft_print_params(msh); 	// Remover
+	//ft_print_tokens(msh); 	// Remover
+	//printf("<--------------------------------->\n"); 	// Remover
 
 	// Ler quantidade de pipes e dividir os tokens
 	// Start parser

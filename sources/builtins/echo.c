@@ -11,3 +11,30 @@
 /* ************************************************************************** */
 
 #include "../../minishell.h"
+
+int	execute_echo(char **args)
+{
+	int	no_newline;
+	int	i;
+
+	no_newline = 0;
+	i = 1;
+
+	if (args[1] && (ft_strncmp(args[i], "-n", 2) == 0))
+	{
+		no_newline = 1;
+		i++;
+	}
+	while (args[i])
+	{
+		printf("%s", args[i]);
+		if (args[i + 1])
+			printf(" ");
+		i++;
+	}
+	if (!no_newline)
+	{
+		printf("\n");
+	}
+	return (0);
+}

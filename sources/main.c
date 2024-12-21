@@ -33,6 +33,7 @@ int main(int argc, char *argv[], char **envp)
 			break;
 		if (!ft_strncmp(msh->data->args[0], "env", 3))
 			exec_env(msh->envp);
+		execute(msh);
 		ft_free_data(msh);
 	}
 	ft_free_all(msh);

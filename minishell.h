@@ -17,6 +17,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <sys/ioctl.h>
+#include <sys/wait.h>
 #include <dirent.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -32,6 +33,7 @@
 #define IN
 #define OUT
 
+// Builtins defines
 #define BLT_ECHO 101
 #define BLT_CD 102
 #define BLT_PWD 103
@@ -40,6 +42,7 @@
 #define BLT_ENV 106
 #define BLT_EXIT 107
 
+// In type defines
 #define DBL_QUOTES 108
 #define SNG_QUOTES 109
 #define TKN_PIPE 110
@@ -55,7 +58,8 @@
 /********** GLOBAL VARIABLE **********/
 extern int	g_signal;
 
-/************* FUNCTIONS *************/
+/************* STRUCTS *************/
+//msh->data->tokens
 
 typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
 {
@@ -68,16 +72,13 @@ typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
 
 typedef struct s_data			// Info sobre argumentos recebidos
 {
-	int			error;
-	int			argc;
-	int			pipes;
-	char		**args;
+	int			argc;			// Quantidade de **args
+	char		**args;			// Vetor de strings com agrs
 	t_tokens	*tokens;
 }				t_data;
 
 typedef struct s_msh			// Main struct que contem tudo
 {
-	char	*argv;
 	char	**envp;
 	char	**cmd_paths;
 	t_data	*data;
@@ -85,9 +86,6 @@ typedef struct s_msh			// Main struct que contem tudo
 
 
 /************* FUNCTIONS *************/
-
-/* MAIN */
-
 
 /* INIT */
 void		ft_init_shell(t_msh **msh, char **envp);
@@ -107,21 +105,31 @@ char		*ft_get_command(char *cmd, char **path);
 void		ft_free_tokens(t_tokens *tokens);
 void		ft_free_all(t_msh *msh);
 void		ft_free_data(t_msh	*msh);
+void		free_array(char **str, unsigned int n);
 
 /* PARSER AND TOKENS */
 int			ft_countargs(char **args);
 int			ft_parsing(t_msh *msh, char *line);
 int			get_builtin_type(char *name);
+int			get_meta_type(char *name);
 int			get_type(char *name);
 char		**ft_split_args(const char *s);
 void		split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
 
-void		handle_single_quote(const char **s, char *str);
-void		handle_double_quote(const char **s, char *str);
-char		*handle_environ(const char **s);
+/* TOKEN UTILS */
+int			handle_single_quote(const char **s, char *str);
+int			handle_double_quote(const char **s, char *str);
+int			double_quote_lenght(const char *s, int *i);
+int			single_quote_lenght(const char *s, int *i);
+int			environ_lenght(const char *s, int *i);
+int			handle_environ(const char **s, char *str);
+
+/* EXECUTER */
+int			execute(t_msh *msh);
 
 /* BUILTINS */
 void		exec_env(char **envp);
+int			execute_echo(char **args);
 
 /* SIGNAL HANDLING */
 void		ft_sigint_shell(int sig);

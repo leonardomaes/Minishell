@@ -12,20 +12,7 @@
 
 #include "../../minishell.h"
 
-void	free_array(char **str, unsigned int n)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < n)
-	{
-		free(str[i]);
-		i++;
-	}
-	free(str);
-}
-
-int	count_args(const char *s)
+int	count_args(const char *s) // Conta quantidade de argumentos
 {
 	int	i;
 	int	word;
@@ -47,6 +34,20 @@ int	count_args(const char *s)
 			if (s[i] == '"')
 				i++;
 		}
+		else if (s[i] == '\'')
+		{
+			i++;
+			while (s[i] && s[i] != '\'')
+				i++;
+			if (s[i] == '\'')
+				i++;
+		}
+		else if (s[i] == '$')
+		{
+			i++;
+			while (s[i] && (ft_isalnum(s[i]) || s[i] == '_'))
+				i++;
+		}
 		else
 		{
 			while (!ft_isspace(s[i]) && s[i])
@@ -56,7 +57,7 @@ int	count_args(const char *s)
 	return (word);
 }
 
-int	*calculate_lengths(const char *s, int words)
+int	*calculate_lengths(const char *s, int words) // Calcula tamanho dos argumentos para alocar
 {
 	int *len;
 	int i;
@@ -74,21 +75,12 @@ int	*calculate_lengths(const char *s, int words)
 			i++;
 		if (s[i] == '\0')
 			break;
-		if (s[i] == '"')
-		{
-			len[word]++;
-			i++;
-			while (s[i] && s[i] != '"')
-			{
-				len[word]++;
-				i++;
-			}
-			if (s[i] == '"')
-				{
-					len[word]++;
-					i++;
-				}
-		}
+		if (s[i] == '$')
+			len[word] = environ_lenght(s, &i);
+		else if (s[i] == '\'')
+			len[word] = single_quote_lenght(s, &i);
+		else if (s[i] == '"')
+			len[word] = double_quote_lenght(s, &i);
 		else
 		{
 			while (s[i] && !ft_isspace(s[i]))
@@ -99,60 +91,10 @@ int	*calculate_lengths(const char *s, int words)
 		}
 		word++;
 	}
-	return len;
+	return (len);
 }
 
-void handle_single_quote(const char **s, char *str)		// Nao deve interpretar metachars
-{
-	int i = 0;
-
-	str[i++] = **s;
-	(*s)++;
-	while (**s && **s != '\'')
-	{
-		str[i++] = **s;
-		(*s)++;
-	}
-	if (**s == '\'')
-		str[i++] = **s;
-	(*s)++;
-	str[i] = '\0';
-}
-
-void handle_double_quote(const char **s, char *str)		// Nao deve interpretar metachars, apenas '$'
-{
-	int i = 0;
-
-	str[i++] = **s;
-	(*s)++;
-	while (**s && **s != '"')
-	{
-		str[i++] = **s;
-		(*s)++;
-	}
-	if (**s == '"')
-		str[i++] = **s;
-	(*s)++;
-	str[i] = '\0';
-}
-
-/* char		*handle_environ(const char **s)
-{
-	char *extended;
-	char *name;
-	int i;
-
-	i = 0;
-	while (**s && (**s != ' ' || **s != '\0'))
-	{
-		name[i++] = **s;
-		(*s)++;
-	}
-	
-	return (extended);
-} */
-
-char **alloc_args(int words, int *len)
+char **alloc_args(int words, int *len) // Allocations for array of strings
 {
 	char **str;
 	int i;
@@ -161,6 +103,12 @@ char **alloc_args(int words, int *len)
 	i = 0;
 	while (i < words)
 	{
+		/* if (len[i] < 0)
+		{
+			free_array(str, i);
+			free(len);
+			return (NULL);
+		} */
 		str[i] = (char *)malloc(sizeof(char) * (len[i] + 1));
 		if (!str[i])
 		{
@@ -170,10 +118,11 @@ char **alloc_args(int words, int *len)
 		}
 		i++;
 	}
+	str[i] = NULL;
 	return (str);
 }
 
-char	**ft_split_args(const char *s)
+char	**ft_split_args(const char *s) // Take the line and transform it in a array of strings
 {
 	char 	**str;
 	int		*len;
@@ -200,23 +149,12 @@ char	**ft_split_args(const char *s)
 		if (*s == '\0')
 			break ;
 		if (*s == '"')
-		{
-			handle_double_quote(&s, str[i]);
-			j = ft_strlen(str[i]);
-		}
+			j = handle_double_quote(&s, str[i]);
 		else if(*s == '\'')
-		{
-			handle_single_quote(&s, str[i]);
-			j = ft_strlen(str[i]);
-		}
+			j = handle_single_quote(&s, str[i]);
 		else if (*s == '$')
-		{
-			// Add handle environ
-			//free(str[i]);
-			//str[i] = handle_environ(&s);
-			j = ft_strlen(str[i]);
-		}
-		else			// Adicionar else if em caso de ser um $ para acessar a environ
+			j = handle_environ(&s, str[i]);
+		else
 		{
 			while (*s && !ft_isspace(*s))
 				str[i][j++] = *s++;
@@ -229,7 +167,7 @@ char	**ft_split_args(const char *s)
 	return (str);
 }
 
-void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)
+void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass agrs to linked list
 {
 	t_tokens	*temp;
 	
