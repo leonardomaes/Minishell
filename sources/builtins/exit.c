@@ -6,11 +6,34 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/20 00:54:34 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/21 19:09:10 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
+
+/*
+//FOR TESTING PORPUSE ONLY
+#include <stdio.h>
+#include <limits.h>
+#include <stdlib.h>
+
+//define global variable for testing
+int g_exit = 0;
+
+//fake struct just for testing
+typedef struct s_msh 
+{
+    int random; 
+} t_msh;
+
+//fake free function just for testing
+void ft_free_all(t_msh *msh) 
+{
+    (void)msh;
+    printf("Running function to free all allocated resources\n");
+}
+*/
 
 int	ft_isnumber(const char *str)
 {
@@ -30,7 +53,7 @@ int	ft_isnumber(const char *str)
 	return (1);
 }
 
-long long	ft_atol(const char *str, int *error)
+long long	ft_safe_atol(const char *str, int *error)
 {
 	long long	result;
 	int			sign;
@@ -48,7 +71,7 @@ long long	ft_atol(const char *str, int *error)
 	}
 	while (*str >= '0' && *str <= '9')
 	{
-		if (result > LONG_MAX - (*str - '0') / 10) // Avoid overflow
+		if (result > LONG_MAX - (*str - '0') / 10) // Avoid long long overflow
 		{
 			*error = 1;
 			return (0);
@@ -58,7 +81,6 @@ long long	ft_atol(const char *str, int *error)
 	}
 	return (sign * result);
 }
-
 
 int	execute_exit(t_msh *msh, char **args)
 {
@@ -71,7 +93,6 @@ int	execute_exit(t_msh *msh, char **args)
 		ft_free_all(msh);
 		exit(g_exit);
 	}
-
 	if (!ft_isnumber(args[1])) //checks if the exit argument is a number and exits with '2' if not
 	{
 		printf("-bash: exit: %s: numeric argument required\n", args[1]);
@@ -89,9 +110,48 @@ int	execute_exit(t_msh *msh, char **args)
 	{
 		printf("-bash: exit: too many arguments");
 		g_exit = 1;
-		return ;
+		return (1);
 	}
 	ft_free_all(msh);
 	exit((int)(exit_status %  256)); //enshure exit status is 0-255; 
 }
 
+/*
+//Must run each test indepently and comment the others
+
+int	main(void)
+{
+	t_msh msh;
+
+//	char	*args01[] = {"exit", NULL};
+//	char	*args02[] = {"exit", "42", NULL};
+//	char	*args03[] = {"exit", "-42", NULL};
+//	char	*args04[] = {"exit", "abc", NULL};
+//	char	*args05[] = {"exit", "9999999999999999999", NULL};
+//	char	*args06[] = {"exit", "abc", "xyz", NULL};
+	char	*args07[] = {"exit", "256", NULL};
+
+	printf("Test 01: No arguments\n");
+	execute_exit(&msh, args01);
+
+	printf("Test 02: Valid Number (42)\n");
+	execute_exit(&msh, args02);
+
+	printf("Test 03: Negative Number\n");
+	execute_exit(&msh, args03);
+
+	printf("Test 04: Invalid Argument\n");
+	execute_exit(&msh, args04);
+
+	printf("Test 05: Overflow\n");
+	execute_exit(&msh, args05);
+
+	printf("Test 06: More than 1 Argument\n");
+	execute_exit(&msh, args06);
+
+	printf("Test 07: Exit status greater than 255\n");
+	execute_exit(&msh, args07);
+
+	return (0);
+}
+*/
