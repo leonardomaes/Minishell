@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/15 15:05:05 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/22 00:58:05 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	execute_pwd(void)
 		return (1);
 	}
 	printf("%s\n", cwd);
-	free(cwd);
+	free_ptr(cwd);
 	return (0);
 }
 /*

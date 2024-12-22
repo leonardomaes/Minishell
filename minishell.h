@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/20 00:20:06 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/22 00:55:20 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ typedef struct s_msh			// Main struct que contem tudo
 void		ft_init_shell(t_msh **msh, char **envp);
 
 /* READLINE */
-char		*ft_prompt();
+char		*ft_prompt(void);
 void		ft_readline(t_msh *msh);
 
 
@@ -108,6 +108,7 @@ char		*ft_get_command(char *cmd, char **path);
 void		ft_free_tokens(t_tokens *tokens);
 void		ft_free_all(t_msh *msh);
 void		ft_free_data(t_msh	*msh);
+void		free_ptr(void *ptr);
 
 /* PARSER AND TOKENS */
 int			ft_countargs(char **args);
