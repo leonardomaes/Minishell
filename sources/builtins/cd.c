@@ -6,12 +6,40 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/27 02:00:33 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/28 23:55:05 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
+/*
+//-----INFO FOR TESTING PORPUSES-----
+// do not forget to compile with libft: cc -Wall -Wextra -Werror -o test_cd cd_builtin.c -L../../includes/libft -lft
+
+//creating a t_msh structure that includes the env var array
+typedef struct s_msh
+{
+	char **envp;
+} t_msh;
+
+//including the libraries needed for testing
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include "../../includes/libft/libft.h"
+
+void	free_ptr(void *ptr)
+{
+	if (ptr != NULL)
+	{
+		free(ptr);
+		ptr = NULL;
+	}
+}
+
+//-----END OF INFO FOR TESTING PORPUSES-----
+*/
 //helper function to reallocate memory for a new env variable / returns a
 //pointer to the new env variable list
 char	**realloc_env_vars(t_msh *msh, int size)
@@ -23,11 +51,21 @@ char	**realloc_env_vars(t_msh *msh, int size)
 	if (!new_envp)
 		return (NULL);
 	i = 0;
-	while (msh->envp[i] && i < size)
+	if (msh->envp)
 	{
-		new_envp[i] = ft_strdup(msh->envp[i]);
-		free_ptr(msh->envp[i]);
-		i++;
+		while (msh->envp[i] && i < size)
+		{
+			new_envp[i] = ft_strdup(msh->envp[i]);
+			if (!new_envp[i]) //additional safeguard - check if neeed | if memory allocation for new_envp[i] fails it cleans all previously allocated memory 
+			{
+				while (--i >= 0)
+					free(new_envp[i]);
+				free(new_envp);
+				return (NULL);
+			}
+			free_ptr(msh->envp[i]);
+			i++;
+		}
 	}
 	free(msh->envp);
 	return (new_envp);
@@ -54,7 +92,7 @@ int	get_env_var_index(char **envp, char *var_name)
 	var_name_len = ft_strlen(var_name);
 	while (envp[i])
 	{
-		if (strncmp(envp[i], var_name, var_name_len) == 0
+		if (ft_strncmp(envp[i], var_name, var_name_len) == 0
 			&& envp[i][var_name_len] == '=')
 			return (i);
 		i++;
@@ -96,7 +134,7 @@ int	set_env_var(t_msh *msh, char *var_name, char *var_value)
 		var_value = "";
 	tmp = ft_strjoin("=", var_value);
 	if (!tmp)
-		return (0);
+		return (1);
 	if (idx != -1 && msh->envp[idx])
 	{
 		free_ptr(msh->envp[idx]);
@@ -107,11 +145,11 @@ int	set_env_var(t_msh *msh, char *var_name, char *var_value)
 		idx = env_var_count(msh->envp);
 		msh->envp = realloc_env_vars(msh, idx + 1);
 		if (!msh->envp)
-			return (0);
+			return (1);
 		msh->envp[idx] = ft_strjoin(var_name, tmp);
 	}
 	free_ptr(tmp);
-	return (1);
+	return (0);
 }
 //helper funtion to update env variables when changing dir
 int	update_env_change_dir(char *oldpwd, t_msh *msh)
@@ -169,10 +207,10 @@ int	execute_cd(t_msh *msh, char **args) //later we can improve how we deal with 
 {
 	char	*path;
 
-	if (!args || !args[1] || ft_isspace(args[1][0] || args[1][0] == '\0' || ft_strncmp(args[1], "--", 3) == 0))
+	if (!args[1] || args[1][0] == '\0' || ft_isspace(args[1][0]) || ft_strncmp(args[1], "--", 3) == 0)
 	{
 		path = get_env_var_value(msh->envp, "HOME");
-		if (!path || !*path || ft_isspace(*path))
+		if (!path || !*path)
 		{
 			perror("-bash: cd: HOME not set\n");
 			return (1);
@@ -197,3 +235,119 @@ int	execute_cd(t_msh *msh, char **args) //later we can improve how we deal with 
 		path = args[1];
 	return (change_dir(path, msh));
 }
+
+//-----FUNCTIONS FOR TESTING PORPUSES-----
+
+//function to test env vars list
+void	print_envp(char **envp)
+{
+	int	i;
+
+	i = 0;
+	printf("\n---ENV VARS---\n");
+	while (envp[i])
+	{
+		printf("%s\n", envp[i]);
+		i++;
+	}
+	printf("\n");
+}
+/*
+//value attribution to my false envp array, define cd arguments
+int	main(int argc, char **argv, char **envp)
+{
+	//creating a struct, an array of env vars, an array or cd arguments, and a counter var (i)
+	t_msh	msh;
+	char	*test_envp[] = {
+			"HOME=/home/rmendes",
+			"OLDPWD=/tmp",
+			"PWD=/home/test_user",
+			NULL	
+			};
+	char	*args[3];
+	int		env_count, i = 0;
+	(void)argc;
+	(void)argv;
+	(void)envp;
+
+    // Initialize msh.envp
+    msh.envp = NULL;
+    env_count = env_var_count(test_envp);
+    msh.envp = realloc_env_vars(&msh, env_count);
+    while (test_envp[i])
+    {
+        msh.envp[i] = ft_strdup(test_envp[i]);
+        i++;
+    }
+
+	//print inicial envp array to check if everything is ok
+	printf("Initial Env Variables\n");
+	print_envp(msh.envp);
+
+	// Test 1: simple change
+	printf("\nTest 1: simple directory change\n");
+	args[0] = "cd";
+	args[1] = "/tmp";
+	args[2] = NULL;
+	execute_cd(&msh, args);
+	print_envp(msh.envp);
+
+	// Test 2: Change to HOME directory
+	printf("\nTest 2: cd with no arguments (HOME)\n");
+	args[0] = "cd";
+	args[1] = NULL;
+	execute_cd(&msh, args);
+	print_envp(msh.envp);
+
+	// Test 3: Use OLDPWD
+	printf("\nTest 3: cd -\n");
+	args[0] = "cd";
+	args[1] = "-";
+	args[2] = NULL;
+	execute_cd(&msh, args);
+	print_envp(msh.envp);
+
+	// Test 4: Invalid directory
+	printf("\nTest 4: cd to non-existent directory\n");
+	args[0] = "cd";
+	args[1] = "/nonexistent";
+	args[2] = NULL;
+	execute_cd(&msh, args);
+	print_envp(msh.envp);
+
+	// Test 5: Too many arguments
+	printf("\nTest 5: cd with too many arguments\n");
+	args[0] = "cd";
+	args[1] = "/tmp";
+	args[2] = "/home";
+	execute_cd(&msh, args);
+	print_envp(msh.envp);
+
+	// Test 6: Empty argument
+	printf("\nTest 6: cd with empty argument\n");
+	args[0] = "cd";
+	args[1] = "";
+	args[2] = NULL;
+	execute_cd(&msh, args);
+	print_envp(msh.envp);
+
+	// Test 7: Double dash
+	printf("\nTest 7: cd --\n");
+	args[0] = "cd";
+	args[1] = "--";
+	args[2] = NULL;
+	execute_cd(&msh, args);
+	print_envp(msh.envp);
+
+	//cleanup functions
+	i = 0; 
+	while (msh.envp[i])
+	{
+		free_ptr(msh.envp[i]);
+		i++;
+	}
+	free_ptr(msh.envp);
+	return (0);
+}
+*/
+
