@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/30 00:55:51 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/30 18:13:27 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	execute_env(char **envp)
 	i = 0;
 	if (!envp)
 		return ;
-	while (array[i])
+	while (envp[i])
 	{
 		printf("%s\n", envp[i]);
 		i++;
