@@ -14,7 +14,16 @@
 
 void	execute_env(char **envp)
 {
-	ft_print_array(envp);
+	int	i;
+
+	i = 0;
+	if (!envp)
+		return ;
+	while (array[i])
+	{
+		printf("%s\n", envp[i]);
+		i++;
+	}
 }
 
 /*

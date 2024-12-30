@@ -10,7 +10,34 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+//#include "../../minishell.h"
+
+
+//-----INFO FOR TESTING PORPUSES-----
+// do not forget to compile with libft (make on libft first): cc -Wall -Wextra -Werror -o test_export cd_builtin.c -L../../includes/libft -lft
+
+//creating a t_msh structure that includes the env var array
+typedef struct s_msh
+{
+	char **envp;
+} t_msh;
+
+//including the libraries needed for testing
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include "../../includes/libft/libft.h"
+
+void	free_ptr(void **ptr)
+{
+	if (ptr && *ptr)
+	{
+		free(*ptr);
+		*ptr = NULL;
+	}
+}
+//-----END OF INFO FOR TESTING PORPUSES-----
 
 //used a simple buble sort (evaluate other more robust algorithms if necessary)
 void	ft_sort_array(char **array, int count)
@@ -150,6 +177,119 @@ int	execute_export(t_msh *msh, char **args)
 		free_ptr(&name);
 		i++;
 	}
+	return (0);
+}
+
+//-----FUNCTIONS FOR TESTING PORPUSES-----
+
+//helper function to reallocate memory for a new env variable / returns a
+//pointer to the new env variable list
+char	**realloc_env_vars(t_msh *msh, int size)
+{
+	char	**new_envp;
+	int		i;
+
+	new_envp = ft_calloc(size + 1, sizeof * new_envp);
+	if (!new_envp)
+		return (NULL);
+	i = 0;
+	if (msh->envp)
+	{
+		while (msh->envp[i] && i < size)
+		{
+			new_envp[i] = ft_strdup(msh->envp[i]);
+			if (!new_envp[i]) //additional safeguard - check if neeed | if memory allocation for new_envp[i] fails it cleans all previously allocated memory 
+			{
+				while (--i >= 0)
+					free(new_envp[i]);
+				free(new_envp);
+				return (NULL);
+			}
+			free_ptr(msh->envp[i]);
+			i++;
+		}
+	}
+	free(msh->envp);
+	return (new_envp);
+}
+
+
+//function to test env vars list
+void	print_envp(char **envp)
+{
+	int	i;
+
+	i = 0;
+	printf("\n---ENV VARS---\n");
+	while (envp[i])
+	{
+		printf("%s\n", envp[i]);
+		i++;
+	}
+	printf("------------------\n");
+}
+
+//value attribution to my false envp array, define cd arguments
+int	main(void)
+{
+	//creating a struct, an array of env vars, an array or cd arguments, and a counter var (i)
+	t_msh	msh;
+	char	*test_envp[] = {
+			"PATH=/user/bin",
+			"HOME=/home/test_user",
+			"SHELL=/bin/bash",
+			NULL	
+			};
+	char	*args[3];
+	int		i = 0;
+
+    // Initialize msh.envp
+    msh.envp = NULL;
+    msh.envp = realloc_env_vars(&msh, 3);
+    while (test_envp[i])
+    {
+        msh.envp[i] = ft_strdup(test_envp[i]);
+        i++;
+    }
+
+	//print inicial envp array to check if everything is ok
+	printf("---Initial Env Variables---\n");
+	print_envp(msh.envp);
+
+	// Test 1: export a new variable
+	printf("\nTest 1: export TEMP_VAR=42\n");
+	args[0] = "export";
+	args[1] = "TEMP_VAR=42";
+	args[2] = NULL;
+	execute_export(&msh, args);
+	print_envp(msh.envp);
+
+	// Test 2: update an existing variable
+	printf("\nTest 2: export PATH=/usr/local/bin\n");
+	args[1] = "PATH=/usr/local/bin";
+	execute_export(&msh, args);
+	print_envp(msh.envp);
+
+	// Test 3: use an invalid argument
+	printf("\nTest 3: export 1VAR=value\n");
+	args[1] = "1VAR=value";
+	execute_export(&msh, args);
+	print_envp(msh.envp);
+
+	// Test 4: export without arguments
+	printf("\nTest 4: export");
+	args[1] = "NULL";
+	execute_export(&msh, args);
+	print_envp(msh.envp);
+
+	//cleanup function
+	i = 0; 
+	while (msh.envp[i])
+	{
+		free_ptr(msh.envp[i]);
+		i++;
+	}
+	free_ptr(msh.envp);
 	return (0);
 }
 

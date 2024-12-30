@@ -37,7 +37,6 @@ void	free_ptr(void **ptr)
 		*ptr = NULL;
 	}
 }
-
 //-----END OF INFO FOR TESTING PORPUSES-----
 */
 //helper funtion to update env variables when changing dir
@@ -143,7 +142,7 @@ void	print_envp(char **envp)
 }
 
 //value attribution to my false envp array, define cd arguments
-int	main(int argc, char **argv, char **envp)
+int	main(void)
 {
 	//creating a struct, an array of env vars, an array or cd arguments, and a counter var (i)
 	t_msh	msh;
@@ -155,9 +154,6 @@ int	main(int argc, char **argv, char **envp)
 			};
 	char	*args[3];
 	int		env_count, i = 0;
-	(void)argc;
-	(void)argv;
-	(void)envp;
 
     // Initialize msh.envp
     msh.envp = NULL;
