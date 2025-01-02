@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/21 19:09:10 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/02 19:35:45 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ int	execute_exit(t_msh *msh, char **args)
 		return (1);
 	}
 	ft_free_all(msh);
-	exit((int)(exit_status %  256)); //enshure exit status is 0-255; 
+	exit((int)(exit_status % 256)); //enshure exit status is 0-255; 
 }
 
 /*

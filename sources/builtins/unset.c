@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/02 19:14:56 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/02 19:41:15 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,7 @@ int	main(void)
 
 	// Test 2: remove a non existing variable
 	printf("\nTest 2: unset NON_EXISTENT\n");
-	args[1] = "NON_EXISTANTE";
+	args[1] = "NON_EXISTANT";
 	execute_unset(&msh, args);
 	print_envp(msh.envp);
 
