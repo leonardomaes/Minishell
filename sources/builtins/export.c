@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/30 23:14:06 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/30 23:29:28 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,7 +194,7 @@ int	is_valid_var_name(char *name)
 		return (0);
 	while (name[i] && name[i] != '=')
 	{
-		if (!(ft_isalpha(name[i]) || name[i] == '_'))
+		if (!(ft_isalnum(name[i]) || name[i] == '_'))
 			return (0);
 		i++;
 	}
