@@ -44,7 +44,7 @@ int get_meta_type(char *name)
 	else if (name[0] == '$')
 		return (VAR_ENVIRON);
 	else
-		return (0);
+		return (ARGUMENT);
 }
 
 int	get_type(char *name)

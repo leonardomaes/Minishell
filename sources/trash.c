@@ -18,7 +18,7 @@ void	ft_print_splitargs(char **args)
 	i = 0;
 	printf("\n <-CMD PATHS->\n");
 	while (args[i])
-		printf("%s\n", args[i++]);
+		printf("%s<\n", args[i++]);
 }
 
 void	ft_print_params(t_msh *msh)
@@ -29,11 +29,11 @@ void	ft_print_params(t_msh *msh)
 	printf("<--------->\n\n");
 }
 
-void	ft_print_tokens(t_msh *msh)
+void	ft_print_tokens(t_tokens *tokens)
 {
 	t_tokens *temp;
 
-	temp = msh->data->tokens;
+	temp = tokens;
 	while (temp != NULL)
 	{
 		printf("\nArg n°%i", temp->count);

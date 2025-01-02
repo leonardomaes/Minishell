@@ -15,11 +15,20 @@
 void ft_free_tokens(t_tokens *tokens)
 {
 	t_tokens *temp;
+	int i;
 
 	while (tokens != NULL)
 	{
 		temp = tokens;
 		tokens = tokens->next;
+		if (temp->args != NULL)
+		{
+			i = 0;
+			while (temp->args[i])
+				free(temp->args[i++]);
+			free(temp->args);
+		}
+		
 		free(temp);
 	}
 }

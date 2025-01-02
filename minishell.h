@@ -47,6 +47,7 @@
 #define SNG_QUOTES 109
 #define TKN_PIPE 110
 #define VAR_ENVIRON 111
+#define ARGUMENT 112
 
 //macros for signal modes
 #define SHELL_MODE		1
@@ -64,16 +65,18 @@ extern int	g_signal;
 typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
 {
 	char				*name;
+	char				**args;
 	int					type;
-	int					count;
+	int					count; // A principio somente para imprimir, nenhum uso
 	struct s_tokens		*prev;
 	struct s_tokens		*next;
 }				t_tokens;
 
 typedef struct s_data			// Info sobre argumentos recebidos
 {
-	int			argc;			// Quantidade de **args
 	char		**args;			// Vetor de strings com agrs
+	int			argc;			// Quantidade de **args
+	int			pipes;			// Quantidade de pipes
 	t_tokens	*tokens;
 }				t_data;
 
@@ -125,7 +128,11 @@ int			environ_lenght(const char *s, int *i);
 int			handle_environ(const char **s, char *str);
 
 /* EXECUTER */
+int			exec_builtin(t_msh *msh);
+int			execute_one(t_msh *msh, char **envp);
+void		executecmd(t_msh *msh);
 int			execute(t_msh *msh);
+int			execute_multi(t_msh *msh);
 
 /* BUILTINS */
 void		exec_env(char **envp);
@@ -142,6 +149,6 @@ void		set_signal(int sg, t_msh *msg);
 /* TRASH */
 void		ft_print_splitargs(char **args);
 void		ft_print_params(t_msh *msh);
-void		ft_print_tokens(t_msh *msh);
+void	ft_print_tokens(t_tokens *tokens);
 
 #endif

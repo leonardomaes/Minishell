@@ -43,7 +43,6 @@ int	syntax_check(t_data *data)
 		printf("bash: syntax error near unexpected token `%s'\n", data->tokens->name);
 		return (1);
 	}
-	
 	return (0);
 }
 
@@ -64,25 +63,25 @@ void	ft_readline(t_msh *msh)
 		return ;
 	}
 	else if (*line == '\0')	// Erro ao enviar readline com string vazia, precisa corrigir
-		return free(line);
-
+	{
+		free(msh->data);
+		msh->data = NULL;
+		free(line);
+		return ;
+	}
 	
 	msh->data->args = ft_split_args(line);					// Faz split em vetores
 	if (!msh->data->args || !msh->data->args[0] || *msh->data->args[0] == '\0')
-		return free(line);
+	return free(line);
 	msh->data->argc = ft_countargs(msh->data->args);		// Lê a quantidade de args
+	msh->data->pipes = 0;
 	split_tokens(msh, &msh->data->tokens, NULL, i);			// Passa os parametros para structs de tokens
 	if (syntax_check(msh->data) != 0)						// Verificaçao de sintaxe
 		return free(line);
 	
-	//printf("\n%s\n", expand_env(msh->envp, "PATH"));
 	//ft_print_params(msh); 	// Remover
-	//ft_print_tokens(msh); 	// Remover
+	//ft_print_tokens(msh->data->tokens); 	// Remover
 	//printf("<--------------------------------->\n"); 	// Remover
-
-	// Ler quantidade de pipes e dividir os tokens
-	// Start parser
-	// Talvez fazer tokens diferentes, para casos:
-	// Sem pipe - Sem input/output - Com pipe - Com input/output
+	//printf("%d\n", msh->data->pipes);
 	free(line);
 }

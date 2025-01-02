@@ -1,0 +1,9 @@
+total 72
+drwxr-xr-x 2 lmaes lmaes  4096 Dec 10 18:32 Anotations
+drwxr-xr-x 4 lmaes lmaes  4096 Nov 23 19:33 includes
+-rw-r--r-- 1 lmaes lmaes  1247 Dec 19 19:27 Makefile
+-rwxr-xr-x 1 lmaes lmaes 48512 Dec 23 18:45 minishell
+-rw-r--r-- 1 lmaes lmaes  3960 Dec 21 18:19 minishell.h
+-rw-r--r-- 1 lmaes lmaes     0 Dec 23 18:51 output
+-rw-r--r-- 1 lmaes lmaes    11 Nov 23 19:33 README.md
+drwxr-xr-x 5 lmaes lmaes  4096 Dec 23 18:45 sources
