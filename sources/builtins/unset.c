@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/02 16:13:46 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/02 19:14:56 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,7 @@ int	execute_unset(t_msh *msh, char **args)
 	}
 	return (0);
 }
-
+/*
 //-----FUNCTIONS FOR TESTING PORPUSES-----
 
 //function to print env vars list
@@ -183,7 +183,7 @@ void	print_envp(char **envp)
 	}
 	printf("------------------\n");
 }
-/*
+
 //value attribution to my false envp array, define arguments
 int	main(void)
 {

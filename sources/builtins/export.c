@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/30 23:29:28 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/02 19:09:46 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,7 +200,6 @@ int	is_valid_var_name(char *name)
 	}
 	return (1);
 }
-
 
 int	print_sorted_env(char **envp)
 {

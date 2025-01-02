@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/22 00:55:20 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/02 19:19:29 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ char		*ft_get_command(char *cmd, char **path);
 void		ft_free_tokens(t_tokens *tokens);
 void		ft_free_all(t_msh *msh);
 void		ft_free_data(t_msh	*msh);
-void		free_ptr(void *ptr);
+void		free_ptr(void **ptr);
 
 /* PARSER AND TOKENS */
 int			ft_countargs(char **args);
@@ -122,8 +122,43 @@ void		handle_single_quote(const char **s, char *str);
 void		handle_double_quote(const char **s, char *str);
 char		*handle_environ(const char **s);
 
-/* BUILTINS */
-void		exec_env(char **envp);
+/* BUILTINS | CD */
+int			update_env_change_dir(char *oldpwd, t_msh *msh);
+int			change_dir(const char *path, t_msh *msh);
+int			execute_cd(t_msh *msh, char **args);
+
+/* BUILTINS | ECHO */
+int			execute_echo(char **args);
+
+/* BUILTINS | ENV */
+void		execute_env(char **envp);
+
+/* BUILTINS | EXIT */
+int			ft_isnumber(const char *str);
+long long	ft_safe_atol(const char *str, int *error);
+int			execute_exit(t_msh *msh, char **args);
+
+/* BUILTINS | EXPORT */
+void		ft_sort_array(char **array, int count);
+void		ft_print_array(char **array);
+void		ft_free_array(char **array); //evaluate to change it to free.c
+int			is_valid_var_name(char *name);
+int			print_sorted_env(char **envp);
+int			execute_export(t_msh *msh, char **args);
+
+/* BUILTINS | PWD */
+int			execute_pwd(void);
+
+/* BUILTINS | UNSET */
+int			remove_env_var(t_msh *msh, char *var);
+int			execute_unset(t_msh *msh, char **args);
+
+/* BUILTINS | UTILS */
+char		**realloc_env_vars(t_msh *msh, int size);
+int			env_var_count(char **envp);
+int			get_env_var_index(char **envp, char *var_name);
+char		*get_env_var_value(char **envp, char *var);
+int			set_env_var(t_msh *msh, char *var_name, char *var_value);
 
 /* SIGNAL HANDLING */
 void		ft_sigint_shell(int sig);

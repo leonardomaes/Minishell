@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/01/02 19:20:19 by rda-cunh          #+#    #+#              #
+#    Updated: 2025/01/02 19:21:31 by rda-cunh         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 #Compile Options
 NAME = minishell
 CC = cc
@@ -13,8 +25,7 @@ SRC =	sources/main.c sources/init.c sources/readline.c sources/environ.c sources
 		sources/free.c sources/Parser_and_tokens/parser.c sources/Parser_and_tokens/tokenizer.c \
 		sources/builtins/env.c sources/builtins/exit.c sources/builtins/export.c sources/builtins/pwd.c \
 		sources/builtins/unset.c sources/builtins/cd.c sources/builtins/echo.c \
-		sources/Parser_and_tokens/token_type.c sources/signals.c
-#
+		sources/builtins/builtins_utils.c sources/Parser_and_tokens/token_type.c sources/signals.c
 
 # Commands
 RM = rm -rf
