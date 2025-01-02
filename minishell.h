@@ -57,7 +57,7 @@
 #define HEREDOC_PAUSE	5
 
 /********** GLOBAL VARIABLE **********/
-extern int	g_signal;
+extern int	g_exit;
 
 /************* STRUCTS *************/
 //msh->data->tokens
@@ -109,6 +109,7 @@ void		ft_free_tokens(t_tokens *tokens);
 void		ft_free_all(t_msh *msh);
 void		ft_free_data(t_msh	*msh);
 void		free_array(char **str, unsigned int n);
+void		free_ptr(void **ptr);
 
 /* PARSER AND TOKENS */
 int			ft_countargs(char **args);
@@ -134,9 +135,44 @@ void		executecmd(t_msh *msh);
 int			execute(t_msh *msh);
 int			execute_multi(t_msh *msh);
 
-/* BUILTINS */
-void		exec_env(char **envp);
+
+/* BUILTINS | CD */
+int			update_env_change_dir(char *oldpwd, t_msh *msh);
+int			change_dir(const char *path, t_msh *msh);
+int			execute_cd(t_msh *msh, char **args);
+
+/* BUILTINS | ECHO */
 int			execute_echo(char **args);
+
+/* BUILTINS | ENV */
+void		execute_env(char **envp);
+
+/* BUILTINS | EXIT */
+int			ft_isnumber(const char *str);
+long long	ft_safe_atol(const char *str, int *error);
+int			execute_exit(t_msh *msh, char **args);
+
+/* BUILTINS | EXPORT */
+void		ft_sort_array(char **array, int count);
+void		ft_print_array(char **array);
+void		ft_free_array(char **array); //evaluate to change it to free.c
+int			is_valid_var_name(char *name);
+int			print_sorted_env(char **envp);
+int			execute_export(t_msh *msh, char **args);
+
+/* BUILTINS | PWD */
+int			execute_pwd(void);
+
+/* BUILTINS | UNSET */
+int			remove_env_var(t_msh *msh, char *var);
+int			execute_unset(t_msh *msh, char **args);
+
+/* BUILTINS | UTILS */
+char		**realloc_env_vars(t_msh *msh, int size);
+int			env_var_count(char **envp);
+int			get_env_var_index(char **envp, char *var_name);
+char		*get_env_var_value(char **envp, char *var);
+int			set_env_var(t_msh *msh, char *var_name, char *var_value);
 
 /* SIGNAL HANDLING */
 void		ft_sigint_shell(int sig);

@@ -15,21 +15,22 @@
 int exec_builtin(t_msh *msh)
 {
 	if (msh->data->tokens->type == BLT_ECHO)
-		execute_echo(msh->data->args);
-	/* else if(msh->data->tokens->type == BLT_CD)
-		execute_cd();
+		execute_echo(msh->data->tokens->args);
+	else if(msh->data->tokens->type == BLT_CD)
+		execute_cd(msh, msh->data->tokens->args);
 	else if(msh->data->tokens->type == BLT_PWD)
 		execute_pwd();
 	else if(msh->data->tokens->type == BLT_EXPORT)
-		execute_export();
+		execute_export(msh, msh->data->tokens->args);
 	else if(msh->data->tokens->type == BLT_UNSET)
-		execute_unset();
+		execute_unset(msh, msh->data->tokens->args);
 	else if(msh->data->tokens->type == BLT_ENV)
-		execute_env();
+		execute_env(msh->envp);
 	else if(msh->data->tokens->type == BLT_EXIT)
-		execute_exit(); */
-	ft_free_all(msh);
-	exit(127);
+		execute_exit(msh, msh->data->tokens->args);
+	//ft_free_all(msh);
+	//exit(127);
+	return (0);
 }
 
 /* int execute_one(t_msh *msh, char **envp) // Teste sem builtins
@@ -95,6 +96,7 @@ int	execute_multi(t_msh *msh)
 	i = 0;
 	prev_pipe = -1;
 	current_token = msh->data->tokens;
+	ft_print_array(msh->envp);
 	while (i <= msh->data->pipes)
 	{
 		if (i < msh->data->pipes && pipe(pipefd) == -1) // Se não for ultimo e der erro no pipe
@@ -110,7 +112,6 @@ int	execute_multi(t_msh *msh)
 		}
 		else if (pid == 0)
 		{
-			
 			if (prev_pipe != -1) // Caso haja comando anterior, altera o input para o resultado anterior
 			{
 				dup2(prev_pipe, STDIN_FILENO);
@@ -140,6 +141,7 @@ int	execute_multi(t_msh *msh)
 			current_token = current_token->next;
 		i++;
 	}
+	ft_print_array(msh->envp);
 	if (prev_pipe != -1)
 		close(prev_pipe);
 	while (i-- > 0)
@@ -148,7 +150,7 @@ int	execute_multi(t_msh *msh)
 	exit(1);
 	return (0);
 }
-int execute(t_msh *msh)
+/* int execute(t_msh *msh)
 {
 	pid_t pid;
 
@@ -162,6 +164,17 @@ int execute(t_msh *msh)
 	}
 	else if(pid < 0)
 		return (-1);
+	ft_print_array(msh->envp);
 	waitpid(pid, NULL, 0);
+	return (0);
+} */
+
+int execute(t_msh *msh)
+{
+	if (msh->data->pipes == 0) // Se identificado 1 pipe pelo menos, não entra aqui
+		execute_one(msh, msh->envp);
+	else
+		execute_multi(msh);
+	ft_print_array(msh->envp);
 	return (0);
 }

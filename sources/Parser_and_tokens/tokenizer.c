@@ -169,7 +169,7 @@ char **get_args(char **data_args, int i, t_msh *msh)
 
 	j = i;
 	while (data_args[j] && get_type(data_args[j]) != TKN_PIPE)
-	j++;
+		j++;
 	args = malloc(sizeof(char *) * (j - i + 1));
 	if (!args)
 	{

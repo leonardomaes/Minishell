@@ -17,7 +17,7 @@
 //used in interactive/shell mode to deal with SIGINT (Ctr+C)
 void	ft_sigint_shell(int sig)
 {
-	g_signal = 130;
+	g_exit = 130;
 	write(1, "\n", 1);
 	rl_replace_line("", 0); //clears the current input line
 	rl_on_new_line(); //move readline to a new line
@@ -28,7 +28,7 @@ void	ft_sigint_shell(int sig)
 //handler in command execution to deal with SIGINT (Ctr+C) 
 void	ft_sigint_command(int sig)
 {
-	g_signal = 130;
+	g_exit = 130;
 	write(1, "\n", 1);
 	(void) sig; //do not have to deal with prompt
 }
@@ -36,7 +36,7 @@ void	ft_sigint_command(int sig)
 //handler to deal with SIGQUIT (Ctr+\)
 void	ft_sigquit(int sig)
 {
-	g_signal = 131;
+	g_exit = 131;
 	printf("Quit (core dumped)\n");
 	(void) sig;
 }
@@ -46,9 +46,9 @@ void	child_signal_handler(int sig)
 {
 	if (sig == HEREDOC)
 	{
-		g_signal = 130;
+		g_exit = 130;
 		write(1, "\n", 1);
-		exit(g_signal);
+		exit(g_exit);
 	}
 }
 
@@ -56,7 +56,7 @@ void	child_signal_handler2(int sig)
 {
 	if (sig == HEREDOC_PAUSE)
 	{
-		g_signal = 130;
+		g_exit = 130;
 		signal(SIGINT, SIG_IGN);
 	}
 }

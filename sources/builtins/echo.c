@@ -3,14 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/25 19:03:46 by lmaes            ###   ########.fr       */
+/*   Updated: 2025/01/02 19:33:10 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
+
+/*
+note to myself: evaluate to Leonardo if using ft_putstr_fd instead of printf 
+might be a better strategy to allow sending the outut piped to another command. 
+Also check with him what would be the best argument for this funtions, array of
+strings or give it direct access to the struct. 
+*/
 
 int	execute_echo(char **args)
 {
@@ -18,14 +25,14 @@ int	execute_echo(char **args)
 	int	i;
 
 	no_newline = 0;
-	i = 1;
+	i = 1; //assuming that echo is passed as an argument it starts printing on arg 1
 
-	if (args[1] && (ft_strncmp(args[i], "-n", 2) == 0))
+	if (args[1] && (strcmp(args[i], "-n") == 0))
 	{
 		no_newline = 1;
 		i++;
 	}
-	while (args[i])
+	while (args[i] && get_type(args[i]) != TKN_PIPE)
 	{
 		printf("%s", args[i]);
 		if (args[i + 1])
@@ -38,3 +45,14 @@ int	execute_echo(char **args)
 	}
 	return (0);
 }
+/*
+int	main(void)
+{
+	char *args[] = {"echo", "This", "is",  "a", "shell", NULL};
+	char *args1[] = {"echo", "-n", "This", "is", "also", "a", "shell", NULL};
+
+	execute_echo(args);
+	execute_echo(args1);
+	return (0);
+}
+*/

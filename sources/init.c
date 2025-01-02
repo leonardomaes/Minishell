@@ -15,7 +15,7 @@
 
 void ft_init_shell(t_msh **msh, char **envp)
 {
-	g_signal = 0;
+	g_exit = 0;
 	set_signal(SHELL_MODE, NULL);
 	(*msh) = malloc(sizeof(t_msh));
 	if (!*msh)

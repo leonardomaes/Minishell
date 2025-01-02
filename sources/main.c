@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-int	g_signal;
+int	g_exit;
 
 int main(int argc, char *argv[], char **envp)
 {
@@ -30,6 +30,7 @@ int main(int argc, char *argv[], char **envp)
 			set_signal(EXIT, msh);
 			break ;
 		}
+		//msh->envp[27] = ft_strdup("teste");
 		if (msh->data->args[0] && !ft_strncmp(msh->data->args[0], "exit", 4))	// test
 			break;
 		/* if (!ft_strncmp(msh->data->args[0], "env", 3))							// test

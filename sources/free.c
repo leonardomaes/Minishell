@@ -86,3 +86,12 @@ void	free_array(char **str, unsigned int n)
 	}
 	free(str);
 }
+
+//standard funtion to free a pointer of any type and set it as NULL (avoids double free)
+void	free_ptr(void **ptr)
+{
+	if (!ptr || !*ptr)
+		return ;
+	free(*ptr);
+	*ptr = NULL;
+}
