@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/30 00:52:19 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/02 15:51:00 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,9 +68,8 @@ void ft_free_data(t_msh	*msh)
 //standard funtion to free a pointer of any type and set it as NULL (avoids double free)
 void	free_ptr(void **ptr)
 {
-	if (ptr && *ptr)
-	{
-		free(*ptr);
-		*ptr = NULL;
-	}
+	if (!ptr || !*ptr)
+		return ;
+	free(*ptr);
+	*ptr = NULL;
 }

@@ -6,12 +6,13 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/02 01:27:42 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/02 16:13:46 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
+/*
 //-----INFO FOR TESTING PORPUSES-----
 // do not forget to compile with libft (make on libft first): gcc -Wall -Wextra -Werror -o test_unset unset.c -L../../includes/libft -lft
 
@@ -29,11 +30,10 @@ typedef struct s_msh
 
 void	free_ptr(void **ptr)
 {
-	if (ptr && *ptr)
-	{
-		free(*ptr);
-		*ptr = NULL;
-	}
+	if (!ptr || !*ptr)
+		return ;
+	free(*ptr);
+	*ptr = NULL;
 }
 
 int	is_valid_var_name(char *name)
@@ -97,11 +97,11 @@ char	**realloc_env_vars(t_msh *msh, int size)
 			if (!new_envp[i]) //additional safeguard - check if neeed | if memory allocation for new_envp[i] fails it cleans all previously allocated memory 
 			{
 				while (--i >= 0)
-					free(new_envp[i]);
+					free_ptr((void **)&msh->envp[i]);
 				free(new_envp);
 				return (NULL);
 			}
-			free_ptr(msh->envp[i]);
+			free_ptr((void **)&msh->envp[i]);
 			i++;
 		}
 	}
@@ -110,7 +110,7 @@ char	**realloc_env_vars(t_msh *msh, int size)
 }
 
 //-----END OF INFO FOR TESTING PORPUSES-----
-
+*/
 //helper function to remove an env var from the list
 int	remove_env_var(t_msh *msh, char *var)
 {
@@ -123,29 +123,32 @@ int	remove_env_var(t_msh *msh, char *var)
 	i = 0;
 	j = 0;
 	len = ft_strlen(var);
-	//count the variavles and allocate memory for the new array
+	//count the variables and allocate memory for the new array
 	env_count = env_var_count(msh->envp);
-	new_envp = ft_calloc(env_count + 1, sizeof(char *));
+	new_envp = ft_calloc(env_count, sizeof(char *));
 	if (!new_envp)
 		return (1);
 	//copy variables for new list excluding the ones to remove
 	while (msh->envp[i])
 	{
-		if (strncmp(msh->envp[i], var, len) == 0 
-		&& msh->envp[i][len] == '=' || msh->envp[i][len] == '\0')
+		if (!(strncmp(msh->envp[i], var, len) == 0
+				&& (msh->envp[i][len] == '=' || msh->envp[i][len] == '\0')))
 		{
-			free(msh->envp[i]);
-			i++;
-			continue ;
+			new_envp[j] = ft_strdup(msh->envp[i]);
+			if (!new_envp[j])
+			{
+				ft_free_array(new_envp);
+				return (1);
+			}
+			j++;
 		}
-		new_envp[j++] = msh->envp[i];
 		i++;
 	}
 	new_envp[j] = NULL;
 	//free old array and change pointer to the new array
 	ft_free_array(msh->envp);
 	msh->envp = new_envp;
-	return (0);
+	return (0); 
 }
 
 int	execute_unset(t_msh *msh, char **args)
@@ -180,7 +183,7 @@ void	print_envp(char **envp)
 	}
 	printf("------------------\n");
 }
-
+/*
 //value attribution to my false envp array, define arguments
 int	main(void)
 {
@@ -238,3 +241,4 @@ int	main(void)
 	free_ptr((void **)&msh.envp);
 	return (0);
 }
+*/

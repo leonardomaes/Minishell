@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 23:57:54 by rda-cunh          #+#    #+#             */
-/*   Updated: 2024/12/30 01:42:18 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/02 15:53:22 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,11 @@ char	**realloc_env_vars(t_msh *msh, int size)
 			if (!new_envp[i]) //additional safeguard - check if neeed | if memory allocation for new_envp[i] fails it cleans all previously allocated memory 
 			{
 				while (--i >= 0)
-					free(new_envp[i]);
+					free_ptr((void **)&msh->envp[i]);
 				free(new_envp);
 				return (NULL);
 			}
-			free_ptr(msh->envp[i]);
+			free_ptr((void **)&msh->envp[i]);
 			i++;
 		}
 	}
