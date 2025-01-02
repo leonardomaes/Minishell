@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/02 01:24:49 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/02 01:27:42 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ int	remove_env_var(t_msh *msh, char *var)
 	while (msh->envp[i])
 	{
 		if (strncmp(msh->envp[i], var, len) == 0 
-		&& msh->envp[i][len] == '=' || msh->envp[i][len] == '\0'))
+		&& msh->envp[i][len] == '=' || msh->envp[i][len] == '\0')
 		{
 			free(msh->envp[i]);
 			i++;
