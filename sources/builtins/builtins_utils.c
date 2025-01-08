@@ -110,20 +110,20 @@ int	set_env_var(t_msh *msh, char *var_name, char *var_value)
 	printf("%d\n", idx);
 	if (idx != -1 && msh->envp[idx])
 	{
-		printf("1\n");
 		free_ptr((void**)&msh->envp[idx]);
 		msh->envp[idx] = ft_strjoin(var_name, tmp);
 	}
 	else
 	{
-		printf("2\n");
 		idx = env_var_count(msh->envp);
 		msh->envp = realloc_env_vars(msh, idx + 1);
 		if (!msh->envp)
 			return (1);
+		// Apagar
 		printf("%s\n%s\n", var_name, tmp);
 		msh->envp[idx] = ft_strjoin(var_name, tmp);
 		printf("%s\n", msh->envp[idx]);
+		// Apagar
 	}
 	free_ptr((void**)&tmp);
 	return (0);

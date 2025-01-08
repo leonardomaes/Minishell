@@ -28,59 +28,42 @@ int exec_builtin(t_msh *msh)
 		execute_env(msh->envp);
 	else if(msh->data->tokens->type == BLT_EXIT)
 		execute_exit(msh, msh->data->tokens->args);
-	//ft_free_all(msh);
-	//exit(127);
+	/* ft_free_all(msh);
+	exit(127); */
 	return (0);
 }
-
-/* int execute_one(t_msh *msh, char **envp) // Teste sem builtins
-{
-	char *comm;
-	
-	comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
-	if (!comm)
-	{
-		printf("bash: %s: command not found\n", msh->data->tokens->name);
-		free(comm);
-		ft_free_all(msh);
-			exit(127);
-	}
-	if (execve(comm, msh->data->tokens->args, envp) == -1)
-	{
-		perror("execve:");
-		free(comm);
-		ft_free_all(msh);
-		exit(1);
-	}
-	free(comm);
-	return (0);
-} */
-
 int execute_one(t_msh *msh, char **envp)
 {
 	char *comm;
-	
+	pid_t pid;
 	
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
 		exec_builtin(msh);
 	else
 	{
-		comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
-		if (!comm)
+		pid = fork();
+		if (pid == 0)
 		{
-			printf("bash: %s: command not found\n", msh->data->tokens->name);
+			comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
+			if (!comm)
+			{
+				printf("bash: %s: command not found\n", msh->data->tokens->name);
+				free(comm);
+				ft_free_all(msh);
+					exit(127);
+			}
+			if (execve(comm, msh->data->tokens->args, envp) == -1)
+			{
+				perror("execve:");
+				free(comm);
+				ft_free_all(msh);
+				exit(1);
+			}
 			free(comm);
-			ft_free_all(msh);
-				exit(127);
 		}
-		if (execve(comm, msh->data->tokens->args, envp) == -1)
-		{
-			perror("execve:");
-			free(comm);
-			ft_free_all(msh);
-			exit(1);
-		}
-		free(comm);
+		else
+			return (-1);
+		waitpid(pid, NULL, 0);
 	}
 	return (0);
 }
@@ -164,7 +147,7 @@ int	execute_multi(t_msh *msh)
 	}
 	else if(pid < 0)
 		return (-1);
-	ft_print_array(msh->envp);
+	//ft_print_array(msh->envp);
 	waitpid(pid, NULL, 0);
 	return (0);
 } */
@@ -175,6 +158,6 @@ int execute(t_msh *msh)
 		execute_one(msh, msh->envp);
 	else
 		execute_multi(msh);
-	ft_print_array(msh->envp);
+	//ft_print_array(msh->envp);
 	return (0);
 }
