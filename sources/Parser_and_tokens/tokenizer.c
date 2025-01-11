@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:19:39 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/28 18:19:39 by lmaes            ###   ########.fr       */
+/*   Updated: 2025/01/11 02:49:38 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,30 +185,57 @@ char **get_args(char **data_args, int i, t_msh *msh)
 	return (args);
 }
 
-void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass agrs to linked list
+void    split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)
 {
-	t_tokens	*temp;
+    t_tokens    *temp;
 
-	if (i < msh->data->argc)
-	{
-		*token = NULL;
-		*token = malloc(sizeof(t_tokens));
-		temp = *token;
-		temp->name = msh->data->args[i];
-		temp->type = get_type(msh->data->args[i]);
-		if (temp->type == TKN_PIPE)
-			msh->data->pipes++;
-		temp->count = msh->data->pipes;
-		//temp->count = i;
-		if (prev != NULL)
-			temp->prev = prev;
-		if (prev == NULL || temp->prev->type == TKN_PIPE) // Adiciona o comando para o primeiro token de cada comando
-			temp->args = get_args(msh->data->args, i, msh);
-		else
-			temp->args = NULL;
-		temp->next = NULL;
-		i++;
-		split_tokens(msh, &temp->next, temp, i);
-	}
+    if (i < msh->data->argc)
+    {
+        *token = NULL;
+        *token = malloc(sizeof(t_tokens));
+        if (!*token)
+            return ;
+        temp = *token;
+        temp->name = msh->data->args[i];
+        temp->type = get_type(msh->data->args[i]);
+        temp->args = NULL;  // Initialize args to NULL first
+        temp->prev = prev;  // Set prev before handling args
+
+        // Handle heredoc case
+        if (temp->type == TKN_HEREDOC)
+        {
+            if (i + 1 >= msh->data->argc || get_type(msh->data->args[i + 1]) != ARGUMENT)
+            {
+                ft_putstr_fd("syntax error near unexpected token 'newline'\n", 2);
+                g_exit = 2;
+                ft_free_all(msh);
+                exit(g_exit);
+            }
+            temp->args = malloc(sizeof(char *) * 2);
+            if (!temp->args)
+            {
+                perror("malloc");
+                ft_free_all(msh);
+                exit(1);
+            }
+            temp->args[0] = ft_strdup(msh->data->args[i + 1]);
+            temp->args[1] = NULL;
+            i++;  // Skip the delimiter
+        }
+        // Handle command case
+        else if (prev == NULL || (prev && prev->type == TKN_PIPE))
+        {
+            temp->args = get_args(msh->data->args, i, msh);
+        }
+
+        if (temp->type == TKN_PIPE)
+            msh->data->pipes++;
+        temp->count = msh->data->pipes;
+        temp->next = NULL;
+
+        // Recursive call
+        if (i + 1 < msh->data->argc)
+            split_tokens(msh, &(temp->next), temp, i + 1);
+    }
 }
 

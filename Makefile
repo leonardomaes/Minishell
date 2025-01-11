@@ -15,7 +15,7 @@ SRC =	sources/main.c sources/init.c sources/readline.c sources/environ.c sources
 		sources/Parser_and_tokens/token_type.c \
 		sources/builtins/env.c sources/builtins/exit.c sources/builtins/export.c sources/builtins/pwd.c \
 		sources/builtins/unset.c sources/builtins/cd.c sources/builtins/echo.c sources/builtins/builtins_utils.c \
-		sources/executer/executer.c \
+		sources/executer/executer.c sources/heredoc.c \
 		sources/signals.c
 #
 
@@ -47,3 +47,5 @@ fclean: clean
 			@make --silent -C includes/libft  fclean
 
 re: fclean all
+
+.PHONY: all clean fclean re

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_type.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:19:39 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/28 18:19:39 by lmaes            ###   ########.fr       */
+/*   Updated: 2025/01/06 19:00:31 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ int get_meta_type(char *name)
 		return (TKN_PIPE);
 	else if (name[0] == '$')
 		return (VAR_ENVIRON);
+	else if (name[0] == '<' && name[1] == '<' && name[2] == '\0') //detects exacly the '<<'
+		return (TKN_HEREDOC);
 	else
 		return (ARGUMENT);
 }
@@ -56,3 +58,4 @@ int	get_type(char *name)
 	else
 		return (1);
 }
+

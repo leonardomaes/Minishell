@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/09 18:45:58 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/11 02:25:53 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #include <termcap.h>
 #include <termios.h>
 #include <signal.h>
+#include <fcntl.h>
 #include "includes/libft/libft.h"
 
 /************* DEFINES *************/
@@ -48,6 +49,7 @@
 #define TKN_PIPE 110
 #define VAR_ENVIRON 111
 #define ARGUMENT 112
+#define TKN_HEREDOC 113
 
 //macros for signal modes
 #define SHELL_MODE		1
@@ -61,6 +63,15 @@ extern int	g_exit;
 
 /************* STRUCTS *************/
 //msh->data->tokens
+
+typedef struct s_expand // struct to deal with the variable expansion in heredoc
+{
+	char	*end;
+	char	*new;
+	int		i;
+	int		start;
+	int		position;
+}				t_expand;
 
 typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
 {
@@ -130,11 +141,19 @@ int			handle_environ(const char **s, char *str);
 
 /* EXECUTER */
 int			exec_builtin(t_msh *msh);
+void		handle_redirections(t_tokens *token);
+void		setup_heredocs(t_tokens *tokens, t_msh *msh);
 int			execute_one(t_msh *msh, char **envp);
 void		executecmd(t_msh *msh);
 int			execute(t_msh *msh);
 int			execute_multi(t_msh *msh);
 
+/* HEREDOC */
+int			has_expand(const char *line);
+int			search_variable_end(const char *s, int i);
+void		get_expand_variable(char *line, t_msh *msh, t_expand *exp);
+char		*expand_line(char *line, t_msh *msh);
+void		handle_heredoc(char *delimiter, t_msh *msh);
 
 /* BUILTINS | CD */
 int			update_env_change_dir(char *oldpwd, t_msh *msh);

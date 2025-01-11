@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executer.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 19:20:00 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/13 19:20:01 by lmaes            ###   ########.fr       */
+/*   Updated: 2025/01/11 02:42:45 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,53 @@ int exec_builtin(t_msh *msh)
 	exit(127); */
 	return (0);
 }
+
+//sets input redirection for heredoc (sdin reads from file)
+void	handle_redirections(t_tokens *token) //added this to handle heredoc (must evaluate how to melt with redirections code from Leonardo)
+{
+	int	fd;
+	
+	while (token)
+	{
+		if (token->type == TKN_HEREDOC)
+		{
+			fd = open(".heredoc_tmp", O_RDONLY); //opens heredoc file
+			if (fd < 0)
+			{
+				perror("heredoc");
+				exit(1);
+			}
+			dup2(fd, STDIN_FILENO); //redirects stdin to read from the heredoc file
+			close(fd);
+			unlink(".heredoc_tmp"); //remove a link to a file in filesystem
+		}
+		token = token->next;
+	}
+}
+
+//prepare all heredocs before pipeline execution (must be called before creating any pipes)
+void	setup_heredocs(t_tokens *tokens, t_msh *msh)
+{
+	t_tokens	*current;
+
+	current = tokens;
+	while (current)
+	{
+		if (current->type == TKN_HEREDOC)
+			handle_heredoc(current->args[0], msh);
+		current = current->next;
+	}
+}
+
+
 int execute_one(t_msh *msh, char **envp)
 {
 	char *comm;
 	pid_t pid;
-	
+
+	//introduced a first pass trought all tokens to handle heredocs (must he taken care first to input redirection)
+	setup_heredocs(msh->data->tokens, msh);
+
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
 		exec_builtin(msh);
 	else
@@ -80,6 +122,7 @@ int	execute_multi(t_msh *msh)
 	prev_pipe = -1;
 	current_token = msh->data->tokens;
 	ft_print_array(msh->envp);
+	setup_heredocs(msh->data->tokens, msh); //setups all heredocs prior to execution
 	while (i <= msh->data->pipes)
 	{
 		if (i < msh->data->pipes && pipe(pipefd) == -1) // Se não for ultimo e der erro no pipe
@@ -106,6 +149,7 @@ int	execute_multi(t_msh *msh)
 				close(pipefd[1]);
 				close(pipefd[0]);
 			}
+			handle_redirections(current_token); //calls redirection function to deal with heredoc (and probably other redirections -- to check with Leo)
 			msh->data->tokens = current_token;
 			execute_one(msh, msh->envp);
 			ft_free_all(msh);
