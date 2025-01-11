@@ -14,7 +14,7 @@
 
 int	get_builtin_type(char *name)
 {
-	if (ft_strcmp(name, "cd") == 0)				// Precisa de "path"
+	if (ft_strcmp(name, "cd") == 0)
 		return (BLT_CD);
 	else if (ft_strcmp(name, "echo") == 0)
 		return (BLT_ECHO);
@@ -30,7 +30,6 @@ int	get_builtin_type(char *name)
 		return (BLT_EXIT);
 	else
 		return (0);
-	
 }
 
 int get_meta_type(char *name)
@@ -43,6 +42,12 @@ int get_meta_type(char *name)
 		return (TKN_PIPE);
 	else if (name[0] == '$')
 		return (VAR_ENVIRON);
+	else if (name[0] == '>')
+		return (TKN_OUTREDIR);
+	else if (name[0] == '<')
+		return (TKN_INREDIR);
+	else if (ft_strcmp(name, ">>") == 0)
+		return (TKN_APPEND);
 	else
 		return (ARGUMENT);
 }

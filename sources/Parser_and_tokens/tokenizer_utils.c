@@ -146,6 +146,3 @@ int	handle_double_quote(const char **s, char *str) // Identifies quotes and '$'
 	*str = '\0';
 	return (len);
 }
-
-//		Continuar daqui
-

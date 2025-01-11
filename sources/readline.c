@@ -36,6 +36,41 @@ int	ft_countargs(char **args)
 	return (i);	
 }
 
+int	get_redir(t_tokens *temp)
+{
+	if (temp->type == TKN_APPEND || temp->type == TKN_INREDIR || temp->type == TKN_OUTREDIR)
+		return (1);
+	return (0);
+}
+
+int syntax_redirs(t_tokens *tokens)
+{
+	t_tokens	*temp;
+
+	temp = tokens;
+	while (temp)
+	{
+		if (get_redir(temp) == 1)
+			break;
+		temp = temp->next;
+	}
+	if (!temp)
+		return (0);
+	if (temp->next == NULL)
+	{
+		printf("bash: syntax error near unexpected token 'newline'\n");
+		g_exit = 2;
+		return (1);
+	}
+	if (get_delimiter(temp->next->name) != 0)
+	{
+		printf("bash: syntax error near unexpected token '%s'\n", temp->next->name);
+		g_exit = 2;
+		return (1);
+	}
+	return (0);
+}
+
 int	syntax_check(t_data *data)
 {
 	if (data->tokens->type == TKN_PIPE)
@@ -43,10 +78,25 @@ int	syntax_check(t_data *data)
 		printf("bash: syntax error near unexpected token `%s'\n", data->tokens->name);
 		return (1);
 	}
+	if (syntax_redirs(data->tokens) != 0)
+		return (1);
+	
 	return (0);
 }
 
-void	ft_readline(t_msh *msh)
+int	ft_init_data(char *line, t_msh *msh)
+{
+	msh->data->args = ft_split_args(line);					// Faz split em vetores
+	if (!msh->data->args || !msh->data->args[0] || *msh->data->args[0] == '\0')
+		return (1);
+	msh->data->argc = ft_countargs(msh->data->args);		// Lê a quantidade de args
+	msh->data->pipes = 0;
+	msh->data->infile = -2;
+	msh->data->outfile = -2;
+	return (0);
+}
+
+int	ft_readline(t_msh *msh)
 {
 	char	*line;
 	int		i;
@@ -54,34 +104,30 @@ void	ft_readline(t_msh *msh)
 	i = 0;
 	msh->data = malloc(sizeof(t_data));
 	if (!msh->data)
-		return ;
+		return (1);
 	line = ft_prompt();									// Lê o input
 	if (!line) //RM: included this because noticed missing EOF handling (Ctrl+D)
 	{
 		free(msh->data); //RM: this can cause SEGFAULT if we do not adapt the ft_free_all function (made a change proposal)
 		msh->data = NULL;
-		return ;
+		return (1);
 	}
 	else if (*line == '\0')	// Erro ao enviar readline com string vazia, precisa corrigir
 	{
 		free(msh->data);
 		msh->data = NULL;
 		free(line);
-		return ;
+		return (1);
 	}
-	
-	msh->data->args = ft_split_args(line);					// Faz split em vetores
-	if (!msh->data->args || !msh->data->args[0] || *msh->data->args[0] == '\0')
-	return free(line);
-	msh->data->argc = ft_countargs(msh->data->args);		// Lê a quantidade de args
-	msh->data->pipes = 0;
-	split_tokens(msh, &msh->data->tokens, NULL, i);			// Passa os parametros para structs de tokens
-	if (syntax_check(msh->data) != 0)						// Verificaçao de sintaxe
-		return free(line);
-	
+	if (ft_init_data(line, msh) != 0) 			// Inicia struct s_data
+		return (free(line), 1);
+	split_tokens(msh, &msh->data->tokens, NULL, i);		// Passa os parametros para structs de tokens
+	// Fazer o syntax tentar abrir fd dos redirs talvez
+	if (syntax_check(msh->data) != 0)					// Verificaçao de sintaxe
+		return (ft_free_data(msh), free(line), 1); // Erro aqui quando return == 1, ocorre varios leaks
 	//ft_print_params(msh); 	// Remover
 	//ft_print_tokens(msh->data->tokens); 	// Remover
 	//printf("<--------------------------------->\n"); 	// Remover
-	//printf("%d\n", msh->data->pipes);
 	free(line);
+	return (0);
 }

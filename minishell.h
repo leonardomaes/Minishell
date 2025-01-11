@@ -27,6 +27,7 @@
 #include <termios.h>
 #include <signal.h>
 #include "includes/libft/libft.h"
+#include <fcntl.h>
 
 /************* DEFINES *************/
 #define CMD
@@ -48,6 +49,9 @@
 #define TKN_PIPE 110
 #define VAR_ENVIRON 111
 #define ARGUMENT 112
+#define TKN_OUTREDIR 113
+#define TKN_INREDIR 114
+#define TKN_APPEND 115
 
 //macros for signal modes
 #define SHELL_MODE		1
@@ -77,6 +81,8 @@ typedef struct s_data			// Info sobre argumentos recebidos
 	char		**args;			// Vetor de strings com agrs
 	int			argc;			// Quantidade de **args
 	int			pipes;			// Quantidade de pipes
+	int			infile;
+	int			outfile;
 	t_tokens	*tokens;
 }				t_data;
 
@@ -94,9 +100,10 @@ typedef struct s_msh			// Main struct que contem tudo
 void		ft_init_shell(t_msh **msh, char **envp);
 
 /* READLINE */
+int			ft_readline(t_msh *msh);
+int			syntax_check(t_data *data);
+int			ft_countargs(char **args);
 char		*ft_prompt();
-void		ft_readline(t_msh *msh);
-
 
 /* ENVIRON */
 char		*expand_env(char **envp, char *name);
@@ -111,29 +118,39 @@ void		ft_free_data(t_msh	*msh);
 void		free_array(char **str, unsigned int n);
 void		free_ptr(void **ptr);
 
-/* PARSER AND TOKENS */
-int			ft_countargs(char **args);
-int			ft_parsing(t_msh *msh, char *line);
-int			get_builtin_type(char *name);
-int			get_meta_type(char *name);
-int			get_type(char *name);
+/****** PARSER AND TOKENS ******/
+/* TOKENIZER */
+int			count_args(const char *s);
+int			*calculate_lengths(const char *s, int words);
+char		**alloc_args(int words, int *len);
 char		**ft_split_args(const char *s);
+char		**get_args(char **data_args, int i, t_msh *msh);
 void		split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
+int			get_delimiter(char *data_args);
+
 
 /* TOKEN UTILS */
-int			handle_single_quote(const char **s, char *str);
-int			handle_double_quote(const char **s, char *str);
 int			double_quote_lenght(const char *s, int *i);
 int			single_quote_lenght(const char *s, int *i);
 int			environ_lenght(const char *s, int *i);
 int			handle_environ(const char **s, char *str);
+int			handle_single_quote(const char **s, char *str);
+int			handle_double_quote(const char **s, char *str);
+
+/* TOKEN TYPE */
+int			get_builtin_type(char *name);
+int			get_meta_type(char *name);
+int			get_type(char *name);
+
+/* REDIRECTIONS */
+void		handle_redirs(t_msh *msh, int i, t_tokens *temp);
+int			open_files(t_msh *msh);
 
 /* EXECUTER */
 int			exec_builtin(t_msh *msh);
 int			execute_one(t_msh *msh, char **envp);
-void		executecmd(t_msh *msh);
-int			execute(t_msh *msh);
 int			execute_multi(t_msh *msh);
+int			execute(t_msh *msh);
 
 
 /* BUILTINS | CD */
@@ -185,6 +202,6 @@ void		set_signal(int sg, t_msh *msg);
 /* TRASH */
 void		ft_print_splitargs(char **args);
 void		ft_print_params(t_msh *msh);
-void	ft_print_tokens(t_tokens *tokens);
+void		ft_print_tokens(t_tokens *tokens);
 
 #endif

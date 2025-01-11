@@ -56,6 +56,10 @@ void ft_free_all(t_msh *msh)
 				free(msh->data->args[i++]);
 			free(msh->data->args);
 		}
+		if (msh->data->infile > 0)
+			close(msh->data->infile);
+		else if(msh->data->outfile > 0)
+			close(msh->data->outfile);
 		free(msh->data);
 	}
 	free(msh);

@@ -161,6 +161,19 @@ char	**ft_split_args(const char *s) // Take the line and transform it in a array
 	return (str);
 }
 
+int get_delimiter(char *data_args)
+{
+	if (get_type(data_args) == TKN_PIPE)
+		return (1);
+	else if(get_type(data_args) == TKN_INREDIR)
+		return (1);
+	else if(get_type(data_args) == TKN_OUTREDIR)
+		return (1);
+	else if(get_type(data_args) == TKN_APPEND)
+		return (1);
+	return (0);
+}
+
 char **get_args(char **data_args, int i, t_msh *msh)
 {
 	int k;
@@ -168,7 +181,7 @@ char **get_args(char **data_args, int i, t_msh *msh)
 	char **args;
 
 	j = i;
-	while (data_args[j] && get_type(data_args[j]) != TKN_PIPE)
+	while (data_args[j] && get_delimiter(data_args[j]) == 0)
 		j++;
 	args = malloc(sizeof(char *) * (j - i + 1));
 	if (!args)
@@ -179,7 +192,7 @@ char **get_args(char **data_args, int i, t_msh *msh)
 	}
 	k = 0;
 	j = i;
-	while (data_args[j] && get_type(data_args[j]) != TKN_PIPE)
+	while (data_args[j] && get_delimiter(data_args[j]) == 0)
 		args[k++] = ft_strdup(data_args[j++]);
 	args[k] = NULL;
 	return (args);
@@ -195,11 +208,13 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 		*token = malloc(sizeof(t_tokens));
 		temp = *token;
 		temp->name = msh->data->args[i];
-		temp->type = get_type(msh->data->args[i]);
+		if (prev == NULL || prev->type == TKN_PIPE)
+			temp->type = get_type(msh->data->args[i]);
+		else // Somente entra em get_type se for primeiro argumento
+			temp->type = get_meta_type(msh->data->args[i]);
 		if (temp->type == TKN_PIPE)
 			msh->data->pipes++;
 		temp->count = msh->data->pipes;
-		//temp->count = i;
 		if (prev != NULL)
 			temp->prev = prev;
 		if (prev == NULL || temp->prev->type == TKN_PIPE) // Adiciona o comando para o primeiro token de cada comando
@@ -212,3 +227,28 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 	}
 }
 
+/* void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass agrs to linked list
+{
+	t_tokens	*temp;
+
+	if (i < msh->data->argc)
+	{
+		*token = NULL;
+		*token = malloc(sizeof(t_tokens));
+		temp = *token;
+		temp->name = msh->data->args[i];
+		temp->type = get_type(msh->data->args[i]);
+		if (temp->type == TKN_PIPE)
+			msh->data->pipes++;
+		temp->count = msh->data->pipes;
+		if (prev != NULL)
+			temp->prev = prev;
+		if (prev == NULL || temp->prev->type == TKN_PIPE) // Adiciona o comando para o primeiro token de cada comando
+			temp->args = get_args(msh->data->args, i, msh);
+		else
+			temp->args = NULL;
+		temp->next = NULL;
+		i++;
+		split_tokens(msh, &temp->next, temp, i);
+	}
+} */

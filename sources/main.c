@@ -23,21 +23,22 @@ int main(int argc, char *argv[], char **envp)
 	ft_init_shell(&msh, envp);				// Inicia struct principal
 	while (1)
 	{
-		ft_readline(msh);
-		// Entra aqui e faz exit caso line == '\0'
-		if (!msh->data) //included this check to implement EOF signal (Ctr+D)
+		if (ft_readline(msh) == 0)
 		{
-			set_signal(EXIT, msh);
-			break ;
+			if (msh->data->args[0] && !ft_strncmp(msh->data->args[0], "exit", 4))	// test
+				break;
+			if (msh->data != NULL)
+				execute(msh);
+			ft_free_data(msh); // Possivel erro neste free
 		}
-		//msh->envp[27] = ft_strdup("teste");
-		if (msh->data->args[0] && !ft_strncmp(msh->data->args[0], "exit", 4))	// test
-			break;
-		/* if (!ft_strncmp(msh->data->args[0], "env", 3))							// test
-			exec_env(msh->envp); */
-		if (msh->data != NULL)
-			execute(msh);
-		ft_free_data(msh);
+		else
+		{
+			if (!msh->data) //included this check to implement EOF signal (Ctr+D)
+			{
+				set_signal(EXIT, msh);
+				break ;
+			}
+		}
 	}
 	ft_free_all(msh);
 	return (0);

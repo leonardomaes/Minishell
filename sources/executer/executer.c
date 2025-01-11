@@ -28,8 +28,6 @@ int exec_builtin(t_msh *msh)
 		execute_env(msh->envp);
 	else if(msh->data->tokens->type == BLT_EXIT)
 		execute_exit(msh, msh->data->tokens->args);
-	/* ft_free_all(msh);
-	exit(127); */
 	return (0);
 }
 int execute_one(t_msh *msh, char **envp)
@@ -62,8 +60,10 @@ int execute_one(t_msh *msh, char **envp)
 			free(comm);
 		}
 		else
+		{
+			waitpid(pid, NULL, 0);
 			return (-1);
-		waitpid(pid, NULL, 0);
+		}
 	}
 	return (0);
 }
@@ -79,7 +79,6 @@ int	execute_multi(t_msh *msh)
 	i = 0;
 	prev_pipe = -1;
 	current_token = msh->data->tokens;
-	ft_print_array(msh->envp);
 	while (i <= msh->data->pipes)
 	{
 		if (i < msh->data->pipes && pipe(pipefd) == -1) // Se não for ultimo e der erro no pipe
@@ -88,12 +87,7 @@ int	execute_multi(t_msh *msh)
 			exit(1);
 		}
 		pid = fork();
-		if (pid == -1)
-		{
-			perror("fork:");
-			exit(1);
-		}
-		else if (pid == 0)
+		if (pid == 0)
 		{
 			if (prev_pipe != -1) // Caso haja comando anterior, altera o input para o resultado anterior
 			{
@@ -111,6 +105,8 @@ int	execute_multi(t_msh *msh)
 			ft_free_all(msh);
 			exit(1);
 		}
+		else
+			waitpid(pid, NULL, 0);
 		if (prev_pipe != -1)
 			close(prev_pipe);
 		if (i < msh->data->pipes)
@@ -124,40 +120,21 @@ int	execute_multi(t_msh *msh)
 			current_token = current_token->next;
 		i++;
 	}
-	ft_print_array(msh->envp);
 	if (prev_pipe != -1)
 		close(prev_pipe);
-	while (i-- > 0)
-		waitpid(-1, NULL, 0);
-	ft_free_all(msh);
-	exit(1);
 	return (0);
 }
-/* int execute(t_msh *msh)
-{
-	pid_t pid;
-
-	pid = fork();
-	if (pid == 0)
-	{
-		if (msh->data->pipes == 0) // Se identificado 1 pipe pelo menos, não entra aqui
-			execute_one(msh, msh->envp);
-		else
-			execute_multi(msh);
-	}
-	else if(pid < 0)
-		return (-1);
-	//ft_print_array(msh->envp);
-	waitpid(pid, NULL, 0);
-	return (0);
-} */
 
 int execute(t_msh *msh)
 {
+	if (open_files(msh) != 0)
+	{
+		g_exit = 1;
+		return (-1);
+	}
 	if (msh->data->pipes == 0) // Se identificado 1 pipe pelo menos, não entra aqui
 		execute_one(msh, msh->envp);
 	else
 		execute_multi(msh);
-	//ft_print_array(msh->envp);
 	return (0);
 }

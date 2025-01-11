@@ -2,6 +2,11 @@
     "files.associations": {
         "allowed functions": "cpp",
         "minishell.h": "c",
-        "libft.h": "c"
+        "libft.h": "c",
+        "array": "c",
+        "memory": "c",
+        "functional": "c",
+        "tuple": "c",
+        "utility": "c"
     }
 }
