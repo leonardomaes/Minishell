@@ -100,29 +100,57 @@ void	handle_heredoc(char *delimiter, t_msh *msh)
 {
 	char	*line;
 	int		fd;
+	pid_t	pid;
+	int 	status; 
 
+	//create heredoc file
 	fd = open(".heredoc_tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
-		return ;
-	set_signal(HEREDOC, msh);
-	while (1)
 	{
-		line = readline("> ");
-		if (!line)
-		{
-			ft_putstr_fd("warning: here-document delimited by end-of-file\n", 2);
-			break ;
-		}
-		if (!ft_strcmp(line, delimiter))
-		{
-			free(line);
-			break ;
-		}
-		if (has_expand(line))
-			line = expand_line(line, msh);
-		ft_putendl_fd(line, fd);
-		free(line);
+		perrror("heredoc");
+		return ;
 	}
-	close(fd);
-	set_signal(SHELL_MODE, msh);
+	pid = fork (); //create child process to handle heredoc
+	if (pid == -1)
+	{
+		close(fd);
+		perror("fork");
+		return ;
+	}
+	if (pid == 0) //child process
+	{
+		set_signal(HEREDOC, msh);
+		while (1)
+		{
+			line = readline("> ");
+			if (!line)
+			{
+				ft_putstr_fd("warning: here-document delimited by end-of-file\n", 2);
+				break ;
+			}
+			if (!ft_strcmp(line, delimiter))
+			{
+				free(line);
+				break ;
+			}
+			if (has_expand(line))
+				line = expand_line(line, msh);
+			ft_putendl_fd(line, fd);
+			free(line);
+		}
+		close(fd);
+		exit(0); 
+	}
+	else //parent process
+	{
+		set_signal(HEREDOC_PAUSE, msh);
+		waitpid(pid, &status, 0);
+		if (WIFSIGNALED(status))
+		{
+			g_exit = 130;
+			unlink(".heredoc_tmp");
+		}
+		close(fd); 
+		set_signal(SHELL_MODE, msh);
+	}
 }
