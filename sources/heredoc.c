@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 00:09:07 by rda-cunh          #+#    #+#             */
-/*   Updated: 2025/01/11 01:11:31 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/13 22:45:51 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ void	handle_heredoc(char *delimiter, t_msh *msh)
 	fd = open(".heredoc_tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 	{
-		perrror("heredoc");
+		perror("heredoc");
 		return ;
 	}
 	pid = fork (); //create child process to handle heredoc
@@ -145,12 +145,12 @@ void	handle_heredoc(char *delimiter, t_msh *msh)
 	{
 		set_signal(HEREDOC_PAUSE, msh);
 		waitpid(pid, &status, 0);
-		if (WIFSIGNALED(status))
+		if (WIFSIGNALED(status)) //checks if the child process was terminated by a signal (SIGINT / Ctrl+C)
 		{
 			g_exit = 130;
 			unlink(".heredoc_tmp");
 		}
-		close(fd); 
+		close(fd);
 		set_signal(SHELL_MODE, msh);
 	}
 }

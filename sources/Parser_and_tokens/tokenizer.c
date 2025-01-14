@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:19:39 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/11 02:49:38 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/14 00:29:45 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,57 +185,74 @@ char **get_args(char **data_args, int i, t_msh *msh)
 	return (args);
 }
 
-void    split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)
+void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass agrs to linked list
 {
-    t_tokens    *temp;
+	t_tokens	*temp;
 
-    if (i < msh->data->argc)
+	if (!msh || !msh->data || !msh->data->args || i >= msh->data->argc)
+		return ;
+
+	*token = malloc(sizeof(t_tokens));
+	if (!*token)
+	{
+		g_exit = 1;
+		return ;
+	}
+	temp = *token;
+	temp->name = msh->data->args[i];
+	temp->prev = prev;
+	temp->next = NULL;
+	temp->args = NULL;
+
+	if (prev == NULL || prev->type == TKN_PIPE)
+		temp->type = get_type(msh->data->args[i]);
+	else // Somente entra em get_type se for primeiro argumento
+		temp->type = get_meta_type(msh->data->args[i]);
+
+	// Handle heredoc case
+	if (temp->type == TKN_HEREDOC)
+	{
+		if (i + 1 >= msh->data->argc || get_type(msh->data->args[i + 1]) != ARGUMENT)
+		{
+			ft_putstr_fd("syntax error near unexpected token 'newline'\n", 2);
+			g_exit = 2;
+			free(*token);
+			*token = NULL;
+			return ;
+		}
+		temp->args = malloc(sizeof(char *) * 2);
+		if (!temp->args)
+		{
+			free(*token);
+			*token = NULL;
+			return ;
+		}
+		temp->args[0] = ft_strdup(msh->data->args[i + 1]);
+		temp->args[1] = NULL;
+		if (!temp->args[0])
+		{
+			free(temp->args);
+			free(*token);
+			*token = NULL;
+			return ;
+		}
+		i++;  // Skip the delimiter
+	}
+	else if (prev == NULL || prev->type == TKN_PIPE)
     {
-        *token = NULL;
-        *token = malloc(sizeof(t_tokens));
-        if (!*token)
-            return ;
-        temp = *token;
-        temp->name = msh->data->args[i];
-        temp->type = get_type(msh->data->args[i]);
-        temp->args = NULL;  // Initialize args to NULL first
-        temp->prev = prev;  // Set prev before handling args
-
-        // Handle heredoc case
-        if (temp->type == TKN_HEREDOC)
+        temp->args = get_args(msh->data->args, i, msh);
+        if (!temp->args)
         {
-            if (i + 1 >= msh->data->argc || get_type(msh->data->args[i + 1]) != ARGUMENT)
-            {
-                ft_putstr_fd("syntax error near unexpected token 'newline'\n", 2);
-                g_exit = 2;
-                ft_free_all(msh);
-                exit(g_exit);
-            }
-            temp->args = malloc(sizeof(char *) * 2);
-            if (!temp->args)
-            {
-                perror("malloc");
-                ft_free_all(msh);
-                exit(1);
-            }
-            temp->args[0] = ft_strdup(msh->data->args[i + 1]);
-            temp->args[1] = NULL;
-            i++;  // Skip the delimiter
+            free(*token);
+            *token = NULL;
+            return;
         }
-        // Handle command case
-        else if (prev == NULL || (prev && prev->type == TKN_PIPE))
-        {
-            temp->args = get_args(msh->data->args, i, msh);
-        }
-
-        if (temp->type == TKN_PIPE)
-            msh->data->pipes++;
-        temp->count = msh->data->pipes;
-        temp->next = NULL;
-
-        // Recursive call
-        if (i + 1 < msh->data->argc)
-            split_tokens(msh, &(temp->next), temp, i + 1);
     }
-}
 
+	if (temp->type == TKN_PIPE)
+		msh->data->pipes++;
+	temp->count = msh->data->pipes;
+
+	if (i + 1 < msh->data->argc)
+		split_tokens(msh, &temp->next, temp, i + 1);
+}

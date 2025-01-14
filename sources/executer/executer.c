@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 19:20:00 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/11 02:42:45 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/14 00:42:42 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,14 @@ void	handle_redirections(t_tokens *token) //added this to handle heredoc (must e
 				perror("heredoc");
 				exit(1);
 			}
-			dup2(fd, STDIN_FILENO); //redirects stdin to read from the heredoc file
+			if (dup2(fd, STDIN_FILENO) == -1) //redirects stdin to read from the heredoc file
+			{
+				perror("dup2");
+				exit(1);
+			}
 			close(fd);
 			unlink(".heredoc_tmp"); //remove a link to a file in filesystem
+			break ; //only use the last heredoc (multi heredocs)
 		}
 		token = token->next;
 	}
@@ -70,7 +75,6 @@ void	setup_heredocs(t_tokens *tokens, t_msh *msh)
 	}
 }
 
-
 int execute_one(t_msh *msh, char **envp)
 {
 	char *comm;
@@ -78,6 +82,10 @@ int execute_one(t_msh *msh, char **envp)
 
 	//introduced a first pass trought all tokens to handle heredocs (must he taken care first to input redirection)
 	setup_heredocs(msh->data->tokens, msh);
+
+	//skip if token is a redirection/heredoc
+	if (msh->data->tokens->type == TKN_HEREDOC)
+		return (0);
 
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
 		exec_builtin(msh);
