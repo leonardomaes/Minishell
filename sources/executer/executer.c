@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 19:20:00 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/14 00:42:42 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/16 00:22:15 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	handle_redirections(t_tokens *token) //added this to handle heredoc (must e
 			fd = open(".heredoc_tmp", O_RDONLY); //opens heredoc file
 			if (fd < 0)
 			{
-				perror("heredoc");
+				perror("open heredoc_tmp");
 				exit(1);
 			}
 			if (dup2(fd, STDIN_FILENO) == -1) //redirects stdin to read from the heredoc file

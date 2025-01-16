@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:19:39 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/14 00:29:45 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/16 00:17:28 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ char **alloc_args(int words, int *len) // Allocations for array of strings
 
 char	**ft_split_args(const char *s) // Take the line and transform it in a array of strings
 {
-	char 	**str;
+	char	**str;
 	int		*len;
 	int		words;
 	int		i;
@@ -161,27 +161,61 @@ char	**ft_split_args(const char *s) // Take the line and transform it in a array
 	return (str);
 }
 
-char **get_args(char **data_args, int i, t_msh *msh)
+char	**get_args(char **data_args, int i, t_msh *msh)
 {
-	int k;
-	int j;
-	char **args;
+	int		k;
+	int		j;
+	char	**args;
+	int		keep_count;
+	int		x;
 
 	j = i;
+	keep_count = 0;
+
+	//count the number of args until we get to a pipe
 	while (data_args[j] && get_type(data_args[j]) != TKN_PIPE)
 		j++;
-	args = malloc(sizeof(char *) * (j - i + 1));
+
+	//count the number of arguments to keep (skipping heredoc tokens)
+	x = i;
+	while (x < j)
+	{
+		if (get_type(data_args[x]) == TKN_HEREDOC)
+		{
+			x += 2; //skip the '<<' and the delimiter. 
+		}
+		else
+		{
+			keep_count++;
+			x++;
+		}
+	}
+
+	//allocate space for keeping the args (without heredoc) and NULL
+	args = malloc(sizeof(char *) * (keep_count + 1));
 	if (!args)
 	{
 		perror("malloc:");
 		ft_free_all(msh);
 		exit(1);
 	}
+	args[keep_count] = NULL;
+
+	//copy the wanted tokens, skipping heredoc
+	x = i;
 	k = 0;
-	j = i;
-	while (data_args[j] && get_type(data_args[j]) != TKN_PIPE)
-		args[k++] = ft_strdup(data_args[j++]);
-	args[k] = NULL;
+	while (x < j)
+	{
+		if (get_type(data_args[x]) == TKN_HEREDOC)
+		{
+			x += 2; //skipping heredoc token and delimiter
+		}
+		else
+		{
+			args[k++] = ft_strdup(data_args[x]);
+			x++; 
+		}
+	}
 	return (args);
 }
 
