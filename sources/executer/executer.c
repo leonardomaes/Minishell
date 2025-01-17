@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 19:20:00 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/16 00:22:15 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/17 01:34:19 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,10 +83,10 @@ int execute_one(t_msh *msh, char **envp)
 	//introduced a first pass trought all tokens to handle heredocs (must he taken care first to input redirection)
 	setup_heredocs(msh->data->tokens, msh);
 
-	//skip if token is a redirection/heredoc
+	//for TKN_HEREDOC alone, just skip
 	if (msh->data->tokens->type == TKN_HEREDOC)
 		return (0);
-
+	//if it's a builtin
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
 		exec_builtin(msh);
 	else
@@ -94,13 +94,15 @@ int execute_one(t_msh *msh, char **envp)
 		pid = fork();
 		if (pid == 0)
 		{
+			//setting up redirections, including heredoc
+			handle_redirections(msh->data->tokens);
 			comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
 			if (!comm)
 			{
 				printf("bash: %s: command not found\n", msh->data->tokens->name);
 				free(comm);
 				ft_free_all(msh);
-					exit(127);
+				exit(127);
 			}
 			if (execve(comm, msh->data->tokens->args, envp) == -1)
 			{
@@ -112,8 +114,7 @@ int execute_one(t_msh *msh, char **envp)
 			free(comm);
 		}
 		else
-			return (-1);
-		waitpid(pid, NULL, 0);
+			waitpid(pid, NULL, 0);
 	}
 	return (0);
 }

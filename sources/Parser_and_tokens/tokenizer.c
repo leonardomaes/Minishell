@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:19:39 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/16 00:17:28 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/17 01:30:05 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,10 @@ char	**ft_split_args(const char *s) // Take the line and transform it in a array
 		return (NULL);
 	str = alloc_args(words, len);
 	if (!str)
+	{
+		free(len);
 		return (NULL);
+	}
 	i = 0;
 	while (*s)
 	{
@@ -144,7 +147,7 @@ char	**ft_split_args(const char *s) // Take the line and transform it in a array
 			break ;
 		if (*s == '"')
 			j = handle_double_quote(&s, str[i]);
-		else if(*s == '\'')
+		else if (*s == '\'')
 			j = handle_single_quote(&s, str[i]);
 		else if (*s == '$')
 			j = handle_environ(&s, str[i]);
@@ -166,56 +169,38 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 	int		k;
 	int		j;
 	char	**args;
-	int		keep_count;
-	int		x;
 
+	//count the number of args until we get to a pipe or end
 	j = i;
-	keep_count = 0;
-
-	//count the number of args until we get to a pipe
-	while (data_args[j] && get_type(data_args[j]) != TKN_PIPE)
+	while (data_args[j] && get_type(data_args[j]) != TKN_PIPE && get_meta_type(data_args[j]) != TKN_HEREDOC)
 		j++;
-
-	//count the number of arguments to keep (skipping heredoc tokens)
-	x = i;
-	while (x < j)
-	{
-		if (get_type(data_args[x]) == TKN_HEREDOC)
-		{
-			x += 2; //skip the '<<' and the delimiter. 
-		}
-		else
-		{
-			keep_count++;
-			x++;
-		}
-	}
-
-	//allocate space for keeping the args (without heredoc) and NULL
-	args = malloc(sizeof(char *) * (keep_count + 1));
+	//allocate space for keeping the args and NULL
+	args = malloc(sizeof(char *) * (j - i + 1));
 	if (!args)
 	{
 		perror("malloc:");
 		ft_free_all(msh);
 		exit(1);
 	}
-	args[keep_count] = NULL;
-
-	//copy the wanted tokens, skipping heredoc
-	x = i;
+	//copy all tokens
 	k = 0;
-	while (x < j)
+	while (data_args[i] && i < j)
 	{
-		if (get_type(data_args[x]) == TKN_HEREDOC)
+		args[k] = ft_strdup(data_args[i]);
+		//free previously allocated memory in case strdup fails
+		if (!args[k])
 		{
-			x += 2; //skipping heredoc token and delimiter
+			perror("strdup");
+			while (--k > 0)
+				free(args[k]);
+			free(args);
+			ft_free_all(msh);
+			exit(1);
 		}
-		else
-		{
-			args[k++] = ft_strdup(data_args[x]);
-			x++; 
-		}
+		k++;
+		i++;
 	}
+	args[k] = NULL;
 	return (args);
 }
 
@@ -225,19 +210,18 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 
 	if (!msh || !msh->data || !msh->data->args || i >= msh->data->argc)
 		return ;
-
-	*token = malloc(sizeof(t_tokens));
+	*token = malloc(sizeof(t_tokens)); //alocate a new node
 	if (!*token)
 	{
 		g_exit = 1;
 		return ;
 	}
 	temp = *token;
-	temp->name = msh->data->args[i];
+	temp->name = msh->data->args[i]; //first word
 	temp->prev = prev;
 	temp->next = NULL;
 	temp->args = NULL;
-
+	//determine token type
 	if (prev == NULL || prev->type == TKN_PIPE)
 		temp->type = get_type(msh->data->args[i]);
 	else // Somente entra em get_type se for primeiro argumento
@@ -261,17 +245,11 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 			*token = NULL;
 			return ;
 		}
-		temp->args[0] = ft_strdup(msh->data->args[i + 1]);
+		temp->args[0] = ft_strdup(msh->data->args[i + 1]); //store the delimiter like 'EOF'
 		temp->args[1] = NULL;
-		if (!temp->args[0])
-		{
-			free(temp->args);
-			free(*token);
-			*token = NULL;
-			return ;
-		}
-		i++;  // Skip the delimiter
+		i++;  // Skip the delimiter in the main array
 	}
+	//if we are at the start of a command or after a pipe get all args
 	else if (prev == NULL || prev->type == TKN_PIPE)
     {
         temp->args = get_args(msh->data->args, i, msh);
@@ -282,11 +260,11 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
             return;
         }
     }
-
+	//count the number of pipes
 	if (temp->type == TKN_PIPE)
 		msh->data->pipes++;
 	temp->count = msh->data->pipes;
-
+	//use recursion to create the next token
 	if (i + 1 < msh->data->argc)
 		split_tokens(msh, &temp->next, temp, i + 1);
 }

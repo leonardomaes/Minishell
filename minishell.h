@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/11 02:25:53 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/16 18:47:15 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ typedef struct s_expand // struct to deal with the variable expansion in heredoc
 typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
 {
 	char				*name;
-	char				**args;
+	char				**args; //this is used for the execve arguments or for identifying a heredoc
 	int					type;
 	int					count; // A principio somente para imprimir, nenhum uso
 	struct s_tokens		*prev;
