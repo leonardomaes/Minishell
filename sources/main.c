@@ -25,19 +25,14 @@ int main(int argc, char *argv[], char **envp)
 	{
 		if (ft_readline(msh) == 0)
 		{
-			if (msh->data->args[0] && !ft_strncmp(msh->data->args[0], "exit", 4))	// test
-				break;
 			if (msh->data != NULL)
 				execute(msh);
-			ft_free_data(msh); // Possivel erro neste free
+			ft_free_data(msh);
 		}
-		else
-		{
-			if (!msh->data) //included this check to implement EOF signal (Ctr+D)
-			{
-				set_signal(EXIT, msh);
-				break ;
-			}
+		else if (!msh->data) //included this check to implement EOF signal (Ctr+D)
+		{ // Entra aqui quando tem infile - solucionado, enterpretava como EOF
+			set_signal(EXIT, msh);
+			break ;
 		}
 	}
 	ft_free_all(msh);

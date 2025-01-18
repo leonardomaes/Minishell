@@ -34,7 +34,7 @@ int execute_one(t_msh *msh, char **envp)
 {
 	char *comm;
 	pid_t pid;
-	
+
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
 		exec_builtin(msh);
 	else
@@ -48,7 +48,7 @@ int execute_one(t_msh *msh, char **envp)
 				printf("bash: %s: command not found\n", msh->data->tokens->name);
 				free(comm);
 				ft_free_all(msh);
-					exit(127);
+				exit(127);
 			}
 			if (execve(comm, msh->data->tokens->args, envp) == -1)
 			{
@@ -60,15 +60,40 @@ int execute_one(t_msh *msh, char **envp)
 			free(comm);
 		}
 		else
-		{
 			waitpid(pid, NULL, 0);
-			return (-1);
-		}
 	}
 	return (0);
 }
 
-int	execute_multi(t_msh *msh)
+int execute_cmd(t_msh *msh, char **envp)
+{
+	char *comm;
+
+	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
+		exec_builtin(msh);
+	else
+	{
+		comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
+		if (!comm)
+		{
+			printf("bash: %s: command not found\n", msh->data->tokens->name);
+			free(comm);
+			ft_free_all(msh);
+			exit(127);
+		}
+		if (execve(comm, msh->data->tokens->args, envp) == -1)
+		{
+			perror("execve:");
+			free(comm);
+			ft_free_all(msh);
+			exit(1);
+		}
+		free(comm);
+	}
+	return (0);
+}
+
+int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe, entra em fork duplo e causa leaks
 {
 	int		pipefd[2];
 	int		prev_pipe;
@@ -101,7 +126,7 @@ int	execute_multi(t_msh *msh)
 				close(pipefd[0]);
 			}
 			msh->data->tokens = current_token;
-			execute_one(msh, msh->envp);
+			execute_cmd(msh, msh->envp);
 			ft_free_all(msh);
 			exit(1);
 		}
@@ -122,19 +147,40 @@ int	execute_multi(t_msh *msh)
 	}
 	if (prev_pipe != -1)
 		close(prev_pipe);
+	while (i-- > 0)
+		waitpid(-1, NULL, 0);
 	return (0);
 }
 
 int execute(t_msh *msh)
 {
+
 	if (open_files(msh) != 0)
 	{
 		g_exit = 1;
 		return (-1);
 	}
-	if (msh->data->pipes == 0) // Se identificado 1 pipe pelo menos, não entra aqui
+	if (msh->data->infile > 0)	// Ta fazendo exit quando tem infile
+		dup2(msh->data->infile, STDIN_FILENO);
+	if (msh->data->outfile > 0)
+		dup2(msh->data->outfile, STDOUT_FILENO);
+	if (msh->data->pipes == 0)
 		execute_one(msh, msh->envp);
 	else
 		execute_multi(msh);
+	if (msh->data->infile > 0)
+	{
+		close(msh->data->infile);
+		msh->data->infile = -1;
+		dup2(msh->data->stdin_backup, STDIN_FILENO);
+		close(msh->data->stdin_backup);
+	}
+	if (msh->data->outfile > 0)
+	{
+		close(msh->data->outfile);
+		msh->data->outfile = -1;
+		dup2(msh->data->stdout_backup, STDOUT_FILENO);
+		close(msh->data->stdout_backup);
+	}
 	return (0);
 }

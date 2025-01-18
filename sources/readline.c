@@ -127,7 +127,7 @@ int	ft_readline(t_msh *msh)
 		return (ft_free_data(msh), free(line), 1); // Erro aqui quando return == 1, ocorre varios leaks
 	//ft_print_params(msh); 	// Remover
 	//ft_print_tokens(msh->data->tokens); 	// Remover
-	//printf("<--------------------------------->\n"); 	// Remover
+	//printf("\n<--------------------------------->\n"); 	// Remover
 	free(line);
 	return (0);
 }

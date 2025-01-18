@@ -12,34 +12,21 @@
 
 #include "../../minishell.h"
 
-void    handle_redirs(t_msh *msh, int i, t_tokens *temp)
-{
-	if (temp->type == TKN_OUTREDIR && msh->data->args[i+1])
-	{
-		msh->data->outfile = open(msh->data->args[i+1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	}
-	else if (temp->type == TKN_INREDIR && msh->data->args[i+1])
-	{
-		msh->data->infile = open(msh->data->args[i+1], O_RDONLY);
-	}
-	else if (temp->type == TKN_APPEND && msh->data->args[i+1])
-	{
-		msh->data->outfile = open(msh->data->args[i+1], O_WRONLY | O_CREAT | O_APPEND, 0777);
-	}
-}
-
 int open_files(t_msh *msh)
 {
 	t_tokens *temp;
 
 	temp = msh->data->tokens;
+	msh->data->stdin_backup = dup(STDIN_FILENO);
+	msh->data->stdout_backup = dup(STDOUT_FILENO);
 	while (temp) // Loop por todos os tokens
 	{
 		if (temp->type == TKN_APPEND)
 		{
+			printf("Append\n");
 			if (msh->data->outfile > 0)
 				close(msh->data->outfile);
-			msh->data->outfile = open(temp->next->name, O_WRONLY | O_CREAT | O_APPEND, 0644);
+			msh->data->outfile = open(temp->next->name, O_WRONLY | O_CREAT | O_APPEND, 0775);
 			if (msh->data->outfile < 1)
 			{
 				printf("bash: %s: No such file or directory\n", temp->next->name);
@@ -48,6 +35,7 @@ int open_files(t_msh *msh)
 		}
 		else if (temp->type == TKN_OUTREDIR)
 		{
+			printf("Output\n");
 			if (msh->data->outfile > 0)
 				close(msh->data->outfile);
 			msh->data->outfile = open(temp->next->name, O_WRONLY | O_CREAT | O_TRUNC, 0777);

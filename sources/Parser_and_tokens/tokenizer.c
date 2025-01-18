@@ -219,7 +219,7 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 			temp->prev = prev;
 		if (prev == NULL || temp->prev->type == TKN_PIPE) // Adiciona o comando para o primeiro token de cada comando
 			temp->args = get_args(msh->data->args, i, msh);
-		else
+		else // Possivel erro aqui
 			temp->args = NULL;
 		temp->next = NULL;
 		i++;

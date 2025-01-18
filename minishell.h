@@ -81,6 +81,8 @@ typedef struct s_data			// Info sobre argumentos recebidos
 	char		**args;			// Vetor de strings com agrs
 	int			argc;			// Quantidade de **args
 	int			pipes;			// Quantidade de pipes
+	int			stdin_backup;
+	int			stdout_backup;
 	int			infile;
 	int			outfile;
 	t_tokens	*tokens;

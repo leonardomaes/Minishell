@@ -42,12 +42,12 @@ int get_meta_type(char *name)
 		return (TKN_PIPE);
 	else if (name[0] == '$')
 		return (VAR_ENVIRON);
+	else if (ft_strcmp(name, ">>") == 0)
+		return (TKN_APPEND);
 	else if (name[0] == '>')
 		return (TKN_OUTREDIR);
 	else if (name[0] == '<')
 		return (TKN_INREDIR);
-	else if (ft_strcmp(name, ">>") == 0)
-		return (TKN_APPEND);
 	else
 		return (ARGUMENT);
 }

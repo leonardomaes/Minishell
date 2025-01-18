@@ -56,10 +56,6 @@ void ft_free_all(t_msh *msh)
 				free(msh->data->args[i++]);
 			free(msh->data->args);
 		}
-		if (msh->data->infile > 0)
-			close(msh->data->infile);
-		else if(msh->data->outfile > 0)
-			close(msh->data->outfile);
 		free(msh->data);
 	}
 	free(msh);
@@ -70,12 +66,20 @@ void ft_free_data(t_msh	*msh)
 	int i;
 
 	i = 0;
-	ft_free_tokens(msh->data->tokens);
-	msh->data->tokens = NULL;
-	while (msh->data->args[i])
-		free(msh->data->args[i++]);
-	free(msh->data->args);
-	free(msh->data);
+	if (msh->data)
+	{
+		if (msh->data->tokens)
+			ft_free_tokens(msh->data->tokens);
+		msh->data->tokens = NULL;
+		while (msh->data->args[i])
+			free(msh->data->args[i++]);
+		free(msh->data->args);
+		if (msh->data->infile > 0)
+			close(msh->data->infile);
+		else if (msh->data->outfile > 0)
+			close(msh->data->outfile);
+		free(msh->data);
+	}
 }
 
 void	free_array(char **str, unsigned int n)

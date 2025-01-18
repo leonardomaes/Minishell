@@ -32,13 +32,24 @@ void	ft_print_params(t_msh *msh)
 void	ft_print_tokens(t_tokens *tokens)
 {
 	t_tokens *temp;
+	int i;
 
 	temp = tokens;
 	while (temp != NULL)
 	{
-		printf("\nArg n°%i", temp->count);
+		printf("\n\nArg n°%i", temp->count);
 		printf("\nName - %s<", temp->name);
 		printf("\nType - %i<\n", temp->type);
+		i = 0;
+		if (temp->args != NULL)
+		{
+			printf("Argumentos: \n");
+			while (temp->args[i])
+			{
+				printf("%s - ", temp->args[i++]);
+			}
+		}
 		temp = temp->next;
 	}
+	printf("\n");
 }
