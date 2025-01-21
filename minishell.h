@@ -52,6 +52,8 @@
 #define TKN_OUTREDIR 113
 #define TKN_INREDIR 114
 #define TKN_APPEND 115
+#define TKN_HEREDOC 116
+#define TKN_BCMD 117
 
 //macros for signal modes
 #define SHELL_MODE		1
@@ -65,6 +67,15 @@ extern int	g_exit;
 
 /************* STRUCTS *************/
 //msh->data->tokens
+
+typedef struct s_expand // struct to deal with the variable expansion in heredoc
+{
+	char	*end;
+	char	*new;
+	int		i;
+	int		start;
+	int		position;
+}				t_expand;
 
 typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
 {
@@ -141,8 +152,8 @@ int			handle_double_quote(const char **s, char *str);
 
 /* TOKEN TYPE */
 int			get_builtin_type(char *name);
-int			get_meta_type(char *name);
-int			get_type(char *name);
+int			get_meta_type(char *name, int i);
+int			get_type(char *name, int i);
 
 /* REDIRECTIONS */
 void		handle_redirs(t_msh *msh, int i, t_tokens *temp);
@@ -150,10 +161,19 @@ int			open_files(t_msh *msh);
 
 /* EXECUTER */
 int			exec_builtin(t_msh *msh);
+void		handle_redirections(t_tokens *token);
+void		setup_heredocs(t_tokens *tokens, t_msh *msh);
+int			execute_cmd(t_msh *msh, char **envp);
 int			execute_one(t_msh *msh, char **envp);
 int			execute_multi(t_msh *msh);
 int			execute(t_msh *msh);
 
+/* HEREDOC */
+int			has_expand(const char *line);
+int			search_variable_end(const char *s, int i);
+void		get_expand_variable(char *line, t_msh *msh, t_expand *exp);
+char		*expand_line(char *line, t_msh *msh);
+void		handle_heredoc(char *delimiter, t_msh *msh);
 
 /* BUILTINS | CD */
 int			update_env_change_dir(char *oldpwd, t_msh *msh);

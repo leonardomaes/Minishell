@@ -30,11 +30,59 @@ int exec_builtin(t_msh *msh)
 		execute_exit(msh, msh->data->tokens->args);
 	return (0);
 }
+
+void	handle_redirections(t_tokens *token) //added this to handle heredoc (must evaluate how to melt with redirections code from Leonardo)
+{
+	int	fd;
+	
+	while (token)
+	{
+		if (token->type == TKN_HEREDOC)
+		{
+			fd = open(".heredoc_tmp", O_RDONLY); //opens heredoc file
+			if (fd < 0)
+			{
+				perror("open heredoc_tmp");
+				exit(1);
+			}
+			if (dup2(fd, STDIN_FILENO) == -1) //redirects stdin to read from the heredoc file
+			{
+				perror("dup2");
+				exit(1);
+			}
+			close(fd);
+			unlink(".heredoc_tmp"); //remove a link to a file in filesystem
+			break ; //only use the last heredoc (multi heredocs)
+		}
+		token = token->next;
+	}
+}
+
+//prepare all heredocs before pipeline execution (must be called before creating any pipes)
+void	setup_heredocs(t_tokens *tokens, t_msh *msh)
+{
+	t_tokens	*current;
+
+	current = tokens;
+	while (current)
+	{
+		if (current->type == TKN_HEREDOC)
+			handle_heredoc(current->args[0], msh);
+		current = current->next;
+	}
+}
+
 int execute_one(t_msh *msh, char **envp)
 {
 	char *comm;
+	char *cwd;
 	pid_t pid;
 
+	//introduced a first pass trought all tokens to handle heredocs (must he taken care first to input redirection)
+	setup_heredocs(msh->data->tokens, msh);
+	//for TKN_HEREDOC alone, just skip
+	if (msh->data->tokens->type == TKN_HEREDOC)
+		return (0);
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
 		exec_builtin(msh);
 	else
@@ -42,17 +90,27 @@ int execute_one(t_msh *msh, char **envp)
 		pid = fork();
 		if (pid == 0)
 		{
-			comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
+			handle_redirections(msh->data->tokens);
+			if (msh->data->tokens->type == TKN_BCMD && msh->data->tokens->name[0] == '.')
+			{
+				cwd = getcwd(NULL, 0);
+				comm = ft_strjoin(cwd, msh->data->tokens->name + 1);
+			}
+			else
+				comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
 			if (!comm)
 			{
 				printf("bash: %s: command not found\n", msh->data->tokens->name);
+				free(cwd);
 				free(comm);
 				ft_free_all(msh);
 				exit(127);
 			}
+			//printf("%s\n", comm); // Apagar
 			if (execve(comm, msh->data->tokens->args, envp) == -1)
 			{
 				perror("execve:");
+				free(cwd);
 				free(comm);
 				ft_free_all(msh);
 				exit(1);
@@ -68,15 +126,23 @@ int execute_one(t_msh *msh, char **envp)
 int execute_cmd(t_msh *msh, char **envp)
 {
 	char *comm;
+	char *cwd;
 
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
 		exec_builtin(msh);
 	else
 	{
-		comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
+		if (msh->data->tokens->type == TKN_BCMD && msh->data->tokens->name[0] == '.')
+		{
+			cwd = getcwd(NULL, 0);
+			comm = ft_strjoin(cwd, msh->data->tokens->name + 1);
+		}
+		else
+			comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
 		if (!comm)
 		{
 			printf("bash: %s: command not found\n", msh->data->tokens->name);
+			free(cwd);
 			free(comm);
 			ft_free_all(msh);
 			exit(127);
@@ -84,6 +150,7 @@ int execute_cmd(t_msh *msh, char **envp)
 		if (execve(comm, msh->data->tokens->args, envp) == -1)
 		{
 			perror("execve:");
+			free(cwd);
 			free(comm);
 			ft_free_all(msh);
 			exit(1);
@@ -104,6 +171,7 @@ int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe
 	i = 0;
 	prev_pipe = -1;
 	current_token = msh->data->tokens;
+	setup_heredocs(msh->data->tokens, msh);
 	while (i <= msh->data->pipes)
 	{
 		if (i < msh->data->pipes && pipe(pipefd) == -1) // Se não for ultimo e der erro no pipe
@@ -125,6 +193,7 @@ int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe
 				close(pipefd[1]);
 				close(pipefd[0]);
 			}
+			handle_redirections(current_token);
 			msh->data->tokens = current_token;
 			execute_cmd(msh, msh->envp);
 			ft_free_all(msh);
@@ -154,7 +223,6 @@ int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe
 
 int execute(t_msh *msh)
 {
-
 	if (open_files(msh) != 0)
 	{
 		g_exit = 1;

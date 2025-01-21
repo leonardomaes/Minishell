@@ -32,7 +32,7 @@ int	get_builtin_type(char *name)
 		return (0);
 }
 
-int get_meta_type(char *name)
+int get_meta_type(char *name, int i)
 {
 	if (name[0] == '"')
 		return (DBL_QUOTES);
@@ -42,22 +42,26 @@ int get_meta_type(char *name)
 		return (TKN_PIPE);
 	else if (name[0] == '$')
 		return (VAR_ENVIRON);
+	else if (name[0] == '<' && name[1] == '<' && name[2] == '\0') //detects exacly the '<<'
+		return (TKN_HEREDOC);
 	else if (ft_strcmp(name, ">>") == 0)
 		return (TKN_APPEND);
 	else if (name[0] == '>')
 		return (TKN_OUTREDIR);
 	else if (name[0] == '<')
 		return (TKN_INREDIR);
+	else if (i == 0)
+		return (TKN_BCMD);
 	else
 		return (ARGUMENT);
 }
 
-int	get_type(char *name)
+int	get_type(char *name, int i)
 {
 	if (get_builtin_type(name) != 0) // Check if it is a builtin cmd
 		return (get_builtin_type(name));
-	else if (get_meta_type(name) != 0)	// check for metachars
-		return (get_meta_type(name));
+	else if (get_meta_type(name, i) != 0)	// check for metachars
+		return (get_meta_type(name, i));
 	else
 		return (1);
 }
