@@ -112,7 +112,7 @@ int	execute_cd(t_msh *msh, char **args) //later we can improve how we deal with 
 			perror("-bash: cd: OLDPWD not set\n");
 			return (1);
 		}
-		printf("%s\n", path);
+		//printf("%s\n", path);
 	}
 	else if (args[2])
 	{

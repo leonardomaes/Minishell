@@ -263,7 +263,7 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 			temp->args[0] = ft_strdup(msh->data->args[i + 1]); //store the delimiter like 'EOF'
 			temp->args[1] = NULL;
 			i++;  // Skip the delimiter in the main array
-		} //if we are at the start of a command or after a pipe get all args
+		}//if we are at the start of a command or after a pipe get all args
 		else if (prev == NULL || temp->prev->type == TKN_PIPE) // Adiciona o comando para o primeiro token de cada comando
 		{
 			temp->args = get_args(msh->data->args, i, msh);

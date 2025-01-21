@@ -79,7 +79,7 @@ int	handle_environ(const char **s, char *str)	// Expand env vars
 {
 	const char *start;
 	char *env_value;
-	char var_name[999];
+	char var_name[9999];
 	int len;
 
 	len = 0;
