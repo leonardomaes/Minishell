@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 00:09:07 by rda-cunh          #+#    #+#             */
-/*   Updated: 2025/01/13 22:45:51 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/22 23:50:03 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,24 +45,27 @@ void	get_expand_variable(char *line, t_msh *msh, t_expand *exp)
 	exp->position = search_variable_end(line + exp->i + 1, -1);
 	key = ft_substr(line, exp->i + 1, exp->position);
 	exp->new = ft_substr(line, exp->start, exp->i);
-	tmp = exp->end; 
-	exp->end = ft_strjoin(exp->end, exp->new);
+
+	tmp = exp->end;
+	exp->end = ft_strjoin(tmp, exp->new);
 	free(tmp);
+
 	if (line[exp->i + 1] != '?')
-		content = get_env_var_value(msh->envp, key);
+		content = ft_strdup(get_env_var_value(msh->envp, key));
 	else
 		content = ft_itoa(g_exit);
+
 	if (content)
 	{
-		tmp = exp->end; 
-		exp->end = ft_strjoin(exp->end, content);
-		free(tmp); 
+		tmp = exp->end;
+		exp->end = ft_strjoin(tmp, content);
+		free(tmp);
+		free(content);
 	}
+
 	exp->i += exp->position;
 	exp->start = exp->i + 1;
 	free(exp->new);
-	if (line[exp->i + 1] == '?')
-		free(content);
 	free(key);
 }
 
@@ -72,6 +75,7 @@ char	*expand_line(char *line, t_msh *msh)
 	t_expand	*exp;
 	char		*tail;
 	char		*result;
+	char		*tmp;
 
 	exp = malloc(sizeof(t_expand));
 	if (!exp)
@@ -86,7 +90,9 @@ char	*expand_line(char *line, t_msh *msh)
 		exp->i++;
 	}
 	tail = ft_substr(line, exp->start, exp->i - exp->start);
-	exp->end = ft_strjoin(exp->end, tail);
+	tmp = exp->end; 
+	exp->end = ft_strjoin(tmp, tail);
+	free(tmp);
 	result = ft_strdup(exp->end);
 	free(tail);
 	free(exp->end);
