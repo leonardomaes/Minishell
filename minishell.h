@@ -149,6 +149,7 @@ int			environ_lenght(const char *s, int *i);
 int			handle_environ(const char **s, char *str);
 int			handle_single_quote(const char **s, char *str);
 int			handle_double_quote(const char **s, char *str);
+char		*ft_chartrim(char **s, char set);
 
 /* TOKEN TYPE */
 int			get_builtin_type(char *name);
@@ -173,7 +174,7 @@ int			has_expand(const char *line);
 int			search_variable_end(const char *s, int i);
 void		get_expand_variable(char *line, t_msh *msh, t_expand *exp);
 char		*expand_line(char *line, t_msh *msh);
-void		handle_heredoc(char *delimiter, t_msh *msh);
+void		handle_heredoc(t_tokens *token, t_msh *msh);
 
 /* BUILTINS | CD */
 int			update_env_change_dir(char *oldpwd, t_msh *msh);

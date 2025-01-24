@@ -18,7 +18,10 @@ int double_quote_lenght(const char *s, int *i) //Calculate size of strings in do
 
 	j = 0;
 	if (s[*i] == '"')
+	{
 		(*i)++;
+		j++;
+	}
 	while (s[*i] && s[*i] != '"')
 	{
 		if (s[*i] == '$')
@@ -30,7 +33,10 @@ int double_quote_lenght(const char *s, int *i) //Calculate size of strings in do
 		}
 	}
 	if (s[*i] == '"')
+	{
 		(*i)++;
+		j++;
+	}
 	return (j);
 }
 
@@ -40,14 +46,20 @@ int single_quote_lenght(const char *s, int *i) //Calculate size of strings in do
 
 	j = 0;
 	if (s[*i] == '\'')
+	{
 		(*i)++;
+		j++;
+	}
 	while (s[*i] && s[*i] != '\'')
 	{
 		j++;
 		(*i)++;
 	}
 	if (s[*i] == '\'')
+	{
 		(*i)++;
+		j++;
+	}
 	return (j);
 }
 
@@ -84,6 +96,11 @@ int	handle_environ(const char **s, char *str)	// Expand env vars
 
 	len = 0;
 	(*s)++;
+	if (**s == '?')
+	{
+		str = ft_itoa(g_exit);
+		return (1);
+	}
 	start = *s;
 	while (**s && (ft_isalnum(**s) || **s == '_'))
 		(*s)++;
@@ -104,8 +121,10 @@ int	handle_environ(const char **s, char *str)	// Expand env vars
 // Do not must to interpret metachars
 int handle_single_quote(const char **s, char *str)	// Identifies quotes and treat it
 {
-	int i = 0;
+	int i;
 
+	i = 0;
+	str[i++] = **s;
 	(*s)++;
 	while (**s && **s != '\'')
 	{
@@ -113,7 +132,10 @@ int handle_single_quote(const char **s, char *str)	// Identifies quotes and trea
 		(*s)++;
 	}
 	if (**s == '\'')
+	{
+		str[i++] = **s;
 		(*s)++;
+	}
 	str[i] = '\0';
 	return (ft_strlen(str));
 }
@@ -124,6 +146,8 @@ int	handle_double_quote(const char **s, char *str) // Identifies quotes and '$'
 	int i;
 
 	len = 0;
+	*str = **s;
+	str++;
 	(*s)++;
 	while (**s && **s != '"')
 	{
@@ -142,7 +166,30 @@ int	handle_double_quote(const char **s, char *str) // Identifies quotes and '$'
 		}
 	}
 	if (**s == '"')
+	{
+		*str = **s;
 		(*s)++;
+	}
+	str++;
 	*str = '\0';
 	return (len);
+}
+
+char *ft_chartrim(char **s, char set)
+{
+    char *start;
+    char *end;
+    char *new_str;
+
+    if (!s || !*s) // Verifica se a string é válida
+        return NULL;
+
+    start = *s;
+    end = *s + strlen(*s) - 1;
+    while (*start == set)
+        start++;
+    while (end > start && *end == set)
+        end--;
+    new_str = strndup(start, end - start + 1);
+	return (new_str);
 }

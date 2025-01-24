@@ -198,7 +198,12 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 	k = 0;
 	while (data_args[i] && i < j)
 	{
-		args[k] = ft_strdup(data_args[i]);
+		if (data_args[i][0] == '"')
+			args[k] = ft_chartrim(&data_args[i], '"');
+		else if (data_args[i][0] == '\'')
+			args[k] = ft_chartrim(&data_args[i], '\'');
+		else
+			args[k] = ft_strdup(data_args[i]);
 		//free previously allocated memory in case strdup fails
 		if (!args[k])
 		{
@@ -238,21 +243,21 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 		else // Somente entra em get_type se for primeiro argumento
 			temp->type = get_meta_type(msh->data->args[i], 1);
 		// Handle heredoc case
-		if (temp->type == TKN_PIPE)
+		if (temp->type == TKN_PIPE) //Se for pipe incrementa soma
 			msh->data->pipes++;
-		temp->count = msh->data->pipes;
-		if (prev != NULL)
+		temp->count = msh->data->pipes; // Contagem do token no conjunto
+		if (prev != NULL)				// Aponta para o token anterior
 			temp->prev = prev;
-		if (temp->type == TKN_HEREDOC)
+		if (temp->type == TKN_HEREDOC)	// Heredocs configs
 		{
-			if (i + 1 >= msh->data->argc || get_type(msh->data->args[i + 1], 1) != ARGUMENT)
+			/* if (i + 1 >= msh->data->argc || get_type(msh->data->args[i + 1], 1) != ARGUMENT)
 			{
 				ft_putstr_fd("syntax error near unexpected token 'newline'\n", 2);
 				g_exit = 2;
 				free(*token);
 				*token = NULL;
 				return ;
-			}
+			} */
 			temp->args = malloc(sizeof(char *) * 2);
 			if (!temp->args)
 			{
@@ -260,9 +265,12 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 				*token = NULL;
 				return ;
 			}
-			temp->args[0] = ft_strdup(msh->data->args[i + 1]); //store the delimiter like 'EOF'
+			if (msh->data->args[i+1][0] == '"')
+				temp->args[0] = ft_chartrim(&msh->data->args[i + 1], '"'); //store the delimiter like 'EOF'
+			else
+				temp->args[0] = ft_chartrim(&msh->data->args[i + 1], '\'');
 			temp->args[1] = NULL;
-			i++;  // Skip the delimiter in the main array
+			//i++;  // Skip the delimiter in the main array
 		}//if we are at the start of a command or after a pipe get all args
 		else if (prev == NULL || temp->prev->type == TKN_PIPE) // Adiciona o comando para o primeiro token de cada comando
 		{

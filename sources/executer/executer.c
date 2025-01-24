@@ -67,7 +67,7 @@ void	setup_heredocs(t_tokens *tokens, t_msh *msh)
 	while (current)
 	{
 		if (current->type == TKN_HEREDOC)
-			handle_heredoc(current->args[0], msh);
+			handle_heredoc(current, msh);
 		current = current->next;
 	}
 }
@@ -101,7 +101,7 @@ int execute_one(t_msh *msh, char **envp)
 			if (!comm)
 			{
 				printf("bash: %s: command not found\n", msh->data->tokens->name);
-				free(cwd);
+				//free(cwd);
 				free(comm);
 				ft_free_all(msh);
 				exit(127);
