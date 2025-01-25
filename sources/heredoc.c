@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 00:09:07 by rda-cunh          #+#    #+#             */
-/*   Updated: 2025/01/22 23:50:03 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/25 02:06:08 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ void	handle_heredoc(t_tokens *token, t_msh *msh)
 		}
 		close(fd);
 		ft_free_all(msh);
-		exit(0); 
+		exit(0);
 	}
 	else //parent process
 	{

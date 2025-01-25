@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 00:39:31 by rda-cunh          #+#    #+#             */
-/*   Updated: 2024/12/09 19:14:48 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/25 01:51:31 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,23 +41,14 @@ void	ft_sigquit(int sig)
 	(void) sig;
 }
 
-//child signal handlers | heredoc signal handlers
+//child signal handler for heredoc
 void	child_signal_handler(int sig)
 {
-	if (sig == HEREDOC)
+	if (sig == SIGINT)
 	{
 		g_exit = 130;
 		write(1, "\n", 1);
 		exit(g_exit);
-	}
-}
-
-void	child_signal_handler2(int sig)
-{
-	if (sig == HEREDOC_PAUSE)
-	{
-		g_exit = 130;
-		signal(SIGINT, SIG_IGN);
 	}
 }
 
@@ -81,7 +72,10 @@ void	set_signal(int sg, t_msh *msh)
 		exit(EXIT_SUCCESS); //to decide later if we can include the exit a proper free and exit functions
 	}
 	if (sg == HEREDOC) //call set_signal(HEREDOC, msh) before starting HEREDOC and return do SHELL_MODE after - TO DO!
-		signal(SIGINT, child_signal_handler);
-	if (sg == HEREDOC_PAUSE) //call set_signal(HEREDOC_PAUSE, msh) when pausing HEREDOC - TO DO!
-		signal(SIGINT, child_signal_handler2);
+	{
+		signal(SIGINT, child_signal_handler);  // Use default signal handler
+		signal(SIGQUIT, SIG_IGN); // Ignore SIGQUIT
+	}
+	if (sg == HEREDOC_PAUSE)
+		signal(SIGINT, SIG_IGN);
 }
