@@ -71,16 +71,41 @@ int syntax_redirs(t_tokens *tokens)
 	return (0);
 }
 
+int	syntax_pipes(t_tokens *tokens)
+{
+	t_tokens *temp;
+
+	temp = tokens;
+	while (temp)
+	{
+		if (temp->type == TKN_PIPE && temp->next == NULL)
+		{
+			printf("bash: syntax error near unexpected token `%s'\n", temp->name);
+			return (1);
+		}
+		temp = temp->next;
+	}
+	return (0);
+}
+
 int	syntax_check(t_data *data)
 {
 	if (data->tokens->type == TKN_PIPE)
 	{
 		printf("bash: syntax error near unexpected token `%s'\n", data->tokens->name);
+		g_exit = 2;
 		return (1);
 	}
-	if (syntax_redirs(data->tokens) != 0)
+	if (data->tokens->type == TKN_HEREDOC)
+	{
+		printf("bash: syntax error near unexpected token 'newline'\n");
+		g_exit = 2;
 		return (1);
-	
+	}
+	if (syntax_pipes(data->tokens) != 0)
+		return (g_exit = 2, 1);
+	if (syntax_redirs(data->tokens) != 0)
+		return (g_exit = 2, 1);
 	return (0);
 }
 

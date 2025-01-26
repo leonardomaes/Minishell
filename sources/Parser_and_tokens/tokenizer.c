@@ -45,7 +45,7 @@ int	count_args(const char *s) // Conta quantidade de argumentos
 		else if (s[i] == '$')
 		{
 			i++;
-			while (s[i] && (ft_isalnum(s[i]) || s[i] == '_'))
+			while (s[i] && (ft_isalnum(s[i]) || s[i] == '_' || s[i] == '?'))
 				i++;
 		}
 		else

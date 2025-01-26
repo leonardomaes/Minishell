@@ -185,7 +185,7 @@ int			execute_cd(t_msh *msh, char **args);
 int			execute_echo(char **args);
 
 /* BUILTINS | ENV */
-void		execute_env(char **envp);
+int			execute_env(char **envp);
 
 /* BUILTINS | EXIT */
 int			ft_isnumber(const char *str);

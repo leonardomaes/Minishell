@@ -72,6 +72,9 @@ int	environ_lenght(const char *s, int *i) //Calculate size of extended env vars
 	if (s[*i] == '$')
 		(*i)++;
 	j = *i;
+	if (s[j] == '?')
+		return (j=3, j);
+	// printf("1= %c\n", s[j]);
 	while (s[*i] && (ft_isalnum(s[*i]) || s[*i] == '_'))
 		(*i)++;
 	env = (char *)malloc(sizeof(char) * ((*i - j) + 1));
@@ -96,12 +99,16 @@ int	handle_environ(const char **s, char *str)	// Expand env vars
 
 	len = 0;
 	(*s)++;
+	start = *s;
 	if (**s == '?')
 	{
-		str = ft_itoa(g_exit);
-		return (1);
+		env_value = ft_itoa(g_exit);
+		len = ft_strlen(env_value);
+		ft_strlcpy(str, env_value, len + 1);
+		free(env_value);
+		(*s)++;	// Avançar '?'
+		return (len);
 	}
-	start = *s;
 	while (**s && (ft_isalnum(**s) || **s == '_'))
 		(*s)++;
 	ft_strlcpy(var_name, start, ((*s - start) + 1));
@@ -115,6 +122,7 @@ int	handle_environ(const char **s, char *str)	// Expand env vars
 		}
 	}
 	*str = '\0';
+	//printf("%d\n", len);
 	return (len);
 }
 

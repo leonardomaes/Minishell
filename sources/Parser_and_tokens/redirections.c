@@ -23,7 +23,7 @@ int open_files(t_msh *msh)
 	{
 		if (temp->type == TKN_APPEND)
 		{
-			printf("Append\n");
+			//printf("Append\n");
 			if (msh->data->outfile > 0)
 				close(msh->data->outfile);
 			msh->data->outfile = open(temp->next->name, O_WRONLY | O_CREAT | O_APPEND, 0775);
@@ -35,7 +35,7 @@ int open_files(t_msh *msh)
 		}
 		else if (temp->type == TKN_OUTREDIR)
 		{
-			printf("Output\n");
+			//printf("Output\n");
 			if (msh->data->outfile > 0)
 				close(msh->data->outfile);
 			msh->data->outfile = open(temp->next->name, O_WRONLY | O_CREAT | O_TRUNC, 0777);

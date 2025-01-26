@@ -15,20 +15,20 @@
 int exec_builtin(t_msh *msh)
 {
 	if (msh->data->tokens->type == BLT_ECHO)
-		execute_echo(msh->data->tokens->args);
+		return (execute_echo(msh->data->tokens->args));
 	else if(msh->data->tokens->type == BLT_CD)
-		execute_cd(msh, msh->data->tokens->args);
+		return (execute_cd(msh, msh->data->tokens->args));
 	else if(msh->data->tokens->type == BLT_PWD)
-		execute_pwd();
+		return (execute_pwd());
 	else if(msh->data->tokens->type == BLT_EXPORT)
-		execute_export(msh, msh->data->tokens->args);
+		return (execute_export(msh, msh->data->tokens->args));
 	else if(msh->data->tokens->type == BLT_UNSET)
-		execute_unset(msh, msh->data->tokens->args);
+		return (execute_unset(msh, msh->data->tokens->args));
 	else if(msh->data->tokens->type == BLT_ENV)
-		execute_env(msh->envp);
+		return (execute_env(msh->envp));
 	else if(msh->data->tokens->type == BLT_EXIT)
-		execute_exit(msh, msh->data->tokens->args);
-	return (0);
+		return (execute_exit(msh, msh->data->tokens->args));
+	return (1);
 }
 
 void	handle_redirections(t_tokens *token) //added this to handle heredoc (must evaluate how to melt with redirections code from Leonardo)
@@ -74,17 +74,19 @@ void	setup_heredocs(t_tokens *tokens, t_msh *msh)
 
 int execute_one(t_msh *msh, char **envp)
 {
-	char *comm;
-	char *cwd;
-	pid_t pid;
+	char 	*comm;
+	char	 *cwd;
+	int		status;
+	pid_t 	pid;
 
 	//introduced a first pass trought all tokens to handle heredocs (must he taken care first to input redirection)
 	setup_heredocs(msh->data->tokens, msh);
 	//for TKN_HEREDOC alone, just skip
+	//g_exit = 1;
 	if (msh->data->tokens->type == TKN_HEREDOC)
 		return (0);
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
-		exec_builtin(msh);
+		g_exit = exec_builtin(msh);
 	else
 	{
 		pid = fork();
@@ -113,12 +115,16 @@ int execute_one(t_msh *msh, char **envp)
 				free(cwd);
 				free(comm);
 				ft_free_all(msh);
-				exit(1);
+				exit(2);
 			}
 			free(comm);
 		}
 		else
-			waitpid(pid, NULL, 0);
+		{
+			waitpid(pid, &status, 0);
+			if (WEXITSTATUS(status))
+				g_exit = WEXITSTATUS(status);
+		}
 	}
 	return (0);
 }
@@ -223,6 +229,9 @@ int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe
 
 int execute(t_msh *msh)
 {
+	int status;
+
+	status = 1;
 	if (open_files(msh) != 0)
 	{
 		g_exit = 1;
@@ -233,9 +242,9 @@ int execute(t_msh *msh)
 	if (msh->data->outfile > 0)
 		dup2(msh->data->outfile, STDOUT_FILENO);
 	if (msh->data->pipes == 0)
-		execute_one(msh, msh->envp);
+		status = execute_one(msh, msh->envp);
 	else
-		execute_multi(msh);
+		status = execute_multi(msh);
 	if (msh->data->infile > 0)
 	{
 		close(msh->data->infile);
@@ -250,5 +259,5 @@ int execute(t_msh *msh)
 		dup2(msh->data->stdout_backup, STDOUT_FILENO);
 		close(msh->data->stdout_backup);
 	}
-	return (0);
+	return (status);
 }
