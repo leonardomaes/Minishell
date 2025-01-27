@@ -142,7 +142,7 @@ int	ft_readline(t_msh *msh)
 		free(msh->data);
 		msh->data = NULL;
 		free(line);
-		return (1);
+		return (0);
 	}
 	if (ft_init_data(line, msh) != 0) 			// Inicia struct s_data
 		return (free(line), 1);

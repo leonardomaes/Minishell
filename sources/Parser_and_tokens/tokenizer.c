@@ -42,7 +42,7 @@ int	count_args(const char *s) // Conta quantidade de argumentos
 			if (s[i] == '\'')
 				i++;
 		}
-		else if (s[i] == '$')
+		else if (s[i] == '$') // Dolar
 		{
 			i++;
 			if (s[i] == '?')
@@ -80,7 +80,7 @@ int	*calculate_lengths(const char *s, int words) // Calcula tamanho dos argument
 			i++;
 		if (s[i] == '\0')
 			break;
-		if (s[i] == '$')
+		if (s[i] == '$') // Dolar
 			len[word] = environ_lenght(s, &i);
 		else if (s[i] == '\'')
 			len[word] = single_quote_lenght(s, &i);
@@ -151,7 +151,7 @@ char	**ft_split_args(const char *s) // Take the line and transform it in a array
 			j = handle_double_quote(&s, str[i]);
 		else if(*s == '\'')
 			j = handle_single_quote(&s, str[i]);
-		else if (*s == '$')
+		else if (*s == '$') // Dolar
 			j = handle_environ(&s, str[i]);
 		else
 		{

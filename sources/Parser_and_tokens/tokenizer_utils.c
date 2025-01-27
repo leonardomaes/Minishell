@@ -24,7 +24,7 @@ int double_quote_lenght(const char *s, int *i) //Calculate size of strings in do
 	}
 	while (s[*i] && s[*i] != '"')
 	{
-		if (s[*i] == '$')
+		if (s[*i] == '$') // Dolar
 			j += environ_lenght(s, i);
 		else
 		{
@@ -159,7 +159,7 @@ int	handle_double_quote(const char **s, char *str) // Identifies quotes and '$'
 	(*s)++;
 	while (**s && **s != '"')
 	{
-		if (**s == '$')
+		if (**s == '$')// Dolar
 		{
 			i = handle_environ(s, str);
 			str += i;
