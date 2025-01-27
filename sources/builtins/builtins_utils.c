@@ -107,7 +107,6 @@ int	set_env_var(t_msh *msh, char *var_name, char *var_value)
 	tmp = ft_strjoin("=", var_value);
 	if (!tmp)
 		return (1);
-	printf("%d\n", idx);
 	if (idx != -1 && msh->envp[idx])
 	{
 		free_ptr((void**)&msh->envp[idx]);
@@ -119,11 +118,7 @@ int	set_env_var(t_msh *msh, char *var_name, char *var_value)
 		msh->envp = realloc_env_vars(msh, idx + 1);
 		if (!msh->envp)
 			return (1);
-		// Apagar
-		printf("%s\n%s\n", var_name, tmp);
 		msh->envp[idx] = ft_strjoin(var_name, tmp);
-		printf("%s\n", msh->envp[idx]);
-		// Apagar
 	}
 	free_ptr((void**)&tmp);
 	return (0);
