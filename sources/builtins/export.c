@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/28 00:18:52 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/28 00:22:58 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,7 +235,7 @@ int	execute_export(t_msh *msh, char **args)
 	int		i;
 	char	*name;
 	char	*value;
-	int		status; 
+	int		status;
 
 	i = 1;
 	status = 0; 
