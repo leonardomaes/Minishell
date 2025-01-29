@@ -46,7 +46,7 @@ void	ft_print_tokens(t_tokens *tokens)
 			printf("Argumentos: \n");
 			while (temp->args[i])
 			{
-				printf("%s - ", temp->args[i++]);
+				printf("%s-", temp->args[i++]);
 			}
 		}
 		temp = temp->next;

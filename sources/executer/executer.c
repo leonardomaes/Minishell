@@ -177,7 +177,7 @@ int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe
 	i = 0;
 	prev_pipe = -1;
 	current_token = msh->data->tokens;
-	setup_heredocs(msh->data->tokens, msh);
+	//setup_heredocs(msh->data->tokens, msh);
 	while (i <= msh->data->pipes)
 	{
 		if (i < msh->data->pipes && pipe(pipefd) == -1) // Se não for ultimo e der erro no pipe
@@ -199,7 +199,7 @@ int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe
 				close(pipefd[1]);
 				close(pipefd[0]);
 			}
-			handle_redirections(current_token);
+			//handle_redirections(current_token);
 			msh->data->tokens = current_token;
 			execute_cmd(msh, msh->envp);
 			ft_free_all(msh);

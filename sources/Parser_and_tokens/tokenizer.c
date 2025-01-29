@@ -12,6 +12,16 @@
 
 #include "../../minishell.h"
 
+int	ft_isdelimiter(char c)
+{
+	return (c == '"' || c == '\'' || c == '\0');
+}
+
+int	ft_isredirection(char c)
+{
+	return (c == '<' || c == '>');
+}
+
 int	count_args(const char *s) // Conta quantidade de argumentos
 {
 	int	i;
@@ -21,12 +31,22 @@ int	count_args(const char *s) // Conta quantidade de argumentos
 	word = 0;
 	while (s[i])
 	{
-		while (s[i] && ft_isspace(s[i]))
-			i++;
+		/* while (s[i] && ft_isspace(s[i]))
+			i++; */
 		if (s[i] == '\0')
 			break;
 		word++;
-		if (s[i] == '"')
+		if (word == 2 && ft_isspace(s[i]))
+		{
+			while (ft_isspace(s[i]))
+				i++;
+		}
+		if (ft_isspace(s[i]))
+		{
+			while (ft_isspace(s[i]))
+				i++;
+		}
+		else if (s[i] == '"')
 		{
 			i++;
 			while (s[i] && s[i] != '"')
@@ -42,20 +62,25 @@ int	count_args(const char *s) // Conta quantidade de argumentos
 			if (s[i] == '\'')
 				i++;
 		}
-		else if (s[i] == '$') // Dolar
+		else if (s[i] == '$' && !ft_isdelimiter(s[i+1]) && !ft_isspace(s[i+1])) // Dolar
 		{
 			i++;
 			if (s[i] == '?')
 				i++;
-			else
+			else if (ft_isdelimiter(s[i]) == 0)
 			{
 				while (s[i] && (ft_isalnum(s[i]) || s[i] == '_'))
 					i++;
 			}
 		}
+		else if (ft_isredirection(s[i]))
+		{
+			while (ft_isredirection(s[i]))
+				i++;
+		}
 		else
 		{
-			while (!ft_isspace(s[i]) && s[i])
+			while (!ft_isspace(s[i]) && s[i] && !ft_isdelimiter(s[i]))
 				i++;
 		}
 	}
@@ -76,23 +101,47 @@ int	*calculate_lengths(const char *s, int words) // Calcula tamanho dos argument
 	while (s[i] && word < words)
 	{
 		len[word] = 0;
-		while (s[i] && ft_isspace(s[i]))
-			i++;
+		/* while (s[i] && ft_isspace(s[i]))
+			i++; */
 		if (s[i] == '\0')
 			break;
-		if (s[i] == '$') // Dolar
+		if (word == 1 && ft_isspace(s[i]))
+		{
+			while (ft_isspace(s[i]))
+				i++;
+		}
+		if (ft_isspace(s[i]))
+		{
+			len[word] = 1;
+			while (ft_isspace(s[i]))
+				i++;
+		}
+		else if (s[i] == '$' && !ft_isdelimiter(s[i+1]) && !ft_isspace(s[i+1])) // Dolar
 			len[word] = environ_lenght(s, &i);
 		else if (s[i] == '\'')
 			len[word] = single_quote_lenght(s, &i);
 		else if (s[i] == '"')
 			len[word] = double_quote_lenght(s, &i);
-		else
+		else if (ft_isredirection(s[i]))
 		{
-			while (s[i] && !ft_isspace(s[i]))
+			while (ft_isredirection(s[i]))
 			{
 				len[word]++;
 				i++;
 			}
+		}
+		else
+		{
+			while (s[i] && !ft_isspace(s[i]) && !ft_isdelimiter(s[i]))
+			{
+				len[word]++;
+				i++;
+			}
+			/* if (ft_isspace(s[i]))
+			{
+				len[word]++;
+				i++;
+			} */
 		}
 		word++;
 	}
@@ -121,18 +170,23 @@ char **alloc_args(int words, int *len) // Allocations for array of strings
 	return (str);
 }
 
-char	**ft_split_args(const char *s) // Take the line and transform it in a array of strings
-{
-	char 	**str;
-	int		*len;
-	int		words;
-	int		i;
-	int		j;
+//printf("1->%s\n", s + 2);	// String a partir da posição
+//printf("2->%c\n", *s + 2);	// Caractere + 2 ASCII
+//printf("3->%s\n", &s[2]);	// String a partir da posição
+//printf("4->%c\n", s[2]);	// Caractere da posição
 
-	len = NULL;
-	words = count_args(s);
-	if (!s || words < 0)
+char **ft_split_args(const char *s)
+{
+	char    **str;
+	int     *len;
+	int     words;
+	int     i;
+	int     j;
+	int     l;
+
+	if (!s)
 		return (NULL);
+	words = count_args(s);
 	len = calculate_lengths(s, words);
 	if (!len)
 		return (NULL);
@@ -140,23 +194,44 @@ char	**ft_split_args(const char *s) // Take the line and transform it in a array
 	if (!str)
 		return (NULL);
 	i = 0;
-	while (*s)
+	l = 0;
+	while (s[l])
 	{
 		j = 0;
-		while (*s && ft_isspace(*s))
-			s++;
-		if (*s == '\0')
-			break ;
-		if (*s == '"')
-			j = handle_double_quote(&s, str[i]);
-		else if(*s == '\'')
-			j = handle_single_quote(&s, str[i]);
-		else if (*s == '$') // Dolar
-			j = handle_environ(&s, str[i]);
+		/* while (s[l] && ft_isspace(s[l]))
+			l++; */
+		if (s[l] == '\0')
+			break;
+		if (i == 1 && ft_isspace(s[l]))
+		{
+			while (ft_isspace(s[l]))
+				l++;
+			//i++;
+		}
+		if (ft_isspace(s[l])) // leak aqui
+		{
+			str[i][j++] = s[l++];
+			str[i][j] = '\0';
+			while (ft_isspace(s[l]))
+				l++;
+		}
+		else if (s[l] == '"')
+			j = handle_double_quote(s, str[i], &l);
+		else if (s[l] == '\'')
+			j = handle_single_quote(s, str[i], &l);
+		else if (s[l] == '$' && !ft_isdelimiter(s[l+1]) && !ft_isspace(s[l+1]))
+			j = handle_environ(s, str[i], &l);
+		else if (s[l] && ft_isredirection(s[l]))
+		{
+			while (ft_isredirection(s[l]))
+				str[i][j++] = s[l++];
+			str[i][j] = '\0';
+		}
+		
 		else
 		{
-			while (*s && !ft_isspace(*s))
-				str[i][j++] = *s++;
+			while (s[l] && !ft_isspace(s[l]) && !ft_isdelimiter(s[l]))
+				str[i][j++] = s[l++];
 			str[i][j] = '\0';
 		}
 		i++;
@@ -279,6 +354,7 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 		}//if we are at the start of a command or after a pipe get all args
 		else if (prev == NULL || temp->prev->type == TKN_PIPE) // Adiciona o comando para o primeiro token de cada comando
 		{
+			//temp->name = ft_chartrim(&temp->name, ' ');  // Esta causando o leak
 			temp->args = get_args(msh->data->args, i, msh);
 			if (!temp->args)
 			{

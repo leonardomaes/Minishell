@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/02 19:35:45 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/28 00:58:08 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int	execute_exit(t_msh *msh, char **args)
 	int	exit_status;
 	int	error;
 
-	printf("exit\n"); //prints exit as an overall feature
+	ft_putstr_fd("exit\n", 1); //prints exit as an overall feature
 	if (!args[1]) //if there's no argument ir cleans data and exits with last status nown (g_exit)
 	{
 		ft_free_all(msh);
@@ -95,20 +95,24 @@ int	execute_exit(t_msh *msh, char **args)
 	}
 	if (!ft_isnumber(args[1])) //checks if the exit argument is a number and exits with '2' if not
 	{
-		printf("-bash: exit: %s: numeric argument required\n", args[1]);
+		ft_putstr_fd("bash: exit: ", 2);
+		ft_putstr_fd(args[1], 2);
+		ft_putstr_fd(": numeric argument required\n", 2);
 		ft_free_all(msh);
 		exit(2); //exit with error code 2
 	}
 	exit_status = ft_safe_atol(args[1], &error); //convertion with overflow error management
 	if (error)
 	{
-		printf("-bash: exit: %s: numeric argument required\n", args[1]);
+		ft_putstr_fd("bash: exit: ", 2);
+		ft_putstr_fd(args[1], 2);
+		ft_putstr_fd(": numeric argument required\n", 2);
 		ft_free_all(msh);
 		exit(2);
 	}
 	if (args[2]) //more than one argument
 	{
-		printf("-bash: exit: too many arguments");
+		ft_putstr_fd("bash: exit: too many arguments\n", 2);
 		g_exit = 1;
 		return (1);
 	}

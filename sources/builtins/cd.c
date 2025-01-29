@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/30 01:41:54 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/28 01:16:29 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ int	execute_cd(t_msh *msh, char **args) //later we can improve how we deal with 
 		path = get_env_var_value(msh->envp, "HOME");
 		if (!path || !*path)
 		{
-			perror("-bash: cd: HOME not set\n");
+			perror("bash: cd: HOME not set\n");
 			return (1);
 		}
 	}
@@ -109,14 +109,14 @@ int	execute_cd(t_msh *msh, char **args) //later we can improve how we deal with 
 		path = get_env_var_value(msh->envp, "OLDPWD");
 		if (!path)
 		{
-			perror("-bash: cd: OLDPWD not set\n");
+			perror("bash: cd: OLDPWD not set\n");
 			return (1);
 		}
 		//printf("%s\n", path);
 	}
 	else if (args[2])
 	{
-		perror("-bash: cd: too many arguments\n");
+		perror("bash: cd: too many arguments\n");
 		return (1);
 	}
 	else
@@ -235,4 +235,3 @@ int	main(void)
 	return (0);
 }
 */
-

@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/02 19:09:46 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/01/28 00:22:58 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,8 +235,10 @@ int	execute_export(t_msh *msh, char **args)
 	int		i;
 	char	*name;
 	char	*value;
+	int		status;
 
 	i = 1;
+	status = 0; 
 	//if no arguments display env vars sorted
 	if (!args[1])
 	{
@@ -254,20 +256,24 @@ int	execute_export(t_msh *msh, char **args)
 		}
 		if (!is_valid_var_name(name))
 		{
-			printf("bash: export: `%s`: not a valid identifier\n", args[i]);
-			free_ptr((void**)&name);
+			ft_putstr_fd("bash: export: `", 2);
+			ft_putstr_fd(args[i], 2);
+			ft_putstr_fd("': not a valid identifier\n", 2);
+			status = 1;
+			free_ptr((void **)&name);
 			i++;
 			continue ;
 		}
 		if (set_env_var(msh, name, value))
 		{
-			free_ptr((void**)&name);
+			free_ptr((void **)&name);
 			return (1); //funtion set_env_var returned error
 		}
-		free_ptr((void**)&name);
+		free_ptr((void **)&name);
 		i++;
 	}
-	return (0);
+	g_exit = status;
+	return (status);
 }
 /*
 //-----FUNCTIONS FOR TESTING PORPUSES-----

@@ -62,7 +62,7 @@ int syntax_redirs(t_tokens *tokens)
 		g_exit = 2;
 		return (1);
 	}
-	if (get_delimiter(temp->next->name) != 0)
+	if (get_delimiter(temp->next->name) != 0) // Arrumar esta verificação
 	{
 		printf("bash: syntax error near unexpected token '%s'\n", temp->next->name);
 		g_exit = 2;
@@ -148,6 +148,7 @@ int	ft_readline(t_msh *msh)
 		return (free(line), 1);
 	split_tokens(msh, &msh->data->tokens, NULL, i);		// Passa os parametros para structs de tokens
 	// Fazer o syntax tentar abrir fd dos redirs talvez
+	//ft_print_tokens(msh->data->tokens); 	// Remover
 	if (syntax_check(msh->data) != 0)					// Verificaçao de sintaxe
 		return (ft_free_data(msh), free(line), 1); // Erro aqui quando return == 1, ocorre varios leaks
 	//ft_print_params(msh); 	// Remover

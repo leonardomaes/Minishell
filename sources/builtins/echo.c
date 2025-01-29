@@ -35,8 +35,8 @@ int	execute_echo(char **args)
 	while (args[i] && get_type(args[i], 1) != TKN_PIPE)
 	{
 		printf("%s", args[i]);
-		if (args[i + 1])
-			printf(" ");
+		//if (args[i + 1])
+		//	printf(" ");
 		i++;
 	}
 	if (!no_newline)

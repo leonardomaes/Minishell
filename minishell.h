@@ -54,6 +54,7 @@
 #define TKN_APPEND 115
 #define TKN_HEREDOC 116
 #define TKN_BCMD 117
+#define TKN_SPACE 118
 
 //macros for signal modes
 #define SHELL_MODE		1
@@ -140,15 +141,16 @@ char		**ft_split_args(const char *s);
 char		**get_args(char **data_args, int i, t_msh *msh);
 void		split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
 int			get_delimiter(char *data_args);
+int			ft_isdelimiter(char c);
 
 
 /* TOKEN UTILS */
 int			double_quote_lenght(const char *s, int *i);
 int			single_quote_lenght(const char *s, int *i);
 int			environ_lenght(const char *s, int *i);
-int			handle_environ(const char **s, char *str);
-int			handle_single_quote(const char **s, char *str);
-int			handle_double_quote(const char **s, char *str);
+int			handle_environ(const char *s, char *str, int *l);
+int			handle_single_quote(const char *s, char *str, int *l);
+int			handle_double_quote(const char *s, char *str, int *l);
 char		*ft_chartrim(char **s, char set);
 
 /* TOKEN TYPE */
