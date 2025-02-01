@@ -36,13 +36,14 @@ int	count_args(const char *s) // Conta quantidade de argumentos
 		if (s[i] == '\0')
 			break;
 		word++;
-		if (word == 2 && ft_isspace(s[i]))
+		if (ft_isspace(s[i]) && (s[i-1] == '|' || word == 2 )) // Trocar para identificar após primeiro argumento
 		{
 			while (ft_isspace(s[i]))
 				i++;
 		}
 		if (ft_isspace(s[i]))
 		{
+			//printf("-%c\n", s[i-1]);
 			while (ft_isspace(s[i]))
 				i++;
 		}
@@ -105,13 +106,14 @@ int	*calculate_lengths(const char *s, int words) // Calcula tamanho dos argument
 			i++; */
 		if (s[i] == '\0')
 			break;
-		if (word == 1 && ft_isspace(s[i]))
+		if (ft_isspace(s[i]) && (s[i-1] == '|' || word == 1))
 		{
 			while (ft_isspace(s[i]))
 				i++;
 		}
 		if (ft_isspace(s[i]))
 		{
+			//printf("-%c\n", s[i-1]);
 			len[word] = 1;
 			while (ft_isspace(s[i]))
 				i++;
@@ -197,12 +199,13 @@ char **ft_split_args(const char *s)
 	l = 0;
 	while (s[l])
 	{
+		//printf("%c-", s[l]);
 		j = 0;
 		/* while (s[l] && ft_isspace(s[l]))
 			l++; */
 		if (s[l] == '\0')
 			break;
-		if (i == 1 && ft_isspace(s[l]))
+		if (ft_isspace(s[l]) && (s[l-1] == '|' || i == 1))
 		{
 			while (ft_isspace(s[l]))
 				l++;
@@ -210,6 +213,7 @@ char **ft_split_args(const char *s)
 		}
 		if (ft_isspace(s[l])) // leak aqui
 		{
+			//printf("-%c\n", s[l-1]);
 			str[i][j++] = s[l++];
 			str[i][j] = '\0';
 			while (ft_isspace(s[l]))
@@ -227,7 +231,6 @@ char **ft_split_args(const char *s)
 				str[i][j++] = s[l++];
 			str[i][j] = '\0';
 		}
-		
 		else
 		{
 			while (s[l] && !ft_isspace(s[l]) && !ft_isdelimiter(s[l]))
@@ -264,10 +267,15 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 
 	//count the number of args until we get to a pipe or end
 	j = i;
+	k = 0;
 	while (data_args[j] && get_delimiter(data_args[j]) == 0)
+	{
+		if (data_args[j][0] != ' ')
+			k++;
 		j++;
+	}
 	//allocate space for keeping the args and NULL
-	args = malloc(sizeof(char *) * (j - i + 1));
+	args = malloc(sizeof(char *) * (k + 1));
 	if (!args)
 	{
 		perror("malloc:");
@@ -278,23 +286,23 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 	k = 0;
 	while (data_args[i] && i < j)
 	{
+		//printf("-%s\n", data_args[i]);
 		if (data_args[i][0] == '"')
-			args[k] = ft_chartrim(&data_args[i], '"');
+			args[k++] = ft_chartrim(&data_args[i], '"');
 		else if (data_args[i][0] == '\'')
-			args[k] = ft_chartrim(&data_args[i], '\'');
-		else
-			args[k] = ft_strdup(data_args[i]);
+			args[k++] = ft_chartrim(&data_args[i], '\'');
+		else if (data_args[i][0] != ' ')
+			args[k++] = ft_strdup(data_args[i]);
 		//free previously allocated memory in case strdup fails
-		if (!args[k])
+		/* if (!args[k])
 		{
 			perror("strdup");
-			while (--k > 0)
-				free(args[k]);
+			while (k >= 0)
+				free(args[k--]);
 			free(args);
 			ft_free_all(msh);
 			exit(1);
-		}
-		k++;
+		} */
 		i++;
 	}
 	args[k] = NULL;

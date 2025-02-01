@@ -160,13 +160,13 @@ int			get_type(char *name, int i);
 
 /* REDIRECTIONS */
 void		handle_redirs(t_msh *msh, int i, t_tokens *temp);
-int			open_files(t_msh *msh);
-
+int			open_files(t_msh *msh, t_tokens *token);
+int			close_files(t_msh *msh);
 /* EXECUTER */
 int			exec_builtin(t_msh *msh);
 void		handle_redirections(t_tokens *token);
 void		setup_heredocs(t_tokens *tokens, t_msh *msh);
-int			execute_cmd(t_msh *msh, char **envp);
+int			execute_cmd(t_msh *msh, t_tokens *tokens, char **envp);
 int			execute_one(t_msh *msh, char **envp);
 int			execute_multi(t_msh *msh);
 int			execute(t_msh *msh);

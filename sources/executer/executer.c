@@ -85,6 +85,15 @@ int execute_one(t_msh *msh, char **envp)
 	//g_exit = 1;
 	if (msh->data->tokens->type == TKN_HEREDOC)
 		return (0);
+	if (open_files(msh, msh->data->tokens) != 0)
+	{
+		g_exit = 1;
+		return (-1);
+	}
+	if (msh->data->infile > 0)	// Ta fazendo exit quando tem infile
+		dup2(msh->data->infile, STDIN_FILENO);
+	if (msh->data->outfile > 0)
+		dup2(msh->data->outfile, STDOUT_FILENO);
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
 		g_exit = exec_builtin(msh);
 	else
@@ -102,7 +111,11 @@ int execute_one(t_msh *msh, char **envp)
 				comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
 			if (!comm)
 			{
-				printf("bash: %s: command not found\n", msh->data->tokens->name);
+				// perror("bash: ");
+				//printf("bash: %s: command not found\n", msh->data->tokens->name);
+				ft_putstr_fd(" bash: ", 2);
+				ft_putstr_fd(msh->data->tokens->name, 2);
+				ft_putstr_fd(" command not found\n", 2);
 				//free(cwd);
 				free(comm);
 				ft_free_all(msh);
@@ -129,34 +142,41 @@ int execute_one(t_msh *msh, char **envp)
 	return (0);
 }
 
-int execute_cmd(t_msh *msh, char **envp)
+int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 {
 	char *comm;
 	char *cwd;
+	int status;
 
-	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
-		exec_builtin(msh);
+	cwd = NULL;
+	if (tokens->type >= 101 && tokens->type <= 107)
+	{
+		status = exec_builtin(msh);
+		ft_free_all(msh);
+		exit(status);
+	}
 	else
 	{
-		if (msh->data->tokens->type == TKN_BCMD && msh->data->tokens->name[0] == '.')
+		if (tokens->type == TKN_BCMD && tokens->name[0] == '.')
 		{
 			cwd = getcwd(NULL, 0);
-			comm = ft_strjoin(cwd, msh->data->tokens->name + 1);
+			comm = ft_strjoin(cwd, tokens->name + 1);
+			free(cwd);
 		}
 		else
-			comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
+			comm = ft_get_command(tokens->name, msh->cmd_paths);
 		if (!comm)
 		{
-			printf("bash: %s: command not found\n", msh->data->tokens->name);
-			free(cwd);
-			free(comm);
+			//printf("bash: %s: command not found\n", tokens->name);
+			ft_putstr_fd(" bash: ", 2);
+			ft_putstr_fd(msh->data->tokens->name, 2);
+			ft_putstr_fd(" command not found\n", 2);
 			ft_free_all(msh);
 			exit(127);
 		}
-		if (execve(comm, msh->data->tokens->args, envp) == -1)
+		if (execve(comm, tokens->args, envp) == -1)
 		{
 			perror("execve:");
-			free(cwd);
 			free(comm);
 			ft_free_all(msh);
 			exit(1);
@@ -180,13 +200,23 @@ int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe
 	//setup_heredocs(msh->data->tokens, msh);
 	while (i <= msh->data->pipes)
 	{
+		if (open_files(msh, msh->data->tokens) != 0)
+		{
+			g_exit = 1;
+			return (-1);
+		}
 		if (i < msh->data->pipes && pipe(pipefd) == -1) // Se não for ultimo e der erro no pipe
 		{
-			perror("pipe:");
+			perror("pipe: ");
 			exit(1);
 		}
 		pid = fork();
-		if (pid == 0)
+		if (pid == -1)
+		{
+			perror("fork: ");
+			exit (1);
+		}
+		else if (pid == 0)
 		{
 			if (prev_pipe != -1) // Caso haja comando anterior, altera o input para o resultado anterior
 			{
@@ -200,8 +230,9 @@ int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe
 				close(pipefd[0]);
 			}
 			//handle_redirections(current_token);
-			msh->data->tokens = current_token;
-			execute_cmd(msh, msh->envp);
+			//msh->data->tokens = current_token;
+			execute_cmd(msh, current_token, msh->envp);
+			// Close redirs
 			ft_free_all(msh);
 			exit(1);
 		}
@@ -218,6 +249,8 @@ int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe
 			current_token = current_token->next;
 		if (current_token && current_token->type == TKN_PIPE)
 			current_token = current_token->next;
+		if (current_token && current_token->type == TKN_SPACE)
+			current_token = current_token->next;
 		i++;
 	}
 	if (prev_pipe != -1)
@@ -232,7 +265,7 @@ int execute(t_msh *msh)
 	int status;
 
 	status = 1;
-	if (open_files(msh) != 0)
+	/* if (open_files(msh) != 0)
 	{
 		g_exit = 1;
 		return (-1);
@@ -240,24 +273,11 @@ int execute(t_msh *msh)
 	if (msh->data->infile > 0)	// Ta fazendo exit quando tem infile
 		dup2(msh->data->infile, STDIN_FILENO);
 	if (msh->data->outfile > 0)
-		dup2(msh->data->outfile, STDOUT_FILENO);
+		dup2(msh->data->outfile, STDOUT_FILENO); */
 	if (msh->data->pipes == 0)
 		status = execute_one(msh, msh->envp);
 	else
 		status = execute_multi(msh);
-	if (msh->data->infile > 0)
-	{
-		close(msh->data->infile);
-		msh->data->infile = -1;
-		dup2(msh->data->stdin_backup, STDIN_FILENO);
-		close(msh->data->stdin_backup);
-	}
-	if (msh->data->outfile > 0)
-	{
-		close(msh->data->outfile);
-		msh->data->outfile = -1;
-		dup2(msh->data->stdout_backup, STDOUT_FILENO);
-		close(msh->data->stdout_backup);
-	}
+	close_files(msh);
 	return (status);
 }
