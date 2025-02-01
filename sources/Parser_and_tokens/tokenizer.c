@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:19:39 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/28 18:19:39 by lmaes            ###   ########.fr       */
+/*   Updated: 2025/02/01 16:37:25 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ int	count_args(const char *s) // Conta quantidade de argumentos
 	word = 0;
 	while (s[i])
 	{
-		/* while (s[i] && ft_isspace(s[i]))
-			i++; */
+		 while (s[i] && ft_isspace(s[i]))
+			i++;
 		if (s[i] == '\0')
 			break;
 		word++;
@@ -210,10 +210,11 @@ char **ft_split_args(const char *s)
 		}
 		if (ft_isspace(s[l])) // leak aqui
 		{
-			str[i][j++] = s[l++];
-			str[i][j] = '\0';
-			while (ft_isspace(s[l]))
+//			str[i][j++] = s[l++];
+//			str[i][j] = '\0';
+			while (s[l] && ft_isspace(s[l]))
 				l++;
+			continue ;
 		}
 		else if (s[l] == '"')
 			j = handle_double_quote(s, str[i], &l);

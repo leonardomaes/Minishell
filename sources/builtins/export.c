@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/28 00:22:58 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/01 17:17:26 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,6 +237,15 @@ int	execute_export(t_msh *msh, char **args)
 	char	*value;
 	int		status;
 
+	//*debug begin
+	i = 0;
+	printf("This is the list of args:\n");
+	while(args[i])
+	{
+		printf("arg[%d]:%s\n", i, args[i]);
+		i++;
+	}
+	//debug end*/
 	i = 1;
 	status = 0; 
 	//if no arguments display env vars sorted
