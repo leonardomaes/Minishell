@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/02 19:41:15 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/02 15:38:08 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ int	remove_env_var(t_msh *msh, char *var)
 	len = ft_strlen(var);
 	//count the variables and allocate memory for the new array
 	env_count = env_var_count(msh->envp);
-	new_envp = ft_calloc(env_count, sizeof(char *));
+	new_envp = ft_calloc(env_count + 1, sizeof(char *));
 	if (!new_envp)
 		return (1);
 	//copy variables for new list excluding the ones to remove
