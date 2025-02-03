@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/09 18:45:58 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/02 23:40:42 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,6 +192,7 @@ int			execute_env(char **envp);
 /* BUILTINS | EXIT */
 int			ft_isnumber(const char *str);
 long long	ft_safe_atol(const char *str, int *error);
+int			get_exit_code(long long n);
 int			execute_exit(t_msh *msh, char **args);
 
 /* BUILTINS | EXPORT */
