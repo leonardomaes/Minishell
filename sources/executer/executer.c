@@ -12,10 +12,10 @@
 
 #include "../../minishell.h"
 
-int exec_builtin(t_msh *msh)
+int exec_builtin(t_msh *msh, t_tokens *tokens)
 {
 	if (msh->data->tokens->type == BLT_ECHO)
-		return (execute_echo(msh->data->tokens->args));
+		return (execute_echo(tokens->args));
 	else if(msh->data->tokens->type == BLT_CD)
 		return (execute_cd(msh, msh->data->tokens->args));
 	else if(msh->data->tokens->type == BLT_PWD)
@@ -95,7 +95,7 @@ int execute_one(t_msh *msh, char **envp)
 	if (msh->data->outfile > 0)
 		dup2(msh->data->outfile, STDOUT_FILENO);
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
-		g_exit = exec_builtin(msh);
+		g_exit = exec_builtin(msh, msh->data->tokens);
 	else
 	{
 		pid = fork();
@@ -151,7 +151,7 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 	cwd = NULL;
 	if (tokens->type >= 101 && tokens->type <= 107)
 	{
-		status = exec_builtin(msh);
+		status = exec_builtin(msh, tokens);
 		ft_free_all(msh);
 		exit(status);
 	}
@@ -186,7 +186,7 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 	return (0);
 }
 
-int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe, entra em fork duplo e causa leaks
+int	execute_multi(t_msh *msh)
 {
 	int		pipefd[2];
 	int		prev_pipe;
@@ -197,68 +197,100 @@ int	execute_multi(t_msh *msh)		// Problema esta aqui quando faz comando com pipe
 	i = 0;
 	prev_pipe = -1;
 	current_token = msh->data->tokens;
-	//setup_heredocs(msh->data->tokens, msh);
+
+	// Abre arquivos apenas no primeiro comando
+	if (open_files(msh, current_token) != 0)
+	{
+		g_exit = 1;
+		return (-1);
+	}
+
 	while (i <= msh->data->pipes)
 	{
-		if (open_files(msh, msh->data->tokens) != 0)
-		{
-			g_exit = 1;
-			return (-1);
-		}
-		if (i < msh->data->pipes && pipe(pipefd) == -1) // Se não for ultimo e der erro no pipe
+		if (i < msh->data->pipes && pipe(pipefd) == -1) // Criando pipe para o próximo comando
 		{
 			perror("pipe: ");
 			exit(1);
 		}
+
 		pid = fork();
 		if (pid == -1)
 		{
 			perror("fork: ");
-			exit (1);
+			exit(1);
 		}
-		else if (pid == 0)
+		else if (pid == 0) // Processo filho
 		{
-			if (prev_pipe != -1) // Caso haja comando anterior, altera o input para o resultado anterior
+			// 🔹 Redirecionamento de Entrada (Se houver infile ou pipe anterior)
+			if (prev_pipe != -1) 
 			{
 				dup2(prev_pipe, STDIN_FILENO);
 				close(prev_pipe);
 			}
-			if (i < msh->data->pipes) // Caso não for o ultimo comando, altera output para guardar no pipe
+			else if (msh->data->infile > 0) // Se houver infile aberto
+			{
+				dup2(msh->data->infile, STDIN_FILENO);
+				close(msh->data->infile);
+			}
+
+			// 🔹 Redirecionamento de Saída (Se houver outfile ou próximo comando no pipeline)
+			if (i < msh->data->pipes && msh->data->outfile == -1) 
 			{
 				dup2(pipefd[1], STDOUT_FILENO);
 				close(pipefd[1]);
 				close(pipefd[0]);
 			}
-			//handle_redirections(current_token);
-			//msh->data->tokens = current_token;
+			else if (msh->data->outfile > 0) // Se houver outfile aberto
+			{
+				dup2(msh->data->outfile, STDOUT_FILENO);
+				close(msh->data->outfile);
+			}
+
+			// Executa o comando
 			execute_cmd(msh, current_token, msh->envp);
-			// Close redirs
-			ft_free_all(msh);
 			exit(1);
 		}
-		else
-			waitpid(pid, NULL, 0);
+
+		// Processo pai
 		if (prev_pipe != -1)
 			close(prev_pipe);
 		if (i < msh->data->pipes)
 		{
-			close(pipefd[1]);
-			prev_pipe = pipefd[0];
+			close(pipefd[1]); // Fecha a escrita do pipe
+			prev_pipe = pipefd[0]; // Mantém a leitura do pipe para o próximo comando
 		}
+		close_files(msh);
+		// Avança para o próximo comando
 		while (current_token && current_token->type != TKN_PIPE)
 			current_token = current_token->next;
 		if (current_token && current_token->type == TKN_PIPE)
 			current_token = current_token->next;
 		if (current_token && current_token->type == TKN_SPACE)
 			current_token = current_token->next;
+		
 		i++;
 	}
+
+	// 🔹 Restaurar entrada e saída padrão após execução dos comandos
+	if (msh->data->infile > 0)
+	{
+		dup2(msh->data->stdin_backup, STDIN_FILENO);
+		close(msh->data->stdin_backup);
+	}
+	if (msh->data->outfile > 0)
+	{
+		dup2(msh->data->stdout_backup, STDOUT_FILENO);
+		close(msh->data->stdout_backup);
+	}
+
 	if (prev_pipe != -1)
 		close(prev_pipe);
 	while (i-- > 0)
 		waitpid(-1, NULL, 0);
+
 	return (0);
 }
+
 
 int execute(t_msh *msh)
 {

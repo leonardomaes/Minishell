@@ -14,40 +14,39 @@
 
 char *find_last_arg(t_tokens *temp)
 {
-    t_tokens *tmp = temp;
-    char *file = NULL;
-    char *joined_str = NULL;
-    char *temp_str = NULL;
+	t_tokens *tmp = temp;
+	char *file = NULL;
+	char *joined_str = NULL;
+	char *temp_str = NULL;
 
-    while (tmp && tmp->next && tmp->next->type != TKN_PIPE && tmp->next->type != TKN_OUTREDIR && tmp->next->type != TKN_INREDIR && tmp->next->type != TKN_APPEND)
-    {
-        tmp = tmp->next;
-        if (tmp->type == ARGUMENT || tmp->type == DBL_QUOTES || tmp->type == SNG_QUOTES)
-        {
-            if (tmp->type == DBL_QUOTES)
-                temp_str = ft_chartrim(&tmp->name, '"');
-            else if (tmp->type == SNG_QUOTES)
-                temp_str = ft_chartrim(&tmp->name, '\'');
-            else
-                temp_str = ft_strdup(tmp->name);
+	while (tmp && tmp->next && tmp->next->type != TKN_PIPE && tmp->next->type != TKN_OUTREDIR && tmp->next->type != TKN_INREDIR && tmp->next->type != TKN_APPEND)
+	{
+		tmp = tmp->next;
+		if (tmp->type == ARGUMENT || tmp->type == DBL_QUOTES || tmp->type == SNG_QUOTES)
+		{
+			if (tmp->type == DBL_QUOTES)
+				temp_str = ft_chartrim(&tmp->name, '"');
+			else if (tmp->type == SNG_QUOTES)
+				temp_str = ft_chartrim(&tmp->name, '\'');
+			else
+				temp_str = ft_strdup(tmp->name);
 
-            if (!file) // Primeiro argumento
-                file = temp_str;
-            else
-            {
-                joined_str = ft_strjoin(file, temp_str); // Concatena strings
-                free(file);
-                free(temp_str);
-                file = joined_str;
-            }
+			if (!file) // Primeiro argumento
+				file = temp_str;
+			else
+			{
+				joined_str = ft_strjoin(file, temp_str); // Concatena strings
+				free(file);
+				free(temp_str);
+				file = joined_str;
+			}
 
-            if (!tmp->next || tmp->next->type == TKN_SPACE) // Se próximo for espaço, retorna
-                return (file);
-        }
-    }
-    return (file);
+			if (!tmp->next || tmp->next->type == TKN_SPACE) // Se próximo for espaço, retorna
+				return (file);
+		}
+	}
+	return (file);
 }
-
 
  // Adicionar condição para fazer strjoin na sequencia de strings até achar o espaço
 
@@ -139,6 +138,8 @@ int open_files(t_msh *msh, t_tokens *token)
 	int error = 0;
 
 	temp = token;
+	msh->data->infile = -1;
+	msh->data->outfile = -1;
 	msh->data->stdin_backup = dup(STDIN_FILENO);
 	msh->data->stdout_backup = dup(STDOUT_FILENO);
 	while (temp != NULL && temp->type != TKN_PIPE) // Percorre todos os tokens

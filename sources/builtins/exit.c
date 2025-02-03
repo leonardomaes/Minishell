@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/28 00:58:08 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/03 00:36:39 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,8 @@ long long	ft_safe_atol(const char *str, int *error)
 	}
 	while (*str >= '0' && *str <= '9')
 	{
-		if (result > LONG_MAX - (*str - '0') / 10) // Avoid long long overflow
+		if ((result > LONG_MAX / 10) 
+			|| (result == LONG_MAX / 10 && (*str - '0') > LONG_MAX % 10)) // Avoid long long overflow
 		{
 			*error = 1;
 			return (0);
@@ -82,10 +83,22 @@ long long	ft_safe_atol(const char *str, int *error)
 	return (sign * result);
 }
 
+int	get_exit_code(long long n)
+{
+	unsigned char	result;
+
+	if (n < 0)
+		result = 256 - ((-n) % 256);
+	else
+		result = n % 256;
+	g_exit = result;
+	return (n % 256);
+}
+
 int	execute_exit(t_msh *msh, char **args)
 {
-	int	exit_status;
-	int	error;
+	long long	exit_status;
+	int			error;
 
 	ft_putstr_fd("exit\n", 1); //prints exit as an overall feature
 	if (!args[1]) //if there's no argument ir cleans data and exits with last status nown (g_exit)
@@ -117,7 +130,7 @@ int	execute_exit(t_msh *msh, char **args)
 		return (1);
 	}
 	ft_free_all(msh);
-	exit((int)(exit_status % 256)); //enshure exit status is 0-255; 
+	exit(get_exit_code(exit_status)); //enshure exit status is 0-255; 
 }
 
 /*

@@ -247,15 +247,15 @@ char **ft_split_args(const char *s)
 int get_delimiter(char *data_args)
 {
 	if (get_type(data_args, 1) == TKN_PIPE)
-		return (1);
+		return (TKN_PIPE);
 	else if(get_type(data_args, 1) == TKN_INREDIR)
-		return (1);
+		return (TKN_INREDIR);
 	else if(get_type(data_args, 1) == TKN_OUTREDIR)
-		return (1);
+		return (TKN_OUTREDIR);
 	else if(get_type(data_args, 1) == TKN_APPEND)
-		return (1);
+		return (TKN_APPEND);
 	else if (get_meta_type(data_args, 1) == TKN_HEREDOC)
-		return (1);
+		return (TKN_HEREDOC);
 	return (0);
 }
 
@@ -268,8 +268,17 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 	//count the number of args until we get to a pipe or end
 	j = i;
 	k = 0;
-	while (data_args[j] && get_delimiter(data_args[j]) == 0)
+	while (data_args[j] && data_args[j][0] != '|') // Ciclo para calcular alocação
 	{
+		if (get_delimiter(data_args[j]) != 0) // Caso seja um redirect
+		{
+			j++;
+			if (data_args[j][0] == ' ') // Avança o primeiro espaço se tiver um
+				j++;
+			while (data_args[j] && data_args[j][0] != ' ' && data_args[j][0] != '|') // Copia até achar um espaço ou pipe
+				j++;
+			continue;
+		}
 		if (data_args[j][0] != ' ')
 			k++;
 		j++;
@@ -286,6 +295,15 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 	k = 0;
 	while (data_args[i] && i < j)
 	{
+		if (get_delimiter(data_args[i]) != 0)
+		{
+			i++;
+			if (data_args[i][0] == ' ')
+				i++;
+			while (data_args[i] && data_args[i][0] != ' ' && data_args[i][0] != '|')
+				i++;
+			continue;
+		}
 		//printf("-%s\n", data_args[i]);
 		if (data_args[i][0] == '"')
 			args[k++] = ft_chartrim(&data_args[i], '"');

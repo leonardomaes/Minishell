@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/02 19:33:10 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/03 18:11:58 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ int	execute_echo(char **args)
 	while (args[i] && get_type(args[i], 1) != TKN_PIPE)
 	{
 		printf("%s", args[i]);
-		//if (args[i + 1])
-		//	printf(" ");
+		if (args[i + 1])
+			printf(" ");
 		i++;
 	}
 	if (!no_newline)
