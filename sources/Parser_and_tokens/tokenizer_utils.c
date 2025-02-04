@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:20:10 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/15 20:20:15 by lmaes            ###   ########.fr       */
+/*   Updated: 2025/02/04 00:04:36 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,10 @@ int handle_environ(const char *s, char *str, int *l)	// Expand env vars
 		ft_strlcpy(str, env_value, len + 1);
 		free(env_value);
 		(*l)++;	// Avançar '?'
+		//append non delimited characters to the same token (e.g. echo $?HELLO)
+		while (s[*l] && !ft_isspace(s[*l]) && !ft_isdelimiter(s[*l]))
+			str[len++] = s[(*l)++];
+		str[len] = '\0';
 		return (len);
 	}
 	while (s[*l] && (ft_isalnum(s[*l]) || s[*l] == '_'))
