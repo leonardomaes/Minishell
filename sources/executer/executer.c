@@ -108,13 +108,13 @@ int execute_one(t_msh *msh, char **envp)
 				comm = ft_strjoin(cwd, msh->data->tokens->name + 1);
 			}
 			else
-				comm = ft_get_command(msh->data->tokens->name, msh->cmd_paths);
+				comm = ft_get_command(msh->data->tokens->args[0], msh->cmd_paths);
 			if (!comm)
 			{
 				// perror("bash: ");
 				//printf("bash: %s: command not found\n", msh->data->tokens->name);
-				ft_putstr_fd(" bash: ", 2);
-				ft_putstr_fd(msh->data->tokens->name, 2);
+				//ft_putstr_fd(" bash: ", 2);
+				//ft_putstr_fd(msh->data->tokens->args[0], 2);
 				ft_putstr_fd(" command not found\n", 2);
 				//free(cwd);
 				free(comm);
@@ -164,12 +164,12 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 			free(cwd);
 		}
 		else
-			comm = ft_get_command(tokens->name, msh->cmd_paths);
+			comm = ft_get_command(tokens->args[0], msh->cmd_paths);
 		if (!comm)
 		{
 			//printf("bash: %s: command not found\n", tokens->name);
 			ft_putstr_fd(" bash: ", 2);
-			ft_putstr_fd(msh->data->tokens->name, 2);
+			ft_putstr_fd(tokens->name, 2);
 			ft_putstr_fd(" command not found\n", 2);
 			ft_free_all(msh);
 			exit(127);
@@ -183,6 +183,7 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 		}
 		free(comm);
 	}
+	exit(1);
 	return (0);
 }
 
@@ -190,6 +191,7 @@ int	execute_multi(t_msh *msh)
 {
 	int		pipefd[2];
 	int		prev_pipe;
+	int		status;
 	int		i;
 	pid_t 	pid;
 	t_tokens *current_token;
@@ -199,12 +201,6 @@ int	execute_multi(t_msh *msh)
 	current_token = msh->data->tokens;
 
 	// Abre arquivos apenas no primeiro comando
-	if (open_files(msh, current_token) != 0)
-	{
-		g_exit = 1;
-		return (-1);
-	}
-
 	while (i <= msh->data->pipes)
 	{
 		if (i < msh->data->pipes && pipe(pipefd) == -1) // Criando pipe para o próximo comando
@@ -212,7 +208,6 @@ int	execute_multi(t_msh *msh)
 			perror("pipe: ");
 			exit(1);
 		}
-
 		pid = fork();
 		if (pid == -1)
 		{
@@ -221,36 +216,39 @@ int	execute_multi(t_msh *msh)
 		}
 		else if (pid == 0) // Processo filho
 		{
-			// 🔹 Redirecionamento de Entrada (Se houver infile ou pipe anterior)
+			//printf("-%s\n", current_token->name);
+			if (open_files(msh, current_token) != 0)
+			{
+				g_exit = 1;
+				return (-1);
+			}
+			// Redirecionamento de Entrada (Se houver infile ou pipe anterior)
 			if (prev_pipe != -1) 
 			{
 				dup2(prev_pipe, STDIN_FILENO);
 				close(prev_pipe);
 			}
-			else if (msh->data->infile > 0) // Se houver infile aberto
+			if (msh->data->infile > 0) // Se houver infile aberto
 			{
 				dup2(msh->data->infile, STDIN_FILENO);
 				close(msh->data->infile);
 			}
-
-			// 🔹 Redirecionamento de Saída (Se houver outfile ou próximo comando no pipeline)
+			// Redirecionamento de Saída (Se houver outfile ou próximo comando no pipeline)
 			if (i < msh->data->pipes && msh->data->outfile == -1) 
 			{
 				dup2(pipefd[1], STDOUT_FILENO);
 				close(pipefd[1]);
 				close(pipefd[0]);
 			}
-			else if (msh->data->outfile > 0) // Se houver outfile aberto
+			if (msh->data->outfile > 0) // Se houver outfile aberto
 			{
 				dup2(msh->data->outfile, STDOUT_FILENO);
 				close(msh->data->outfile);
 			}
-
 			// Executa o comando
 			execute_cmd(msh, current_token, msh->envp);
 			exit(1);
 		}
-
 		// Processo pai
 		if (prev_pipe != -1)
 			close(prev_pipe);
@@ -267,11 +265,8 @@ int	execute_multi(t_msh *msh)
 			current_token = current_token->next;
 		if (current_token && current_token->type == TKN_SPACE)
 			current_token = current_token->next;
-		
 		i++;
 	}
-
-	// 🔹 Restaurar entrada e saída padrão após execução dos comandos
 	if (msh->data->infile > 0)
 	{
 		dup2(msh->data->stdin_backup, STDIN_FILENO);
@@ -286,8 +281,9 @@ int	execute_multi(t_msh *msh)
 	if (prev_pipe != -1)
 		close(prev_pipe);
 	while (i-- > 0)
-		waitpid(-1, NULL, 0);
-
+		waitpid(-1, &status, 0);
+	if (WEXITSTATUS(status))
+		g_exit = WEXITSTATUS(status);
 	return (0);
 }
 

@@ -111,7 +111,13 @@ int	syntax_check(t_data *data)
 
 int	ft_init_data(char *line, t_msh *msh)
 {
-	msh->data->args = ft_split_args(line);					// Faz split em vetores
+	/* char **temp;
+	temp = ft_split_args(line);					// Faz split em vetores
+	msh->data->args = ft_merge_args(temp);
+	ft_print_splitargs(temp);
+	ft_print_splitargs(msh->data->args);
+	free_args(temp); */
+	msh->data->args = ft_split_args(line);
 	if (!msh->data->args || !msh->data->args[0] || *msh->data->args[0] == '\0')
 		return (1);
 	msh->data->argc = ft_countargs(msh->data->args);		// Lê a quantidade de args

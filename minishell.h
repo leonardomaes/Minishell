@@ -131,18 +131,25 @@ void		ft_free_all(t_msh *msh);
 void		ft_free_data(t_msh	*msh);
 void		free_array(char **str, unsigned int n);
 void		free_ptr(void **ptr);
+void		free_args(char **args);
 
 /****** PARSER AND TOKENS ******/
 /* TOKENIZER */
-int			count_args(const char *s);
-int			*calculate_lengths(const char *s, int words);
+int			get_delimiter(char *data_args);
 char		**alloc_args(int words, int *len);
-char		**ft_split_args(const char *s);
 char		**get_args(char **data_args, int i, t_msh *msh);
 void		split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
 int			get_delimiter(char *data_args);
 int			ft_isdelimiter(char c);
+int			ft_isredirection(char c);
+int			ft_isdelimiter(char c);
 
+
+/* SPLIT TOKENS */
+char		**ft_merge_args(char **args);
+int			count_args(const char *s);
+int			*calculate_lengths(const char *s, int words);
+char		**ft_split_args(const char *s);
 
 /* TOKEN UTILS */
 int			double_quote_lenght(const char *s, int *i);

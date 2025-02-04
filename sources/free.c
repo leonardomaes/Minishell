@@ -82,6 +82,16 @@ void ft_free_data(t_msh	*msh)
 	}
 }
 
+void	free_args(char **args)
+{
+	int	i;
+
+	i = 0;
+	while (args[i])
+		free(args[i++]);
+	free(args);
+}
+
 void	free_array(char **str, unsigned int n)
 {
 	size_t	i;

@@ -22,228 +22,39 @@ int	ft_isredirection(char c)
 	return (c == '<' || c == '>');
 }
 
-int	count_args(const char *s) // Conta quantidade de argumentos
-{
-	int	i;
-	int	word;
-
-	i = 0;
-	word = 0;
-	while (s[i])
-	{
-		/* while (s[i] && ft_isspace(s[i]))
-			i++; */
-		if (s[i] == '\0')
-			break;
-		word++;
-		if (ft_isspace(s[i]) && (s[i-1] == '|' || word == 2 )) // Trocar para identificar após primeiro argumento
-		{
-			while (ft_isspace(s[i]))
-				i++;
-		}
-		if (ft_isspace(s[i]))
-		{
-			//printf("-%c\n", s[i-1]);
-			while (ft_isspace(s[i]))
-				i++;
-		}
-		else if (s[i] == '"')
-		{
-			i++;
-			while (s[i] && s[i] != '"')
-				i++;
-			if (s[i] == '"')
-				i++;
-		}
-		else if (s[i] == '\'')
-		{
-			i++;
-			while (s[i] && s[i] != '\'')
-				i++;
-			if (s[i] == '\'')
-				i++;
-		}
-		else if (s[i] == '$' && !ft_isdelimiter(s[i+1]) && !ft_isspace(s[i+1])) // Dolar
-		{
-			i++;
-			if (s[i] == '?')
-				i++;
-			else if (ft_isdelimiter(s[i]) == 0)
-			{
-				while (s[i] && (ft_isalnum(s[i]) || s[i] == '_'))
-					i++;
-			}
-		}
-		else if (ft_isredirection(s[i]))
-		{
-			while (ft_isredirection(s[i]))
-				i++;
-		}
-		else
-		{
-			while (!ft_isspace(s[i]) && s[i] && !ft_isdelimiter(s[i]))
-				i++;
-		}
-	}
-	return (word);
-}
-
-int	*calculate_lengths(const char *s, int words) // Calcula tamanho dos argumentos para alocar
-{
-	int *len;
-	int i;
-	int word;
-
-	i = 0;
-	word = 0;
-	len = (int *)malloc(sizeof(int) * words);
-	if (!len)
-		return NULL;
-	while (s[i] && word < words)
-	{
-		len[word] = 0;
-		/* while (s[i] && ft_isspace(s[i]))
-			i++; */
-		if (s[i] == '\0')
-			break;
-		if (ft_isspace(s[i]) && (s[i-1] == '|' || word == 1))
-		{
-			while (ft_isspace(s[i]))
-				i++;
-		}
-		if (ft_isspace(s[i]))
-		{
-			//printf("-%c\n", s[i-1]);
-			len[word] = 1;
-			while (ft_isspace(s[i]))
-				i++;
-		}
-		else if (s[i] == '$' && !ft_isdelimiter(s[i+1]) && !ft_isspace(s[i+1])) // Dolar
-			len[word] = environ_lenght(s, &i);
-		else if (s[i] == '\'')
-			len[word] = single_quote_lenght(s, &i);
-		else if (s[i] == '"')
-			len[word] = double_quote_lenght(s, &i);
-		else if (ft_isredirection(s[i]))
-		{
-			while (ft_isredirection(s[i]))
-			{
-				len[word]++;
-				i++;
-			}
-		}
-		else
-		{
-			while (s[i] && !ft_isspace(s[i]) && !ft_isdelimiter(s[i]))
-			{
-				len[word]++;
-				i++;
-			}
-			/* if (ft_isspace(s[i]))
-			{
-				len[word]++;
-				i++;
-			} */
-		}
-		word++;
-	}
-	return (len);
-}
-
-char **alloc_args(int words, int *len) // Allocations for array of strings
-{
-	char **str;
-	int i;
-	
-	str = (char **)malloc(sizeof(char *) * (words + 1));
-	i = 0;
-	while (i < words)
-	{
-		str[i] = (char *)malloc(sizeof(char) * (len[i] + 1));
-		if (!str[i])
-		{
-			free_array(str, i);
-			free(len);
-			return (NULL);
-		}
-		i++;
-	}
-	str[i] = NULL;
-	return (str);
-}
-
 //printf("1->%s\n", s + 2);	// String a partir da posição
 //printf("2->%c\n", *s + 2);	// Caractere + 2 ASCII
 //printf("3->%s\n", &s[2]);	// String a partir da posição
 //printf("4->%c\n", s[2]);	// Caractere da posição
 
-char **ft_split_args(const char *s)
-{
-	char    **str;
-	int     *len;
-	int     words;
-	int     i;
-	int     j;
-	int     l;
 
-	if (!s)
-		return (NULL);
-	words = count_args(s);
-	len = calculate_lengths(s, words);
-	if (!len)
-		return (NULL);
-	str = alloc_args(words, len);
-	if (!str)
-		return (NULL);
+/* char **ft_merge_args(char **args)
+{
+	char **joined_args;
+	int	i;
+	int	j;
+	int	k;
+
 	i = 0;
-	l = 0;
-	while (s[l])
+	while (args[i]) // Each index is a arg
 	{
-		//printf("%c-", s[l]);
-		j = 0;
-		/* while (s[l] && ft_isspace(s[l]))
-			l++; */
-		if (s[l] == '\0')
-			break;
-		if (ft_isspace(s[l]) && (s[l-1] == '|' || i == 1))
-		{
-			while (ft_isspace(s[l]))
-				l++;
-			//i++;
-		}
-		if (ft_isspace(s[l])) // leak aqui
-		{
-			//printf("-%c\n", s[l-1]);
-			str[i][j++] = s[l++];
-			str[i][j] = '\0';
-			while (ft_isspace(s[l]))
-				l++;
-		}
-		else if (s[l] == '"')
-			j = handle_double_quote(s, str[i], &l);
-		else if (s[l] == '\'')
-			j = handle_single_quote(s, str[i], &l);
-		else if (s[l] == '$' && !ft_isdelimiter(s[l+1]) && !ft_isspace(s[l+1]))
-			j = handle_environ(s, str[i], &l);
-		else if (s[l] && ft_isredirection(s[l]))
-		{
-			while (ft_isredirection(s[l]))
-				str[i][j++] = s[l++];
-			str[i][j] = '\0';
-		}
-		else
-		{
-			while (s[l] && !ft_isspace(s[l]) && !ft_isdelimiter(s[l]))
-				str[i][j++] = s[l++];
-			str[i][j] = '\0';
-		}
+		if (args[i][0] == ' ' || (args[i+1] == NULL && args[i][0] != ' '))// Each j is a joined arg
+			j++;
 		i++;
 	}
-	str[i] = NULL;
-	free(len);
-	return (str);
-}
-
+	new_args = (char **)malloc(sizeof(char *) * (j + 1));
+	i = 0;
+	while (i < j)
+	{
+		k = 0;
+		while (args[i][0] != ' ')
+			k += ft_strlen(args[i++]);
+		i++;
+		//joined_args[i] = (char *)malloc(sizeof(char) * (ft_strlen(args[j]) + 1))
+	}
+	joined_args[i] = NULL;
+	return(joined_args);
+} */
 int get_delimiter(char *data_args)
 {
 	if (get_type(data_args, 1) == TKN_PIPE)
@@ -258,8 +69,7 @@ int get_delimiter(char *data_args)
 		return (TKN_HEREDOC);
 	return (0);
 }
-
-char	**get_args(char **data_args, int i, t_msh *msh)
+/* char	**get_args(char **data_args, int i, t_msh *msh)
 {
 	int		k;
 	int		j;
@@ -270,16 +80,16 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 	k = 0;
 	while (data_args[j] && data_args[j][0] != '|') // Ciclo para calcular alocação
 	{
-		if (get_delimiter(data_args[j]) != 0) // Caso seja um redirect
+		if (get_delimiter(data_args[j]) != 0) // Caso seja um redirect ou pipe
 		{
 			j++;
-			if (data_args[j][0] == ' ') // Avança o primeiro espaço se tiver um
+			if (data_args[j][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
 				j++;
-			while (data_args[j] && data_args[j][0] != ' ' && data_args[j][0] != '|') // Copia até achar um espaço ou pipe
+			while (data_args[j] && data_args[j][0] != ' ' && data_args[j][0] != '|') // avança o argumento inteiro até o espaço após
 				j++;
 			continue;
 		}
-		if (data_args[j][0] != ' ')
+		if (data_args[j][0] != ' ') // copia se não for espaço
 			k++;
 		j++;
 	}
@@ -295,24 +105,116 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 	k = 0;
 	while (data_args[i] && i < j)
 	{
-		if (get_delimiter(data_args[i]) != 0)
+		if (get_delimiter(data_args[i]) != 0) // Caso seja um redirect ou pipe
 		{
 			i++;
-			if (data_args[i][0] == ' ')
+			if (data_args[i][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
 				i++;
-			while (data_args[i] && data_args[i][0] != ' ' && data_args[i][0] != '|')
+			while (data_args[i] && data_args[i][0] != ' ' && data_args[i][0] != '|') // avança o argumento inteiro até o espaço após
 				i++;
 			continue;
 		}
 		//printf("-%s\n", data_args[i]);
 		if (data_args[i][0] == '"')
-			args[k++] = ft_chartrim(&data_args[i], '"');
+			args[k++] = ft_chartrim(&data_args[i], '"'); // Copia sem aspas duplas
 		else if (data_args[i][0] == '\'')
-			args[k++] = ft_chartrim(&data_args[i], '\'');
+			args[k++] = ft_chartrim(&data_args[i], '\''); // Copia sem aspas simples
 		else if (data_args[i][0] != ' ')
 			args[k++] = ft_strdup(data_args[i]);
 		//free previously allocated memory in case strdup fails
-		/* if (!args[k])
+		if (!args[k-1])
+		{
+			perror("strdup");
+			while (k >= 0)
+				free(args[k--]);
+			free(args);
+			ft_free_all(msh);
+			exit(1);
+		}
+		i++;
+	}
+	args[k] = NULL;
+	return (args);
+} */
+char	**get_args(char **data_args, int i, t_msh *msh)
+{
+	int		k;	// Argumentos merged
+	int		j;	// Qtd args até pipe ou final
+	char	**args;
+	char	*merged;
+	char	*temp;
+	char	*next_arg;
+
+	//count the number of args until we get to a pipe or end
+	j = i;
+	k = 0;
+	while (data_args[j] && data_args[j][0] != '|') // Ciclo para calcular alocação
+	{
+		if (get_delimiter(data_args[j]) != 0) // Caso seja um redirect ou pipe
+		{
+			j++;
+			if (data_args[j][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
+				j++;
+			while (data_args[j] && data_args[j][0] != ' ' && data_args[j][0] != '|') // avança o argumento inteiro até o espaço após
+				j++;
+			continue;
+		}
+		if (data_args[j][0] == ' ' || data_args[j+1])
+			k++;
+		j++;
+	}
+	if (k == 0)
+		k++;
+	//allocate space for keeping the args and NULL
+	args = malloc(sizeof(char *) * (k + 1));
+	if (!args)
+	{
+		perror("malloc:");
+		ft_free_all(msh);
+		exit(1);
+	}
+	//copy all tokens
+	k = 0;
+	while (data_args[i] && data_args[i][0] != '|' && i < j)	// Enquanto não chegar no pipe ou no final
+	{
+		if (get_delimiter(data_args[i]) != 0) // Caso seja um redirect ou pipe, apenas avança
+		{
+			i++;
+			if (data_args[i][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
+				i++;
+			while (data_args[i] && data_args[i][0] != ' ' && data_args[i][0] != '|') // avança o argumento inteiro até o espaço após
+				i++;
+			continue;
+		}
+		else if (data_args[i][0] != ' ')
+		{
+			if (data_args[i][0] == '"')
+				merged = ft_chartrim(&data_args[i], '"');
+			else if (data_args[i][0] == '\'')
+				merged = ft_chartrim(&data_args[i], '\'');
+			else
+				merged = ft_strdup(data_args[i]);
+			i++;
+			while (data_args[i] && data_args[i][0] != ' ')
+			{
+				if (data_args[i][0] == '"')
+					next_arg = ft_chartrim(&data_args[i], '"');
+				else if (data_args[i][0] == '\'')
+					next_arg = ft_chartrim(&data_args[i], '\'');
+				else
+					next_arg = ft_strdup(data_args[i]);
+				temp = merged;
+				merged = ft_strjoin(merged, next_arg);
+				free(temp);
+				free(next_arg);
+				i++;
+			}
+			args[k++] = merged;
+		}
+		else
+			i++;
+		//free previously allocated memory in case strdup fails
+		/* if (!args[k])	//Alterar para k-1
 		{
 			perror("strdup");
 			while (k >= 0)
@@ -321,7 +223,7 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 			ft_free_all(msh);
 			exit(1);
 		} */
-		i++;
+		// i++;
 	}
 	args[k] = NULL;
 	return (args);
@@ -371,10 +273,14 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 				*token = NULL;
 				return ;
 			}
+			if (msh->data->args[i + 1][0] == ' ')
+				i++;
 			if (msh->data->args[i+1][0] == '"')
 				temp->args[0] = ft_chartrim(&msh->data->args[i + 1], '"'); //store the delimiter like 'EOF'
-			else
+			else if (msh->data->args[i+1][0] == '\'')
 				temp->args[0] = ft_chartrim(&msh->data->args[i + 1], '\'');
+			else
+				temp->args[0] = ft_strdup(msh->data->args[i+1]);
 			temp->args[1] = NULL;
 			//i++;  // Skip the delimiter in the main array
 		}//if we are at the start of a command or after a pipe get all args

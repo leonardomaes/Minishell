@@ -16,9 +16,10 @@ void	ft_print_splitargs(char **args)
 {
 	int i;
 	i = 0;
-	printf("\n <-CMD PATHS->\n");
+	printf("\n <-ARGS->\n");
 	while (args[i])
-		printf("%s<\n", args[i++]);
+		printf("%s-", args[i++]);
+	printf("\n");
 }
 
 void	ft_print_params(t_msh *msh)
