@@ -142,7 +142,7 @@ int open_files(t_msh *msh, t_tokens *token)
 	msh->data->outfile = -1;
 	msh->data->stdin_backup = dup(STDIN_FILENO);
 	msh->data->stdout_backup = dup(STDOUT_FILENO);
-	while (temp != NULL && temp->type != TKN_PIPE) // Percorre todos os tokens
+	while (temp->next != NULL && temp->type != TKN_PIPE) // Percorre todos os tokens
 	{
 		//printf("-%s\n", temp->name);
 		if (temp->type == TKN_APPEND)

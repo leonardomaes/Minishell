@@ -115,7 +115,7 @@ void		ft_init_shell(t_msh **msh, char **envp);
 
 /* READLINE */
 int			ft_readline(t_msh *msh);
-int			syntax_check(t_data *data);
+int			syntax_check(t_msh *msh, t_data *data);
 int			ft_countargs(char **args);
 char		*ft_prompt();
 
@@ -135,14 +135,13 @@ void		free_args(char **args);
 
 /****** PARSER AND TOKENS ******/
 /* TOKENIZER */
-int			get_delimiter(char *data_args);
 char		**alloc_args(int words, int *len);
 char		**get_args(char **data_args, int i, t_msh *msh);
 void		split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
-int			get_delimiter(char *data_args);
 int			ft_isdelimiter(char c);
 int			ft_isredirection(char c);
 int			ft_isdelimiter(char c);
+int			get_delimiter(t_msh *msh, char *data_args);
 
 
 /* SPLIT TOKENS */
@@ -162,8 +161,8 @@ char		*ft_chartrim(char **s, char set);
 
 /* TOKEN TYPE */
 int			get_builtin_type(char *name);
-int			get_meta_type(char *name, int i);
-int			get_type(char *name, int i);
+int			get_meta_type(t_msh *msh, char *name, int i);
+int			get_type(t_msh *msh, char *name, int i);
 
 /* REDIRECTIONS */
 void		handle_redirs(t_msh *msh, int i, t_tokens *temp);
@@ -191,7 +190,7 @@ int			change_dir(const char *path, t_msh *msh);
 int			execute_cd(t_msh *msh, char **args);
 
 /* BUILTINS | ECHO */
-int			execute_echo(char **args);
+int			execute_echo(t_msh *msh, char **args);
 
 /* BUILTINS | ENV */
 int			execute_env(char **envp);

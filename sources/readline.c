@@ -43,7 +43,7 @@ int	get_redir(t_tokens *temp)
 	return (0);
 }
 
-int syntax_redirs(t_tokens *tokens)
+int syntax_redirs(t_msh *msh, t_tokens *tokens)
 {
 	t_tokens	*temp;
 
@@ -62,7 +62,7 @@ int syntax_redirs(t_tokens *tokens)
 		g_exit = 2;
 		return (1);
 	}
-	if (get_delimiter(temp->next->name) != 0) // Arrumar esta verificação
+	if (get_delimiter(msh, temp->next->name) != 0) // Arrumar esta verificação
 	{
 		printf("bash: syntax error near unexpected token '%s'\n", temp->next->name);
 		g_exit = 2;
@@ -88,7 +88,7 @@ int	syntax_pipes(t_tokens *tokens)
 	return (0);
 }
 
-int	syntax_check(t_data *data)
+int	syntax_check(t_msh *msh, t_data *data)
 {
 	if (data->tokens->type == TKN_PIPE)
 	{
@@ -104,7 +104,7 @@ int	syntax_check(t_data *data)
 	}
 	if (syntax_pipes(data->tokens) != 0)
 		return (g_exit = 2, 1);
-	if (syntax_redirs(data->tokens) != 0)
+	if (syntax_redirs(msh, data->tokens) != 0)
 		return (g_exit = 2, 1);
 	return (0);
 }
@@ -155,7 +155,7 @@ int	ft_readline(t_msh *msh)
 	split_tokens(msh, &msh->data->tokens, NULL, i);		// Passa os parametros para structs de tokens
 	// Fazer o syntax tentar abrir fd dos redirs talvez
 	//ft_print_tokens(msh->data->tokens); 	// Remover
-	if (syntax_check(msh->data) != 0)					// Verificaçao de sintaxe
+	if (syntax_check(msh, msh->data) != 0)					// Verificaçao de sintaxe
 		return (ft_free_data(msh), free(line), 1); // Erro aqui quando return == 1, ocorre varios leaks
 	//ft_print_params(msh); 	// Remover
 	//ft_print_tokens(msh->data->tokens); 	// Remover

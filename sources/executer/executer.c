@@ -14,20 +14,20 @@
 
 int exec_builtin(t_msh *msh, t_tokens *tokens)
 {
-	if (msh->data->tokens->type == BLT_ECHO)
-		return (execute_echo(tokens->args));
-	else if(msh->data->tokens->type == BLT_CD)
-		return (execute_cd(msh, msh->data->tokens->args));
-	else if(msh->data->tokens->type == BLT_PWD)
+	if (tokens->type == BLT_ECHO)
+		return (execute_echo(msh, tokens->args));
+	else if(tokens->type == BLT_CD)
+		return (execute_cd(msh, tokens->args));
+	else if(tokens->type == BLT_PWD)
 		return (execute_pwd());
-	else if(msh->data->tokens->type == BLT_EXPORT)
-		return (execute_export(msh, msh->data->tokens->args));
-	else if(msh->data->tokens->type == BLT_UNSET)
-		return (execute_unset(msh, msh->data->tokens->args));
-	else if(msh->data->tokens->type == BLT_ENV)
+	else if(tokens->type == BLT_EXPORT)
+		return (execute_export(msh, tokens->args));
+	else if(tokens->type == BLT_UNSET)
+		return (execute_unset(msh, tokens->args));
+	else if(tokens->type == BLT_ENV)
 		return (execute_env(msh->envp));
-	else if(msh->data->tokens->type == BLT_EXIT)
-		return (execute_exit(msh, msh->data->tokens->args));
+	else if(tokens->type == BLT_EXIT)
+		return (execute_exit(msh, tokens->args));
 	return (1);
 }
 
@@ -99,7 +99,12 @@ int execute_one(t_msh *msh, char **envp)
 	else
 	{
 		pid = fork();
-		if (pid == 0)
+		if (pid == -1)
+		{
+			g_exit = 1;
+			return (-1);
+		}
+		else if (pid == 0)
 		{
 			handle_redirections(msh->data->tokens);
 			if (msh->data->tokens->type == TKN_BCMD && msh->data->tokens->name[0] == '.')
@@ -174,6 +179,7 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 			ft_free_all(msh);
 			exit(127);
 		}
+		printf("teste");
 		if (execve(comm, tokens->args, envp) == -1)
 		{
 			perror("execve:");
@@ -206,12 +212,14 @@ int	execute_multi(t_msh *msh)
 		if (i < msh->data->pipes && pipe(pipefd) == -1) // Criando pipe para o próximo comando
 		{
 			perror("pipe: ");
+			ft_free_all(msh);
 			exit(1);
 		}
 		pid = fork();
 		if (pid == -1)
 		{
 			perror("fork: ");
+			ft_free_all(msh);
 			exit(1);
 		}
 		else if (pid == 0) // Processo filho
@@ -220,7 +228,8 @@ int	execute_multi(t_msh *msh)
 			if (open_files(msh, current_token) != 0)
 			{
 				g_exit = 1;
-				return (-1);
+				ft_free_all(msh);
+				exit(g_exit);
 			}
 			// Redirecionamento de Entrada (Se houver infile ou pipe anterior)
 			if (prev_pipe != -1) 
@@ -233,17 +242,17 @@ int	execute_multi(t_msh *msh)
 				dup2(msh->data->infile, STDIN_FILENO);
 				close(msh->data->infile);
 			}
+			if (msh->data->outfile > 0) // Se houver outfile aberto
+			{
+				dup2(msh->data->outfile, STDOUT_FILENO);
+				close(msh->data->outfile);
+			}
 			// Redirecionamento de Saída (Se houver outfile ou próximo comando no pipeline)
 			if (i < msh->data->pipes && msh->data->outfile == -1) 
 			{
 				dup2(pipefd[1], STDOUT_FILENO);
 				close(pipefd[1]);
 				close(pipefd[0]);
-			}
-			if (msh->data->outfile > 0) // Se houver outfile aberto
-			{
-				dup2(msh->data->outfile, STDOUT_FILENO);
-				close(msh->data->outfile);
 			}
 			// Executa o comando
 			execute_cmd(msh, current_token, msh->envp);
@@ -267,6 +276,9 @@ int	execute_multi(t_msh *msh)
 			current_token = current_token->next;
 		i++;
 	}
+	waitpid(pid, &status, 0);
+	if (WEXITSTATUS(status))
+		g_exit = WEXITSTATUS(status);
 	if (msh->data->infile > 0)
 	{
 		dup2(msh->data->stdin_backup, STDIN_FILENO);
@@ -277,13 +289,8 @@ int	execute_multi(t_msh *msh)
 		dup2(msh->data->stdout_backup, STDOUT_FILENO);
 		close(msh->data->stdout_backup);
 	}
-
 	if (prev_pipe != -1)
 		close(prev_pipe);
-	while (i-- > 0)
-		waitpid(-1, &status, 0);
-	if (WEXITSTATUS(status))
-		g_exit = WEXITSTATUS(status);
 	return (0);
 }
 

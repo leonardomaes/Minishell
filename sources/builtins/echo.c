@@ -19,20 +19,19 @@ Also check with him what would be the best argument for this funtions, array of
 strings or give it direct access to the struct. 
 */
 
-int	execute_echo(char **args)
+int	execute_echo(t_msh *msh, char **args)
 {
 	int	no_newline;
 	int	i;
 
 	no_newline = 0;
 	i = 1; //assuming that echo is passed as an argument it starts printing on arg 1
-
 	if (args[1] && (strcmp(args[i], "-n") == 0))
 	{
 		no_newline = 1;
 		i++;
 	}
-	while (args[i] && get_type(args[i], 1) != TKN_PIPE)
+	while (args[i] && get_type(msh, args[i], 1) != TKN_PIPE)
 	{
 		printf("%s", args[i]);
 		if (args[i + 1])

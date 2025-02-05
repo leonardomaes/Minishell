@@ -55,17 +55,17 @@ int	ft_isredirection(char c)
 	joined_args[i] = NULL;
 	return(joined_args);
 } */
-int get_delimiter(char *data_args)
+int get_delimiter(t_msh *msh, char *data_args)
 {
-	if (get_type(data_args, 1) == TKN_PIPE)
+	if (get_type(msh, data_args, 1) == TKN_PIPE)
 		return (TKN_PIPE);
-	else if(get_type(data_args, 1) == TKN_INREDIR)
+	else if(get_type(msh, data_args, 1) == TKN_INREDIR)
 		return (TKN_INREDIR);
-	else if(get_type(data_args, 1) == TKN_OUTREDIR)
+	else if(get_type(msh, data_args, 1) == TKN_OUTREDIR)
 		return (TKN_OUTREDIR);
-	else if(get_type(data_args, 1) == TKN_APPEND)
+	else if(get_type(msh, data_args, 1) == TKN_APPEND)
 		return (TKN_APPEND);
-	else if (get_meta_type(data_args, 1) == TKN_HEREDOC)
+	else if (get_meta_type(msh, data_args, 1) == TKN_HEREDOC)
 		return (TKN_HEREDOC);
 	return (0);
 }
@@ -150,7 +150,7 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 	k = 0;
 	while (data_args[j] && data_args[j][0] != '|') // Ciclo para calcular alocação
 	{
-		if (get_delimiter(data_args[j]) != 0) // Caso seja um redirect ou pipe
+		if (get_delimiter(msh, data_args[j]) != 0) // Caso seja um redirect ou pipe
 		{
 			j++;
 			if (data_args[j][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
@@ -177,7 +177,7 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 	k = 0;
 	while (data_args[i] && data_args[i][0] != '|' && i < j)	// Enquanto não chegar no pipe ou no final
 	{
-		if (get_delimiter(data_args[i]) != 0) // Caso seja um redirect ou pipe, apenas avança
+		if (get_delimiter(msh, data_args[i]) != 0) // Caso seja um redirect ou pipe, apenas avança
 		{
 			i++;
 			if (data_args[i][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
@@ -247,9 +247,9 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 		temp = *token;
 		temp->name = msh->data->args[i];
 		if (prev == NULL || prev->type == TKN_PIPE)
-			temp->type = get_type(msh->data->args[i], i);
+			temp->type = get_type(msh, msh->data->args[i], i);
 		else // Somente entra em get_type se for primeiro argumento
-			temp->type = get_meta_type(msh->data->args[i], 1);
+			temp->type = get_meta_type(msh, msh->data->args[i], 1);
 		// Handle heredoc case
 		if (temp->type == TKN_PIPE) //Se for pipe incrementa soma
 			msh->data->pipes++;

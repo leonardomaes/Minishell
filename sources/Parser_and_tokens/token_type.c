@@ -32,7 +32,7 @@ int	get_builtin_type(char *name)
 		return (0);
 }
 
-int get_meta_type(char *name, int i)
+int get_meta_type(t_msh *msh, char *name, int i)
 {
 	if (name[0] == '"')
 		return (DBL_QUOTES);
@@ -50,7 +50,7 @@ int get_meta_type(char *name, int i)
 		return (TKN_OUTREDIR);
 	else if (name[0] == '<')
 		return (TKN_INREDIR);
-	else if (i == 0)
+	else if (i == 0 || msh->data->args[i-1][0] == '|')	// (i == 0 || args[i-1] == TKN_PIPE)
 		return (TKN_BCMD);
 	else if (name[0] == ' ')
 		return (TKN_SPACE);
@@ -58,12 +58,12 @@ int get_meta_type(char *name, int i)
 		return (ARGUMENT);
 }
 
-int	get_type(char *name, int i)
+int	get_type(t_msh *msh, char *name, int i)
 {
 	if (get_builtin_type(name) != 0) // Check if it is a builtin cmd
 		return (get_builtin_type(name));
-	else if (get_meta_type(name, i) != 0)	// check for metachars
-		return (get_meta_type(name, i));
+	else if (get_meta_type(msh, name, i) != 0)	// check for metachars
+		return (get_meta_type(msh, name, i));
 	else
 		return (1);
 }
