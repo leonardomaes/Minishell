@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   environ.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/25 19:03:46 by lmaes            ###   ########.fr       */
+/*   Updated: 2025/02/06 18:44:31 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,11 @@ char	*ft_get_command(char *cmd, char **path)
 	char	*comm;
 	char	*temp;
 
+	if (cmd[0] == '/')
+	{
+		if(access(cmd, F_OK) == 0)
+			return (ft_strdup(cmd));
+	}
 	while (*path)
 	{
 		temp = ft_strjoin(*path, "/");
