@@ -53,11 +53,16 @@ char	*ft_get_path(char **envp)
 	return (*envp + 5);
 }
 
-char	*ft_get_command(char *cmd, char **path)
+char	*ft_get_command(t_msh *msh, char *cmd, char **path)
 {
 	char	*comm;
 	char	*temp;
 
+	if (cmd[0] == '/')
+	{
+		if(access(cmd, F_OK) == 0)
+			return (ft_strdup(cmd));
+	}
 	while (*path)
 	{
 		temp = ft_strjoin(*path, "/");
@@ -77,6 +82,14 @@ char	*ft_get_command(char *cmd, char **path)
 			return (comm);
 		free(comm);
 		path++;
+	}
+	if (cmd[0] == '/')
+	{
+		ft_putstr_fd("bash: ", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		ft_free_all(msh);
+		exit(127);
 	}
 	return (NULL);
 }

@@ -78,7 +78,9 @@ int execute_one(t_msh *msh, char **envp)
 	char	 *cwd;
 	int		status;
 	pid_t 	pid;
+	struct stat filestat;
 
+	cwd = NULL;
 	//introduced a first pass trought all tokens to handle heredocs (must he taken care first to input redirection)
 	setup_heredocs(msh->data->tokens, msh);
 	//for TKN_HEREDOC alone, just skip
@@ -107,24 +109,53 @@ int execute_one(t_msh *msh, char **envp)
 		else if (pid == 0)
 		{
 			handle_redirections(msh->data->tokens);
-			if (msh->data->tokens->type == TKN_BCMD && msh->data->tokens->name[0] == '.')
+			if (msh->data->tokens->type == TKN_BCMD && (msh->data->tokens->name[0] == '.' && msh->data->tokens->name[1] == '/'))
 			{
 				cwd = getcwd(NULL, 0);
 				comm = ft_strjoin(cwd, msh->data->tokens->name + 1);
 			}
 			else
-				comm = ft_get_command(msh->data->tokens->args[0], msh->cmd_paths);
+				comm = ft_get_command(msh, msh->data->tokens->args[0], msh->cmd_paths);
+			if (stat(comm, &filestat) == 0 && S_ISDIR(filestat.st_mode))
+			{
+				ft_putstr_fd("bash: ", 2);
+				ft_putstr_fd(comm, 2);
+				ft_putstr_fd(": Is a directory\n", 2);
+				free(comm);
+				if (cwd)
+					free(cwd);
+				ft_free_all(msh);
+				exit(126);
+			}
 			if (!comm)
 			{
 				// perror("bash: ");
 				//printf("bash: %s: command not found\n", msh->data->tokens->name);
-				//ft_putstr_fd(" bash: ", 2);
-				//ft_putstr_fd(msh->data->tokens->args[0], 2);
+				ft_putstr_fd("bash: ", 2);
+				ft_putstr_fd(msh->data->tokens->args[0], 2);
 				ft_putstr_fd(" command not found\n", 2);
-				//free(cwd);
+				ft_free_all(msh);
+				exit(127);
+			}
+			if (access(comm, F_OK) == -1)
+			{
+				ft_putstr_fd("bash: ", 2);
+				ft_putstr_fd(comm, 2);
+				ft_putstr_fd(": No such file or directory\n", 2);
+				free(cwd);
 				free(comm);
 				ft_free_all(msh);
 				exit(127);
+			}
+			if (access(comm, X_OK) == -1)
+			{
+				ft_putstr_fd("bash: ", 2);
+				ft_putstr_fd(comm, 2);
+				ft_putstr_fd(": Permission denied\n", 2);
+				free(cwd);
+				free(comm);
+				ft_free_all(msh);
+				exit(126);
 			}
 			//printf("%s\n", comm); // Apagar
 			if (execve(comm, msh->data->tokens->args, envp) == -1)
@@ -133,7 +164,7 @@ int execute_one(t_msh *msh, char **envp)
 				free(cwd);
 				free(comm);
 				ft_free_all(msh);
-				exit(2);
+				exit(126);
 			}
 			free(comm);
 		}
@@ -152,6 +183,7 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 	char *comm;
 	char *cwd;
 	int status;
+	struct stat filestat;
 
 	cwd = NULL;
 	if (tokens->type >= 101 && tokens->type <= 107)
@@ -162,14 +194,24 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 	}
 	else
 	{
-		if (tokens->type == TKN_BCMD && tokens->name[0] == '.')
+		if (tokens->type == TKN_BCMD && (tokens->name[0] == '.' || tokens->name[0] == '/'))
 		{
 			cwd = getcwd(NULL, 0);
 			comm = ft_strjoin(cwd, tokens->name + 1);
-			free(cwd);
+			//free(cwd);
 		}
 		else
-			comm = ft_get_command(tokens->args[0], msh->cmd_paths);
+			comm = ft_get_command(msh, tokens->args[0], msh->cmd_paths);
+		if (stat(comm, &filestat) == 0 && S_ISDIR(filestat.st_mode))
+		{
+			ft_putstr_fd("bash: ", 2);
+			ft_putstr_fd(comm, 2);
+			ft_putstr_fd(": Is a directory\n", 2);
+			free(comm);
+			free(cwd);
+			ft_free_all(msh);
+			exit(126);
+		}
 		if (!comm)
 		{
 			//printf("bash: %s: command not found\n", tokens->name);
@@ -179,13 +221,13 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 			ft_free_all(msh);
 			exit(127);
 		}
-		printf("teste");
 		if (execve(comm, tokens->args, envp) == -1)
 		{
 			perror("execve:");
+			free(cwd);
 			free(comm);
 			ft_free_all(msh);
-			exit(1);
+			exit(126);
 		}
 		free(comm);
 	}

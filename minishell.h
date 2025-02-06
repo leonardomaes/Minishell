@@ -18,6 +18,7 @@
 #include <readline/history.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <dirent.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -55,6 +56,7 @@
 #define TKN_HEREDOC 116
 #define TKN_BCMD 117
 #define TKN_SPACE 118
+#define TKN_DIR 119
 
 //macros for signal modes
 #define SHELL_MODE		1
@@ -123,7 +125,7 @@ char		*ft_prompt();
 char		*expand_env(char **envp, char *name);
 char		*ft_get_path(char **envp);
 char		**ft_get_env(char **envp);
-char		*ft_get_command(char *cmd, char **path);
+char		*ft_get_command(t_msh *msh, char *cmd, char **path);
 
 /* FREE */
 void		ft_free_tokens(t_tokens *tokens);

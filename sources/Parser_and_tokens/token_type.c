@@ -34,6 +34,9 @@ int	get_builtin_type(char *name)
 
 int get_meta_type(t_msh *msh, char *name, int i)
 {
+	/* DIR* dir;
+	struct dirent* entity; */
+
 	if (name[0] == '"')
 		return (DBL_QUOTES);
 	else if (name[0] == '\'')
@@ -51,7 +54,13 @@ int get_meta_type(t_msh *msh, char *name, int i)
 	else if (name[0] == '<')
 		return (TKN_INREDIR);
 	else if (i == 0 || msh->data->args[i-1][0] == '|')	// (i == 0 || args[i-1] == TKN_PIPE)
+	{
+		/* dir = opendir(name);
+		entity = readdir(dir);
+		if (entity != NULL)
+			return (TKN_DIR); */
 		return (TKN_BCMD);
+	}
 	else if (name[0] == ' ')
 		return (TKN_SPACE);
 	else

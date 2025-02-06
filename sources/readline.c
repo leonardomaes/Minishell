@@ -111,6 +111,9 @@ int	syntax_check(t_msh *msh, t_data *data)
 
 int	ft_init_data(char *line, t_msh *msh)
 {
+	int i;
+
+	i = 0;
 	/* char **temp;
 	temp = ft_split_args(line);					// Faz split em vetores
 	msh->data->args = ft_merge_args(temp);
@@ -118,8 +121,16 @@ int	ft_init_data(char *line, t_msh *msh)
 	ft_print_splitargs(msh->data->args);
 	free_args(temp); */
 	msh->data->args = ft_split_args(line);
-	if (!msh->data->args || !msh->data->args[0] || *msh->data->args[0] == '\0')
+	if (!msh->data->args || !msh->data->args[0] || (*msh->data->args[0] == '\0' && !msh->data->args[1]))
+	{
+		if (msh->data->args)
+		{
+			while (msh->data->args[i])
+				free(msh->data->args[i++]);
+			free(msh->data->args);
+		}
 		return (1);
+	}
 	msh->data->argc = ft_countargs(msh->data->args);		// Lê a quantidade de args
 	msh->data->pipes = 0;
 	msh->data->infile = -2;
@@ -151,7 +162,8 @@ int	ft_readline(t_msh *msh)
 		return (0);
 	}
 	if (ft_init_data(line, msh) != 0) 			// Inicia struct s_data
-		return (free(line), 1);
+		return (free(msh->data), free(line), 1);
+	//ft_print_params(msh); 	// Remover
 	split_tokens(msh, &msh->data->tokens, NULL, i);		// Passa os parametros para structs de tokens
 	// Fazer o syntax tentar abrir fd dos redirs talvez
 	//ft_print_tokens(msh->data->tokens); 	// Remover

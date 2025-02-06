@@ -233,6 +233,8 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 {
 	t_tokens	*temp;
 
+	if (i < msh->data->argc && msh->data->args[i][0] == '\0')
+		i++;
 	if (i < msh->data->argc)
 	{
 		if (!msh || !msh->data)
