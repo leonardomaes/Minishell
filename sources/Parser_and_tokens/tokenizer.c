@@ -260,14 +260,14 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 			temp->prev = prev;
 		if (temp->type == TKN_HEREDOC)	// Heredocs configs
 		{
-			/* if (i + 1 >= msh->data->argc || get_type(msh->data->args[i + 1], 1) != ARGUMENT)
+			if (i + 1 >= msh->data->argc || get_type(msh, msh->data->args[i + 1], 1) != ARGUMENT)
 			{
 				ft_putstr_fd("syntax error near unexpected token 'newline'\n", 2);
 				g_exit = 2;
 				free(*token);
 				*token = NULL;
 				return ;
-			} */
+			}
 			temp->args = malloc(sizeof(char *) * 2);
 			if (!temp->args)
 			{

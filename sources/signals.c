@@ -37,7 +37,7 @@ void	ft_sigint_command(int sig)
 void	ft_sigquit(int sig)
 {
 	g_exit = 131;
-	printf("Quit (core dumped)\n");
+	printf("Quit\n");
 	(void) sig;
 }
 

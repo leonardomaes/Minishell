@@ -101,6 +101,7 @@ int execute_one(t_msh *msh, char **envp)
 	else
 	{
 		pid = fork();
+		set_signal(COMMAND_MODE, msh);
 		if (pid == -1)
 		{
 			g_exit = 1;
@@ -171,6 +172,7 @@ int execute_one(t_msh *msh, char **envp)
 		else
 		{
 			waitpid(pid, &status, 0);
+			set_signal(COMMAND_MODE, msh);
 			if (WEXITSTATUS(status))
 				g_exit = WEXITSTATUS(status);
 		}
@@ -258,6 +260,7 @@ int	execute_multi(t_msh *msh)
 			exit(1);
 		}
 		pid = fork();
+		set_signal(COMMAND_MODE, msh);
 		if (pid == -1)
 		{
 			perror("fork: ");
@@ -319,6 +322,7 @@ int	execute_multi(t_msh *msh)
 		i++;
 	}
 	waitpid(pid, &status, 0);
+	set_signal(COMMAND_MODE, msh);
 	if (WEXITSTATUS(status))
 		g_exit = WEXITSTATUS(status);
 	if (msh->data->infile > 0)
@@ -333,6 +337,8 @@ int	execute_multi(t_msh *msh)
 	}
 	if (prev_pipe != -1)
 		close(prev_pipe);
+	while (i-- > 0)
+		waitpid(-1, NULL, 0);
 	return (0);
 }
 
