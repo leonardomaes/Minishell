@@ -195,7 +195,7 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 			else
 				merged = ft_strdup(data_args[i]);
 			i++;
-			while (data_args[i] && data_args[i][0] != ' ')
+			while (data_args[i] && data_args[i][0] != '|' && data_args[i][0] != ' ')
 			{
 				if (data_args[i][0] == '"')
 					next_arg = ft_chartrim(&data_args[i], '"');

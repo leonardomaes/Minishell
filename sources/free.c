@@ -41,12 +41,15 @@ void ft_free_all(t_msh *msh)
 	while (msh->envp[i])
 		free(msh->envp[i++]);
 	free(msh->envp);
-	i = 0;
-	while (msh->cmd_paths[i])
-		free(msh->cmd_paths[i++]);
-	free(msh->cmd_paths);
 	if (msh->data) //RM: need to review this function to avoid SEGFAULT, because i need to free msh->data dealing with EOF in readline
 	{
+		if (msh->data->cmd_paths)
+		{
+			i = 0;
+			while (msh->data->cmd_paths[i])
+				free(msh->data->cmd_paths[i++]);
+			free(msh->data->cmd_paths);
+		}
 		if (msh->data->tokens)
 			ft_free_tokens(msh->data->tokens);
         if (msh->data->args)
@@ -68,9 +71,17 @@ void ft_free_data(t_msh	*msh)
 	i = 0;
 	if (msh->data)
 	{
+		if (msh->data->cmd_paths)
+		{
+			i = 0;
+			while (msh->data->cmd_paths[i])
+				free(msh->data->cmd_paths[i++]);
+			free(msh->data->cmd_paths);
+		}
 		if (msh->data->tokens)
 			ft_free_tokens(msh->data->tokens);
 		msh->data->tokens = NULL;
+		i = 0;
 		while (msh->data->args[i])
 			free(msh->data->args[i++]);
 		free(msh->data->args);

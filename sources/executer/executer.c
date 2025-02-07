@@ -84,7 +84,7 @@ int execute_one(t_msh *msh, char **envp)
 	//introduced a first pass trought all tokens to handle heredocs (must he taken care first to input redirection)
 	setup_heredocs(msh->data->tokens, msh);
 	//for TKN_HEREDOC alone, just skip
-	//g_exit = 1;
+	g_exit = 0;
 	if (msh->data->tokens->type == TKN_HEREDOC)
 		return (0);
 	if (open_files(msh, msh->data->tokens) != 0)
@@ -115,7 +115,7 @@ int execute_one(t_msh *msh, char **envp)
 				comm = ft_strjoin(cwd, msh->data->tokens->name + 1);
 			}
 			else
-				comm = ft_get_command(msh, msh->data->tokens->args[0], msh->cmd_paths);
+				comm = ft_get_command(msh, msh->data->tokens->args[0], msh->data->cmd_paths);
 			if (stat(comm, &filestat) == 0 && S_ISDIR(filestat.st_mode))
 			{
 				ft_putstr_fd("bash: ", 2);
@@ -201,7 +201,7 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 			//free(cwd);
 		}
 		else
-			comm = ft_get_command(msh, tokens->args[0], msh->cmd_paths);
+			comm = ft_get_command(msh, tokens->args[0], msh->data->cmd_paths);
 		if (stat(comm, &filestat) == 0 && S_ISDIR(filestat.st_mode))
 		{
 			ft_putstr_fd("bash: ", 2);

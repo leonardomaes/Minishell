@@ -8,7 +8,7 @@
 /*   Created: 2025/01/07 16:32:10 by lmaes             #+#    #+#             */
 /*   Updated: 2025/01/11 12:46:15 by lmaes            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/* ********************************	****************************************** */
 
 #include "../../minishell.h"
 
@@ -18,9 +18,9 @@ char *find_last_arg(t_tokens *temp)
 	char *file = NULL;
 	char *joined_str = NULL;
 	char *temp_str = NULL;
-
 	while (tmp && tmp->next && tmp->next->type != TKN_PIPE && tmp->next->type != TKN_OUTREDIR && tmp->next->type != TKN_INREDIR && tmp->next->type != TKN_APPEND)
 	{
+		//printf("%s\n", tmp->name);
 		tmp = tmp->next;
 		if (tmp->type == ARGUMENT || tmp->type == DBL_QUOTES || tmp->type == SNG_QUOTES)
 		{

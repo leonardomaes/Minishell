@@ -92,6 +92,7 @@ typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
 
 typedef struct s_data			// Info sobre argumentos recebidos
 {
+	char		**cmd_paths;
 	char		**args;			// Vetor de strings com agrs
 	int			argc;			// Quantidade de **args
 	int			pipes;			// Quantidade de pipes
@@ -105,7 +106,6 @@ typedef struct s_data			// Info sobre argumentos recebidos
 typedef struct s_msh			// Main struct que contem tudo
 {
 	char	**envp;
-	char	**cmd_paths;
 	t_data	*data;
 }               t_msh;
 

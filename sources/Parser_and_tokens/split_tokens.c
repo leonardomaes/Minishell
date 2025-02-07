@@ -75,7 +75,7 @@ int	count_args(const char *s) // Conta quantidade de argumentos
 		}
 		else
 		{
-			while (!ft_isspace(s[i]) && s[i] != '|' && s[i] && !ft_isdelimiter(s[i]))
+			while (!ft_isspace(s[i]) && s[i] != '|' && s[i] && !ft_isdelimiter(s[i]) && !ft_isredirection(s[i]))
 				i++;
 		}
 	}
@@ -133,7 +133,7 @@ int	*calculate_lengths(const char *s, int words) // Calcula tamanho dos argument
 		}
 		else
 		{
-			while (s[i] && s[i] != '|' && !ft_isspace(s[i]) && !ft_isdelimiter(s[i]))
+			while (s[i] && s[i] != '|' && !ft_isspace(s[i]) && !ft_isdelimiter(s[i]) && !ft_isredirection(s[i]))
 			{
 				len[word]++;
 				i++;
@@ -232,7 +232,7 @@ char **ft_split_args(const char *s)
 		}
 		else
 		{
-			while (s[l] && s[l] != '|' && !ft_isspace(s[l]) && !ft_isdelimiter(s[l])) // don't add redirs to args
+			while (s[l] && s[l] != '|' && !ft_isspace(s[l]) && !ft_isdelimiter(s[l]) && !ft_isredirection(s[l])) // don't add redirs to args
 				str[i][j++] = s[l++];
 			str[i][j] = '\0';
 		}

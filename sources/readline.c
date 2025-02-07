@@ -78,6 +78,11 @@ int	syntax_pipes(t_tokens *tokens)
 	temp = tokens;
 	while (temp)
 	{
+		if (temp->type == TKN_PIPE && temp->next->type == TKN_PIPE)
+		{
+			printf("bash: syntax error near unexpected token `%s'\n", temp->name);
+			return (1);
+		}
 		if (temp->type == TKN_PIPE && temp->next == NULL)
 		{
 			printf("bash: syntax error near unexpected token `%s'\n", temp->name);
@@ -120,6 +125,8 @@ int	ft_init_data(char *line, t_msh *msh)
 	ft_print_splitargs(temp);
 	ft_print_splitargs(msh->data->args);
 	free_args(temp); */
+	msh->data->cmd_paths = NULL;
+	msh->data->cmd_paths = ft_split(ft_get_path((*msh).envp), ':');
 	msh->data->args = ft_split_args(line);
 	if (!msh->data->args || !msh->data->args[0] || (*msh->data->args[0] == '\0' && !msh->data->args[1]))
 	{

@@ -49,7 +49,11 @@ char	*ft_get_path(char **envp)
 	if (!*envp)
     	return (NULL);
 	while (ft_strncmp("PATH", *envp, 4))
+	{
 		envp++;
+		if (*envp == NULL)
+			return (NULL);
+	}
 	return (*envp + 5);
 }
 
@@ -58,6 +62,8 @@ char	*ft_get_command(t_msh *msh, char *cmd, char **path)
 	char	*comm;
 	char	*temp;
 
+	if (path == NULL)
+		return (ft_strdup(cmd));
 	if (cmd[0] == '/')
 	{
 		if(access(cmd, F_OK) == 0)
