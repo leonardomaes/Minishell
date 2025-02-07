@@ -127,7 +127,7 @@ int	ft_init_data(char *line, t_msh *msh)
 	free_args(temp); */
 	msh->data->cmd_paths = NULL;
 	msh->data->cmd_paths = ft_split(ft_get_path((*msh).envp), ':');
-	msh->data->args = ft_split_args(line);
+	msh->data->args = ft_split_args(msh, line);
 	if (!msh->data->args || !msh->data->args[0] || (*msh->data->args[0] == '\0' && !msh->data->args[1]))
 	{
 		if (msh->data->args)

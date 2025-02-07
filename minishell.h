@@ -147,18 +147,18 @@ int			get_delimiter(t_msh *msh, char *data_args);
 
 
 /* SPLIT TOKENS */
-char		**ft_merge_args(char **args);
+//char		**ft_merge_args(char **args);
 int			count_args(const char *s);
-int			*calculate_lengths(const char *s, int words);
-char		**ft_split_args(const char *s);
+int			*calculate_lengths(t_msh *msh, const char *s, int words);
+char		**ft_split_args(t_msh *msh, const char *s);
 
 /* TOKEN UTILS */
-int			double_quote_lenght(const char *s, int *i);
+int			double_quote_lenght(t_msh *msh, const char *s, int *i);
 int			single_quote_lenght(const char *s, int *i);
-int			environ_lenght(const char *s, int *i);
-int			handle_environ(const char *s, char *str, int *l);
+int			environ_lenght(t_msh *msh, const char *s, int *i);
+int			handle_environ(t_msh *msh, const char *s, char *str, int *l);
 int			handle_single_quote(const char *s, char *str, int *l);
-int			handle_double_quote(const char *s, char *str, int *l);
+int			handle_double_quote(t_msh *msh, const char *s, char *str, int *l);
 char		*ft_chartrim(char **s, char set);
 
 /* TOKEN TYPE */

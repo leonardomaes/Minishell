@@ -82,7 +82,7 @@ int	count_args(const char *s) // Conta quantidade de argumentos
 	return (word);
 }
 
-int	*calculate_lengths(const char *s, int words) // Calcula tamanho dos argumentos para alocar
+int	*calculate_lengths(t_msh *msh, const char *s, int words) // Calcula tamanho dos argumentos para alocar
 {
 	int *len;
 	int i;
@@ -118,11 +118,11 @@ int	*calculate_lengths(const char *s, int words) // Calcula tamanho dos argument
 			i++;
 		}
 		else if (s[i] == '$' && !ft_isdelimiter(s[i+1]) && !ft_isspace(s[i+1])) // Dolar
-			len[word] = environ_lenght(s, &i);
+			len[word] = environ_lenght(msh, s, &i);
 		else if (s[i] == '\'')
 			len[word] = single_quote_lenght(s, &i);
 		else if (s[i] == '"')
-			len[word] = double_quote_lenght(s, &i);
+			len[word] = double_quote_lenght(msh, s, &i);
 		else if (ft_isredirection(s[i]))
 		{
 			while (ft_isredirection(s[i]))
@@ -171,7 +171,7 @@ char **alloc_args(int words, int *len) // Allocations for array of strings
 	return (str);
 }
 
-char **ft_split_args(const char *s)
+char **ft_split_args(t_msh *msh, const char *s)
 {
 	char    **str;
 	int     *len;
@@ -183,7 +183,7 @@ char **ft_split_args(const char *s)
 	if (!s)
 		return (NULL);
 	words = count_args(s);
-	len = calculate_lengths(s, words);
+	len = calculate_lengths(msh, s, words);
 	if (!len)
 		return (NULL);
 	str = alloc_args(words, len);
@@ -219,11 +219,11 @@ char **ft_split_args(const char *s)
 			str[i][j] = '\0';
 		}
 		else if (s[l] == '"')
-			j = handle_double_quote(s, str[i], &l);
+			j = handle_double_quote(msh, s, str[i], &l);
 		else if (s[l] == '\'')
 			j = handle_single_quote(s, str[i], &l);
 		else if (s[l] == '$' && !ft_isdelimiter(s[l+1]) && !ft_isspace(s[l+1])) // Se for apenas'$', nao entra aqui
-			j = handle_environ(s, str[i], &l);
+			j = handle_environ(msh, s, str[i], &l);
 		else if (s[l] && ft_isredirection(s[l]))
 		{
 			while (ft_isredirection(s[l]))
