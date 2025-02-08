@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executer.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 19:20:00 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/13 19:20:01 by lmaes            ###   ########.fr       */
+/*   Updated: 2025/02/08 22:01:59 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int exec_builtin(t_msh *msh, t_tokens *tokens)
 	else if(tokens->type == BLT_UNSET)
 		return (execute_unset(msh, tokens->args));
 	else if(tokens->type == BLT_ENV)
-		return (execute_env(msh->envp));
+		return (execute_env(tokens->args, msh->envp));
 	else if(tokens->type == BLT_EXIT)
 		return (execute_exit(msh, tokens->args));
 	return (1);
@@ -132,9 +132,9 @@ int execute_one(t_msh *msh, char **envp)
 			{
 				// perror("bash: ");
 				//printf("bash: %s: command not found\n", msh->data->tokens->name);
-				ft_putstr_fd("bash: ", 2);
+				//ft_putstr_fd("bash: ", 2);
 				ft_putstr_fd(msh->data->tokens->args[0], 2);
-				ft_putstr_fd(" command not found\n", 2);
+				ft_putstr_fd(": command not found\n", 2);
 				ft_free_all(msh);
 				exit(127);
 			}
@@ -217,9 +217,9 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 		if (!comm)
 		{
 			//printf("bash: %s: command not found\n", tokens->name);
-			ft_putstr_fd(" bash: ", 2);
-			ft_putstr_fd(tokens->name, 2);
-			ft_putstr_fd(" command not found\n", 2);
+			//ft_putstr_fd(" bash: ", 2);
+			ft_putstr_fd(msh->data->tokens->args[0], 2);
+			ft_putstr_fd(": command not found\n", 2);
 			ft_free_all(msh);
 			exit(127);
 		}

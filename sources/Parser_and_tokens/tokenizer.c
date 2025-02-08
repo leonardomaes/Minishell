@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:19:39 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/28 18:19:39 by lmaes            ###   ########.fr       */
+/*   Updated: 2025/02/08 21:30:36 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 		if (get_delimiter(msh, data_args[j]) != 0) // Caso seja um redirect ou pipe
 		{
 			j++;
-			if (data_args[j][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
+			if (data_args[j] && data_args[j][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
 				j++;
 			while (data_args[j] && data_args[j][0] != ' ' && data_args[j][0] != '|') // avança o argumento inteiro até o espaço após
 				j++;
@@ -180,7 +180,7 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 		if (get_delimiter(msh, data_args[i]) != 0) // Caso seja um redirect ou pipe, apenas avança
 		{
 			i++;
-			if (data_args[i][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
+			if (data_args[i] && data_args[i][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
 				i++;
 			while (data_args[i] && data_args[i][0] != ' ' && data_args[i][0] != '|') // avança o argumento inteiro até o espaço após
 				i++;

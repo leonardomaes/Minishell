@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/09 18:45:58 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/08 16:18:50 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,7 +195,7 @@ int			execute_cd(t_msh *msh, char **args);
 int			execute_echo(t_msh *msh, char **args);
 
 /* BUILTINS | ENV */
-int			execute_env(char **envp);
+int			execute_env(char **args, char **envp);
 
 /* BUILTINS | EXIT */
 int			ft_isnumber(const char *str);

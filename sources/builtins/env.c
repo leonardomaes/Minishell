@@ -6,22 +6,30 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/30 18:13:27 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/08 16:37:46 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-int	execute_env(char **envp)
+int	execute_env(char **args, char **envp)
 {
 	int	i;
 
 	i = 0;
-	if (!envp)
+	if (!args)
 		return (1);
-	while (envp[i])
+	if (args[1]) //if there are arguments do not accept them
 	{
-		printf("%s\n", envp[i]);
+		ft_putstr_fd("env: '", 2);
+		ft_putstr_fd(args[1], 2);
+		ft_putstr_fd("': No such file or directory\n", 2);
+		return(127); //return error code 127
+	}
+	while (envp && envp[i])
+	{
+		if (strchr(envp[i], '=')) //only print variables that contain '='
+			printf("%s\n", envp[i]);
 		i++;
 	}
 	return (0);
