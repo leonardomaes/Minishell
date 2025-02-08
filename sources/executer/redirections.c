@@ -20,7 +20,6 @@ char *find_last_arg(t_tokens *temp)
 	char *temp_str = NULL;
 	while (tmp && tmp->next && tmp->next->type != TKN_PIPE && tmp->next->type != TKN_OUTREDIR && tmp->next->type != TKN_INREDIR && tmp->next->type != TKN_APPEND)
 	{
-		//printf("%s\n", tmp->name);
 		tmp = tmp->next;
 		if (tmp->type == ARGUMENT || tmp->type == DBL_QUOTES || tmp->type == SNG_QUOTES)
 		{
@@ -30,8 +29,7 @@ char *find_last_arg(t_tokens *temp)
 				temp_str = ft_chartrim(&tmp->name, '\'');
 			else
 				temp_str = ft_strdup(tmp->name);
-
-			if (!file) // Primeiro argumento
+			if (!file)
 				file = temp_str;
 			else
 			{
@@ -40,15 +38,12 @@ char *find_last_arg(t_tokens *temp)
 				free(temp_str);
 				file = joined_str;
 			}
-
 			if (!tmp->next || tmp->next->type == TKN_SPACE) // Se próximo for espaço, retorna
 				return (file);
 		}
 	}
 	return (file);
 }
-
- // Adicionar condição para fazer strjoin na sequencia de strings até achar o espaço
 
 int	open_append(t_msh *msh, t_tokens *temp)
 {
@@ -142,16 +137,15 @@ int open_files(t_msh *msh, t_tokens *token)
 	msh->data->outfile = -1;
 	msh->data->stdin_backup = dup(STDIN_FILENO);
 	msh->data->stdout_backup = dup(STDOUT_FILENO);
-	while (temp->next != NULL && temp->type != TKN_PIPE) // Percorre todos os tokens
+	while (temp->next != NULL && temp->type != TKN_PIPE)
 	{
-		//printf("-%s\n", temp->name);
 		if (temp->type == TKN_APPEND)
 			error = open_append(msh, temp);
 		else if (temp->type == TKN_OUTREDIR)
 			error = open_outfile(msh, temp);
 		else if (temp->type == TKN_INREDIR)
 			error = open_infile(msh, temp);
-		if (error != 0) // Se um erro ocorrer, fecha os arquivos abertos e retorna
+		if (error != 0)
 		{
 			if (msh->data->infile > 0)
 				close(msh->data->infile);
@@ -163,61 +157,3 @@ int open_files(t_msh *msh, t_tokens *token)
 	}
 	return (0);
 }
-
-
-/* 
-int open_files(t_msh *msh)
-{
-	t_tokens *temp;
-
-	temp = msh->data->tokens;
-	msh->data->stdin_backup = dup(STDIN_FILENO);
-	msh->data->stdout_backup = dup(STDOUT_FILENO);
-	while (temp) // Loop por todos os tokens
-	{
-		if (temp->type == TKN_APPEND)
-		{
-			//printf("Append\n");
-			if (msh->data->outfile > 0)
-				close(msh->data->outfile);
-			msh->data->outfile = open(temp->next->name, O_WRONLY | O_CREAT | O_APPEND, 0775);
-			if (msh->data->outfile < 1)
-			{
-				ft_putstr_fd("bash: ", 2);
-				ft_putstr_fd(temp->next->name, 2);
-				ft_putstr_fd(": No such file or directory\n", 2);
-				return (-1);
-			}
-		}
-		else if (temp->type == TKN_OUTREDIR)
-		{
-			//printf("Output\n");
-			if (msh->data->outfile > 0)
-				close(msh->data->outfile);
-			msh->data->outfile = open(temp->next->name, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-			if (msh->data->outfile < 1)
-			{
-				ft_putstr_fd("bash: ", 2);
-				ft_putstr_fd(temp->next->name, 2);
-				ft_putstr_fd(": No such file or directory\n", 2);
-				return (-1);
-			}
-		}
-		else if (temp->type == TKN_INREDIR)
-		{
-			if (msh->data->infile > 0)
-				close(msh->data->infile);
-			msh->data->infile = open(temp->next->name, O_RDONLY, 0777);
-			if (msh->data->infile < 1)
-			{
-				ft_putstr_fd("bash: ", 2);
-				ft_putstr_fd(temp->next->name, 2);
-				ft_putstr_fd(": No such file or directory\n", 2);
-				return (-1);
-			}
-		}
-		
-		temp = temp->next;
-	}
-	return (0);
-} */

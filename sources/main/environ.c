@@ -10,18 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
 
 char *expand_env(char **envp, char *name)		// Expandir de acordo com variavel apos '$'
 {
 	if (!*envp)
-    	return (NULL);
+		return (NULL);
 	while (ft_strncmp(name, *envp, 4))
 		envp++;
 	return (*envp + ft_strlen(name));
 }
 
-char	**ft_get_env(char **envp)
+char **ft_get_env(char **envp)
 {
 	char	**env_copy;
 	int		i;
@@ -44,10 +44,10 @@ char	**ft_get_env(char **envp)
 	return (env_copy);
 }
 
-char	*ft_get_path(char **envp)
+char *ft_get_path(char **envp)
 {
 	if (!*envp)
-    	return (NULL);
+		return (NULL);
 	while (ft_strncmp("PATH", *envp, 4))
 	{
 		envp++;
@@ -57,18 +57,11 @@ char	*ft_get_path(char **envp)
 	return (*envp + 5);
 }
 
-char	*ft_get_command(t_msh *msh, char *cmd, char **path)
+char *ft_find_executable(char *cmd, char **path)
 {
 	char	*comm;
 	char	*temp;
 
-	if (path == NULL)
-		return (ft_strdup(cmd));
-	if (cmd[0] == '/')
-	{
-		if(access(cmd, F_OK) == 0)
-			return (ft_strdup(cmd));
-	}
 	while (*path)
 	{
 		temp = ft_strjoin(*path, "/");
@@ -84,11 +77,31 @@ char	*ft_get_command(t_msh *msh, char *cmd, char **path)
 			perror("Error allocating memory for command");
 			return (NULL);
 		}
-		if (access(comm, 0) == 0)
+		if (access(comm, F_OK) == 0)
 			return (comm);
 		free(comm);
 		path++;
 	}
+	return (NULL);
+}
+
+char *ft_get_command(t_msh *msh, char *cmd, char **path)
+{
+	char	*comm;
+
+	if (!cmd)
+	{
+		ft_free_all(msh);
+		exit(0);
+	}
+	if (!path)
+		return (ft_strdup(cmd));
+	if (cmd[0] == '/')
+	{
+		if(access(cmd, F_OK) == 0)
+			return (ft_strdup(cmd));
+	}
+	comm = ft_find_executable(cmd, path);
 	if (cmd[0] == '/')
 	{
 		ft_putstr_fd("bash: ", 2);
@@ -97,5 +110,5 @@ char	*ft_get_command(t_msh *msh, char *cmd, char **path)
 		ft_free_all(msh);
 		exit(127);
 	}
-	return (NULL);
+	return (comm);
 }

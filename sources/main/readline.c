@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
 
 char *ft_prompt()
 {
@@ -78,7 +78,7 @@ int	syntax_pipes(t_tokens *tokens)
 	temp = tokens;
 	while (temp)
 	{
-		if (temp->type == TKN_PIPE && temp->next->type == TKN_PIPE)
+		if (temp->type == TKN_PIPE && (temp->next == NULL || temp->next->type == TKN_PIPE))
 		{
 			printf("bash: syntax error near unexpected token `%s'\n", temp->name);
 			return (1);
@@ -162,12 +162,6 @@ int	ft_init_data(char *line, t_msh *msh)
 	int i;
 
 	i = 0;
-	/* char **temp;
-	temp = ft_split_args(line);					// Faz split em vetores
-	msh->data->args = ft_merge_args(temp);
-	ft_print_splitargs(temp);
-	ft_print_splitargs(msh->data->args);
-	free_args(temp); */
 	msh->data->cmd_paths = NULL;
 	msh->data->cmd_paths = ft_split(ft_get_path((*msh).envp), ':');
 	msh->data->args = ft_split_args(msh, line);
@@ -215,7 +209,6 @@ int	ft_readline(t_msh *msh)
 		return (free(msh->data), free(line), 1);
 	//ft_print_params(msh); 	// Remover
 	split_tokens(msh, &msh->data->tokens, NULL, i);		// Passa os parametros para structs de tokens
-	// Fazer o syntax tentar abrir fd dos redirs talvez
 	//ft_print_tokens(msh->data->tokens); 	// Remover
 	if (syntax_check(msh, msh->data) != 0)					// Verificaçao de sintaxe
 		return (ft_free_data(msh), free(line), 1); // Erro aqui quando return == 1, ocorre varios leaks

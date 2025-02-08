@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
 
 void ft_free_tokens(t_tokens *tokens)
 {
@@ -41,26 +41,7 @@ void ft_free_all(t_msh *msh)
 	while (msh->envp[i])
 		free(msh->envp[i++]);
 	free(msh->envp);
-	if (msh->data) //RM: need to review this function to avoid SEGFAULT, because i need to free msh->data dealing with EOF in readline
-	{
-		if (msh->data->cmd_paths)
-		{
-			i = 0;
-			while (msh->data->cmd_paths[i])
-				free(msh->data->cmd_paths[i++]);
-			free(msh->data->cmd_paths);
-		}
-		if (msh->data->tokens)
-			ft_free_tokens(msh->data->tokens);
-        if (msh->data->args)
-		{
-			i = 0;
-			while (msh->data->args[i])
-				free(msh->data->args[i++]);
-			free(msh->data->args);
-		}
-		free(msh->data);
-	}
+	ft_free_data(msh);
 	free(msh);
 }
 

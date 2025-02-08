@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
 
 //checks if within a heredoc, there are variables to expand
 int	has_expand(const char *line)
@@ -45,7 +45,6 @@ void	get_expand_variable(char *line, t_msh *msh, t_expand *exp)
 	exp->position = search_variable_end(line + exp->i + 1, -1);
 	key = ft_substr(line, exp->i + 1, exp->position);
 	exp->new = ft_substr(line, exp->start, exp->i);
-
 	tmp = exp->end;
 	exp->end = ft_strjoin(tmp, exp->new);
 	free(tmp);

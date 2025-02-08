@@ -9,14 +9,13 @@ LIBFT = includes/libft/libft.a
 PRINTF = includes/ft_printf/libftprintf.a
 
 #
-SRC =	sources/main.c sources/init.c sources/readline.c sources/environ.c sources/trash.c \
-		sources/free.c sources/heredoc.c \
+SRC =	sources/main/main.c sources/main/init.c sources/main/readline.c sources/main/environ.c sources/trash.c \
+		sources/main/free.c sources/main/heredoc.c sources/main/signals.c \
 		sources/Parser_and_tokens/tokenizer.c sources/Parser_and_tokens/tokenizer_utils.c \
 		sources/Parser_and_tokens/token_type.c sources/Parser_and_tokens/split_tokens.c \
 		sources/builtins/env.c sources/builtins/exit.c sources/builtins/export.c sources/builtins/pwd.c \
 		sources/builtins/unset.c sources/builtins/cd.c sources/builtins/echo.c sources/builtins/builtins_utils.c \
-		sources/executer/executer.c sources/executer/redirections.c \
-		sources/signals.c
+		sources/executer/executer.c sources/executer/redirections.c
 #
 
 # Commands

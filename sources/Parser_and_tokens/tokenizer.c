@@ -22,39 +22,6 @@ int	ft_isredirection(char c)
 	return (c == '<' || c == '>');
 }
 
-//printf("1->%s\n", s + 2);	// String a partir da posição
-//printf("2->%c\n", *s + 2);	// Caractere + 2 ASCII
-//printf("3->%s\n", &s[2]);	// String a partir da posição
-//printf("4->%c\n", s[2]);	// Caractere da posição
-
-
-/* char **ft_merge_args(char **args)
-{
-	char **joined_args;
-	int	i;
-	int	j;
-	int	k;
-
-	i = 0;
-	while (args[i]) // Each index is a arg
-	{
-		if (args[i][0] == ' ' || (args[i+1] == NULL && args[i][0] != ' '))// Each j is a joined arg
-			j++;
-		i++;
-	}
-	new_args = (char **)malloc(sizeof(char *) * (j + 1));
-	i = 0;
-	while (i < j)
-	{
-		k = 0;
-		while (args[i][0] != ' ')
-			k += ft_strlen(args[i++]);
-		i++;
-		//joined_args[i] = (char *)malloc(sizeof(char) * (ft_strlen(args[j]) + 1))
-	}
-	joined_args[i] = NULL;
-	return(joined_args);
-} */
 int get_delimiter(t_msh *msh, char *data_args)
 {
 	if (get_type(msh, data_args, 1) == TKN_PIPE)
@@ -69,73 +36,7 @@ int get_delimiter(t_msh *msh, char *data_args)
 		return (TKN_HEREDOC);
 	return (0);
 }
-/* char	**get_args(char **data_args, int i, t_msh *msh)
-{
-	int		k;
-	int		j;
-	char	**args;
 
-	//count the number of args until we get to a pipe or end
-	j = i;
-	k = 0;
-	while (data_args[j] && data_args[j][0] != '|') // Ciclo para calcular alocação
-	{
-		if (get_delimiter(data_args[j]) != 0) // Caso seja um redirect ou pipe
-		{
-			j++;
-			if (data_args[j][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
-				j++;
-			while (data_args[j] && data_args[j][0] != ' ' && data_args[j][0] != '|') // avança o argumento inteiro até o espaço após
-				j++;
-			continue;
-		}
-		if (data_args[j][0] != ' ') // copia se não for espaço
-			k++;
-		j++;
-	}
-	//allocate space for keeping the args and NULL
-	args = malloc(sizeof(char *) * (k + 1));
-	if (!args)
-	{
-		perror("malloc:");
-		ft_free_all(msh);
-		exit(1);
-	}
-	//copy all tokens
-	k = 0;
-	while (data_args[i] && i < j)
-	{
-		if (get_delimiter(data_args[i]) != 0) // Caso seja um redirect ou pipe
-		{
-			i++;
-			if (data_args[i][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
-				i++;
-			while (data_args[i] && data_args[i][0] != ' ' && data_args[i][0] != '|') // avança o argumento inteiro até o espaço após
-				i++;
-			continue;
-		}
-		//printf("-%s\n", data_args[i]);
-		if (data_args[i][0] == '"')
-			args[k++] = ft_chartrim(&data_args[i], '"'); // Copia sem aspas duplas
-		else if (data_args[i][0] == '\'')
-			args[k++] = ft_chartrim(&data_args[i], '\''); // Copia sem aspas simples
-		else if (data_args[i][0] != ' ')
-			args[k++] = ft_strdup(data_args[i]);
-		//free previously allocated memory in case strdup fails
-		if (!args[k-1])
-		{
-			perror("strdup");
-			while (k >= 0)
-				free(args[k--]);
-			free(args);
-			ft_free_all(msh);
-			exit(1);
-		}
-		i++;
-	}
-	args[k] = NULL;
-	return (args);
-} */
 char	**get_args(char **data_args, int i, t_msh *msh)
 {
 	int		k;	// Argumentos merged
@@ -153,7 +54,7 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 		if (get_delimiter(msh, data_args[j]) != 0) // Caso seja um redirect ou pipe
 		{
 			j++;
-			if (data_args[j][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
+			if (data_args[j] && data_args[j][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
 				j++;
 			while (data_args[j] && data_args[j][0] != ' ' && data_args[j][0] != '|') // avança o argumento inteiro até o espaço após
 				j++;
@@ -180,7 +81,7 @@ char	**get_args(char **data_args, int i, t_msh *msh)
 		if (get_delimiter(msh, data_args[i]) != 0) // Caso seja um redirect ou pipe, apenas avança
 		{
 			i++;
-			if (data_args[i][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
+			if (data_args[i] && data_args[i][0] == ' ') // Avança o primeiro espaço logo após o redir ou pipe
 				i++;
 			while (data_args[i] && data_args[i][0] != ' ' && data_args[i][0] != '|') // avança o argumento inteiro até o espaço após
 				i++;
@@ -233,7 +134,7 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 {
 	t_tokens	*temp;
 
-	if (i < msh->data->argc && msh->data->args[i][0] == '\0')
+	if (i < msh->data->argc && msh->data->args[i][0] == '\0')	// ???
 		i++;
 	if (i < msh->data->argc)
 	{
@@ -260,14 +161,14 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 			temp->prev = prev;
 		if (temp->type == TKN_HEREDOC)	// Heredocs configs
 		{
-			if (i + 1 >= msh->data->argc || get_type(msh, msh->data->args[i + 1], 1) != ARGUMENT)
+			/* if (i + 1 >= msh->data->argc || get_type(msh, msh->data->args[i + 1], 1) != ARGUMENT)
 			{
 				ft_putstr_fd("syntax error near unexpected token 'newline'\n", 2);
 				g_exit = 2;
 				free(*token);
 				*token = NULL;
 				return ;
-			}
+			} */
 			temp->args = malloc(sizeof(char *) * 2);
 			if (!temp->args)
 			{
@@ -275,13 +176,14 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 				*token = NULL;
 				return ;
 			}
-			if (msh->data->args[i + 1][0] == ' ')
+			if (msh->data->args[i + 1] && msh->data->args[i + 1][0] == ' ')
 				i++;
-			if (msh->data->args[i+1][0] == '"')
+			temp->args[0] = NULL;
+			if (msh->data->args[i + 1] && msh->data->args[i+1][0] == '"')
 				temp->args[0] = ft_chartrim(&msh->data->args[i + 1], '"'); //store the delimiter like 'EOF'
-			else if (msh->data->args[i+1][0] == '\'')
+			else if (msh->data->args[i + 1] && msh->data->args[i+1][0] == '\'')
 				temp->args[0] = ft_chartrim(&msh->data->args[i + 1], '\'');
-			else
+			else if (msh->data->args[i + 1])
 				temp->args[0] = ft_strdup(msh->data->args[i+1]);
 			temp->args[1] = NULL;
 			//i++;  // Skip the delimiter in the main array

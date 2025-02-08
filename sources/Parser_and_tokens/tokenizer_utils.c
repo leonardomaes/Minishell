@@ -37,12 +37,6 @@ int double_quote_lenght(t_msh *msh, const char *s, int *i) //Calculate size of s
 		(*i)++;
 		j++;
 	}
-	/* if (ft_isspace(s[*i]))
-	{
-		(*i)++;
-		j++;
-	} */
-	
 	return (j);
 }
 
@@ -87,7 +81,6 @@ int	environ_lenght(t_msh *msh, const char *s, int *i) //Calculate size of extend
 		return (0);
 	ft_strlcpy(env, &s[j], (*i - j) + 1);
 	env_val = get_env_var_value(msh->envp, env);
-	//env_val = getenv(env);
 	if (!env_val)
 		j = ft_strlen(env);
 	else
@@ -116,8 +109,6 @@ int handle_environ(t_msh *msh, const char *s, char *str, int *l)	// Expand env v
 		(*l)++;
 	ft_strlcpy(var_name, start, &s[*l] - start + 1);
 	env_value = get_env_var_value(msh->envp, var_name);
-	//env_value = getenv(var_name);
-	//printf("%s\n", env_value);
 	if (env_value)
 	{
 		while (*env_value)
@@ -127,7 +118,6 @@ int handle_environ(t_msh *msh, const char *s, char *str, int *l)	// Expand env v
 	return (len);
 }
 
-// Do not must to interpret metachars
 int handle_single_quote(const char *s, char *str, int *l) // Identifies quotes and treat it
 {
 	int len = 0;
@@ -149,7 +139,6 @@ int handle_double_quote(t_msh *msh, const char *s, char *str, int *l) // Identif
 	str[len++] = s[(*l)++];
 	while (s[*l] && s[*l] != '"')
 	{
-		//printf("%c\n", s[*l]);
 		if (s[*l] == '$' && !ft_isdelimiter(s[*l+1]) && !ft_isspace(s[*l+1])) // Dolar
 		{
 			i = handle_environ(msh, s, &str[len], l);
@@ -160,13 +149,9 @@ int handle_double_quote(t_msh *msh, const char *s, char *str, int *l) // Identif
 	}
 	if (s[*l] == '"')
 		str[len++] = s[(*l)++];
-	/* printf("->%c\n", s[*l]);
-	if (ft_isspace(s[*l]))
-		str[len++] = s[(*l)++]; */
 	str[len] = '\0';
 	return (len);
 }
-
 
 char *ft_chartrim(char **s, char set)
 {
