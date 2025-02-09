@@ -38,7 +38,7 @@ int	ft_countargs(char **args)
 
 int	get_redir(t_tokens *temp)
 {
-	if (temp->type == TKN_APPEND || temp->type == TKN_INREDIR || temp->type == TKN_OUTREDIR)
+	if (temp->type == TKN_APPEND || temp->type == TKN_INREDIR || temp->type == TKN_OUTREDIR || temp->type == TKN_HEREDOC)
 		return (1);
 	return (0);
 }
@@ -78,7 +78,7 @@ int	syntax_pipes(t_tokens *tokens)
 	temp = tokens;
 	while (temp)
 	{
-		if (temp->type == TKN_PIPE && (temp->next == NULL || temp->next->type == TKN_PIPE))
+		if (temp->type == TKN_PIPE && (temp->next == NULL || temp->next->type == TKN_PIPE)) // Aqui
 		{
 			printf("bash: syntax error near unexpected token `%s'\n", temp->name);
 			return (1);
@@ -161,7 +161,6 @@ int	ft_init_data(char *line, t_msh *msh)
 {
 	int i;
 
-	i = 0;
 	msh->data->cmd_paths = NULL;
 	msh->data->cmd_paths = ft_split(ft_get_path((*msh).envp), ':');
 	msh->data->args = ft_split_args(msh, line);
@@ -169,9 +168,17 @@ int	ft_init_data(char *line, t_msh *msh)
 	{
 		if (msh->data->args)
 		{
+			i = 0;
 			while (msh->data->args[i])
 				free(msh->data->args[i++]);
 			free(msh->data->args);
+		}
+		if (msh->data->cmd_paths)
+		{
+			i = 0;
+			while (msh->data->cmd_paths[i])
+				free(msh->data->cmd_paths[i++]);
+			free(msh->data->cmd_paths);
 		}
 		return (1);
 	}
@@ -212,8 +219,9 @@ int	ft_readline(t_msh *msh)
 	//ft_print_tokens(msh->data->tokens); 	// Remover
 	if (syntax_check(msh, msh->data) != 0)					// Verificaçao de sintaxe
 		return (ft_free_data(msh), free(line), 1); // Erro aqui quando return == 1, ocorre varios leaks
+	ft_get_args(msh);
 	//ft_print_params(msh); 	// Remover
-	//ft_print_tokens(msh->data->tokens); 	// Remover
+	ft_print_tokens(msh->data->tokens); 	// Remover
 	//printf("\n<--------------------------------->\n"); 	// Remover
 	free(line);
 	return (0);

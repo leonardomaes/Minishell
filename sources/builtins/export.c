@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/01/28 00:22:58 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/08 23:24:27 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,9 +190,11 @@ int	is_valid_var_name(char *name)
 	int	i;
 
 	i = 0;
-	if (!name || !(ft_isalpha(name[0]) || name[0] == '_'))
+	if (!name || !name[0]) //name NULL or empty
 		return (0);
-	while (name[i] && name[i] != '=')
+	if (!(ft_isalpha(name[0]) || name[0] == '_')) //first character have to be a letter or underscore
+		return (0); 
+	while (name[i] && name[i] != '=') //checks the rest of the name
 	{
 		if (!(ft_isalnum(name[i]) || name[i] == '_'))
 			return (0);
@@ -247,6 +249,11 @@ int	execute_export(t_msh *msh, char **args)
 	}
 	while(args[i])
 	{
+		if (ft_strcmp(args[i], "_") == 0) //special case for '_'
+		{
+			i++;
+			continue ;
+		}
 		name = ft_strdup(args[i]);
 		value = ft_strchr(name, '=');
 		if (value)

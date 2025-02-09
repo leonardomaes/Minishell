@@ -61,9 +61,10 @@
 //macros for signal modes
 #define SHELL_MODE		1
 #define	COMMAND_MODE	2
-#define EXIT			3
-#define HEREDOC			4
-#define HEREDOC_PAUSE	5
+#define	CHILD_MODE		3
+#define EXIT			4
+#define HEREDOC			5
+#define HEREDOC_PAUSE	6
 
 /********** GLOBAL VARIABLE **********/
 extern int	g_exit;
@@ -119,7 +120,7 @@ void		ft_init_shell(t_msh **msh, char **envp);
 int			ft_readline(t_msh *msh);
 int			syntax_check(t_msh *msh, t_data *data);
 int			ft_countargs(char **args);
-char		*ft_prompt();
+char		*ft_prompt(void);
 
 /* ENVIRON */
 char		*expand_env(char **envp, char *name);
@@ -145,9 +146,10 @@ int			ft_isredirection(char c);
 int			ft_isdelimiter(char c);
 int			get_delimiter(t_msh *msh, char *data_args);
 
-
+/* GET ARGS */
+void		ft_get_args(t_msh *msh);
+char		**getargs(t_msh *msh, t_tokens *token);
 /* SPLIT TOKENS */
-//char		**ft_merge_args(char **args);
 int			count_args(const char *s);
 int			*calculate_lengths(t_msh *msh, const char *s, int words);
 char		**ft_split_args(t_msh *msh, const char *s);
@@ -195,7 +197,7 @@ int			execute_cd(t_msh *msh, char **args);
 int			execute_echo(t_msh *msh, char **args);
 
 /* BUILTINS | ENV */
-int			execute_env(char **envp);
+int			execute_env(char **args, char **envp);
 
 /* BUILTINS | EXIT */
 int			ft_isnumber(const char *str);
@@ -229,7 +231,6 @@ void		ft_sigint_shell(int sig);
 void		ft_sigint_command(int sig);
 void		ft_sigquit(int sig);
 void		child_signal_handler(int sig);
-void		child_signal_handler2(int sig);
 void		set_signal(int sg, t_msh *msg);
 
 /* TRASH */

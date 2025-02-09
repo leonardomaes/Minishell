@@ -38,7 +38,7 @@ int get_meta_type(t_msh *msh, char *name, int i)
 		return (DBL_QUOTES);
 	else if (name[0] == '\'')
 		return (SNG_QUOTES);
-	else if (name[0] == '|')
+	else if (name[0] == '|' && name[1] == '\0')
 		return (TKN_PIPE);
 	else if (name[0] == '$')
 		return (VAR_ENVIRON);

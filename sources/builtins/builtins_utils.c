@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 23:57:54 by rda-cunh          #+#    #+#             */
-/*   Updated: 2025/01/02 15:53:22 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/08 23:03:54 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ char	*get_env_var_value(char **envp, char *var)
 	{
 		if (ft_strncmp(tmp, envp[i], ft_strlen(tmp)) == 0)
 		{
-			free_ptr((void**)&tmp);
+			free_ptr((void **)&tmp);
 			return (ft_strchr(envp[i], '=') + 1);
 		}
 		i++;
@@ -99,27 +99,44 @@ char	*get_env_var_value(char **envp, char *var)
 int	set_env_var(t_msh *msh, char *var_name, char *var_value)
 {
 	int		idx;
-	char	*tmp;
+	char	*new_entry;
+	char	*temp;
 
 	idx = get_env_var_index(msh->envp, var_name);
-	if (var_value == NULL)
-		var_value = "";
-	tmp = ft_strjoin("=", var_value);
-	if (!tmp)
-		return (1);
+	if (!var_value) //if no value provided, just save var name
+	{
+		new_entry = ft_strdup(var_name);
+		if (!new_entry)
+			return (1);
+	}
+	else
+	{
+		//create an entry like NAME=VALUE
+		new_entry = ft_strjoin(var_name, "=");
+		if (!new_entry)
+			return (1);
+		temp = ft_strjoin(new_entry, var_value);
+		free (new_entry);
+		if (!temp)
+			return (1);
+		new_entry = temp; 		
+	}
 	if (idx != -1 && msh->envp[idx])
 	{
-		free_ptr((void**)&msh->envp[idx]);
-		msh->envp[idx] = ft_strjoin(var_name, tmp);
+		free_ptr((void **)&msh->envp[idx]);
+		msh->envp[idx] = new_entry;
 	}
 	else
 	{
 		idx = env_var_count(msh->envp);
-		msh->envp = realloc_env_vars(msh, idx + 1);
+		msh->envp = realloc_env_vars(msh, idx + 2);
 		if (!msh->envp)
+		{
+			free(new_entry);
 			return (1);
-		msh->envp[idx] = ft_strjoin(var_name, tmp);
+		}
+		msh->envp[idx] = new_entry;
+		msh->envp[idx + 1] = NULL;
 	}
-	free_ptr((void**)&tmp);
 	return (0);
 }

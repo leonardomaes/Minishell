@@ -25,7 +25,7 @@ int exec_builtin(t_msh *msh, t_tokens *tokens)
 	else if(tokens->type == BLT_UNSET)
 		return (execute_unset(msh, tokens->args));
 	else if(tokens->type == BLT_ENV)
-		return (execute_env(msh->envp));
+		return (execute_env(tokens->args, msh->envp));
 	else if(tokens->type == BLT_EXIT)
 		return (execute_exit(msh, tokens->args));
 	return (1);
@@ -101,7 +101,6 @@ int execute_one(t_msh *msh, char **envp)
 	else
 	{
 		pid = fork();
-		set_signal(COMMAND_MODE, msh);
 		if (pid == -1)
 		{
 			g_exit = 1;
@@ -109,6 +108,7 @@ int execute_one(t_msh *msh, char **envp)
 		}
 		else if (pid == 0)
 		{
+			set_signal(CHILD_MODE, msh);
 			handle_redirections(msh->data->tokens);
 			if (msh->data->tokens->type == TKN_BCMD && (msh->data->tokens->name[0] == '.' && msh->data->tokens->name[1] == '/'))
 			{
@@ -171,10 +171,19 @@ int execute_one(t_msh *msh, char **envp)
 		}
 		else
 		{
-			waitpid(pid, &status, 0);
 			set_signal(COMMAND_MODE, msh);
-			if (WEXITSTATUS(status))
+			waitpid(pid, &status, 0);
+			if (WIFSIGNALED(status))
+			{	
+				g_exit = 128 + WTERMSIG(status); //manual change g_exit to 128 + signal number
+				if (WTERMSIG(status) == SIGINT) //manual handling error because SIGINT was not printing the line break 
+					write(1, "\n", 1);
+				if (WTERMSIG(status) == SIGQUIT)
+					ft_putstr_fd("Quit\n", 2);
+			}
+			else if (WIFEXITED(status))
 				g_exit = WEXITSTATUS(status);
+			set_signal(SHELL_MODE, msh);
 		}
 	}
 	return (0);
@@ -218,8 +227,8 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 		{
 			//printf("bash: %s: command not found\n", tokens->name);
 			ft_putstr_fd(" bash: ", 2);
-			ft_putstr_fd(tokens->name, 2);
-			ft_putstr_fd(" command not found\n", 2);
+			ft_putstr_fd(tokens->args[0], 2);
+			ft_putstr_fd(": command not found\n", 2);
 			ft_free_all(msh);
 			exit(127);
 		}
@@ -260,7 +269,6 @@ int	execute_multi(t_msh *msh)
 			exit(1);
 		}
 		pid = fork();
-		set_signal(COMMAND_MODE, msh);
 		if (pid == -1)
 		{
 			perror("fork: ");
@@ -269,6 +277,7 @@ int	execute_multi(t_msh *msh)
 		}
 		else if (pid == 0) // Processo filho
 		{
+			set_signal(CHILD_MODE, msh);
 			//printf("-%s\n", current_token->name);
 			if (open_files(msh, current_token) != 0)
 			{
@@ -304,6 +313,7 @@ int	execute_multi(t_msh *msh)
 			exit(1);
 		}
 		// Processo pai
+		set_signal(COMMAND_MODE, msh);
 		if (prev_pipe != -1)
 			close(prev_pipe);
 		if (i < msh->data->pipes)
@@ -322,8 +332,15 @@ int	execute_multi(t_msh *msh)
 		i++;
 	}
 	waitpid(pid, &status, 0);
-	set_signal(COMMAND_MODE, msh);
-	if (WEXITSTATUS(status))
+	if (WIFSIGNALED(status))   //if it receives a signal in child
+	{	
+		g_exit = 128 + WTERMSIG(status); //manual change g_exit to 128 + signal number
+		if (WTERMSIG(status) == SIGINT) //manual handling error because SIGINT was not printing the line break 
+			write(1, "\n", 1);
+		if (WTERMSIG(status) == SIGQUIT)
+			ft_putstr_fd("Quit\n", 2);
+	}
+	else if(WIFEXITED(status))
 		g_exit = WEXITSTATUS(status);
 	if (msh->data->infile > 0)
 	{
@@ -339,6 +356,7 @@ int	execute_multi(t_msh *msh)
 		close(prev_pipe);
 	while (i-- > 0)
 		waitpid(-1, NULL, 0);
+	set_signal(SHELL_MODE, msh);
 	return (0);
 }
 

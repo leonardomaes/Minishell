@@ -92,8 +92,10 @@ char *ft_get_command(t_msh *msh, char *cmd, char **path)
 	if (!cmd)
 	{
 		ft_free_all(msh);
-		exit(0);
+		exit(1);
 	}
+	else if (cmd[0] == '\0')
+		return (NULL);
 	if (!path)
 		return (ft_strdup(cmd));
 	if (cmd[0] == '/')

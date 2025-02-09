@@ -26,7 +26,7 @@ int	count_args(const char *s) // Conta quantidade de argumentos
 		if (s[i] == '\0')
 			break;
 		word++;
-		if (ft_isspace(s[i]) && (s[i-1] == '|' || word == 1 )) // Trocar para identificar após primeiro argumento
+		if (ft_isspace(s[i]) && (word == 1 || s[i-1] == '|' )) // Trocar para identificar após primeiro argumento
 		{
 			while (ft_isspace(s[i]))
 				i++;
@@ -100,7 +100,7 @@ int	*calculate_lengths(t_msh *msh, const char *s, int words) // Calcula tamanho 
 			i++; */
 		if (s[i] == '\0')
 			break;
-		if (ft_isspace(s[i]) && (s[i-1] == '|' || word == 0))
+		if (ft_isspace(s[i]) && (word == 0 || s[i-1] == '|'))
 		{
 			while (ft_isspace(s[i]))
 				i++;
@@ -199,7 +199,7 @@ char **ft_split_args(t_msh *msh, const char *s)
 			l++; */
 		if (s[l] == '\0')
 			break;
-		if (ft_isspace(s[l]) && (s[l-1] == '|' || i == 0))
+		if (ft_isspace(s[l]) && (i == 0 || s[l - 1] == '|'))
 		{
 			while (ft_isspace(s[l]))
 				l++;
