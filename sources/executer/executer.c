@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 19:20:00 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/08 22:01:59 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/09 16:56:44 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,6 @@ int execute_one(t_msh *msh, char **envp)
 	else
 	{
 		pid = fork();
-		set_signal(COMMAND_MODE, msh);
 		if (pid == -1)
 		{
 			g_exit = 1;
@@ -109,6 +108,7 @@ int execute_one(t_msh *msh, char **envp)
 		}
 		else if (pid == 0)
 		{
+			set_signal(CHILD_MODE, msh); //initiate child mode and turn on default behavior
 			handle_redirections(msh->data->tokens);
 			if (msh->data->tokens->type == TKN_BCMD && (msh->data->tokens->name[0] == '.' && msh->data->tokens->name[1] == '/'))
 			{
@@ -171,10 +171,19 @@ int execute_one(t_msh *msh, char **envp)
 		}
 		else
 		{
+			set_signal(COMMAND_MODE, msh); //parent process enters on COMMAND_MODE and ignores signals while waitpid
 			waitpid(pid, &status, 0);
-			set_signal(COMMAND_MODE, msh);
-			if (WEXITSTATUS(status))
+			if (WIFSIGNALED(status))   //if it receives a signal in child
+			{	
+				g_exit = 128 + WTERMSIG(status); //manual change g_exit to 128 + signal number
+				if (WTERMSIG(status) == SIGINT) //manual handling error because SIGINT was not printing the line break 
+					write(1, "\n", 1);
+				if (WTERMSIG(status) == SIGQUIT)
+					ft_putstr_fd("Quit\n", 2);
+			}
+			else if(WIFEXITED(status))
 				g_exit = WEXITSTATUS(status);
+			set_signal(SHELL_MODE, msh); //restore signal mode on parent process after child ends
 		}
 	}
 	return (0);
@@ -260,7 +269,6 @@ int	execute_multi(t_msh *msh)
 			exit(1);
 		}
 		pid = fork();
-		set_signal(COMMAND_MODE, msh);
 		if (pid == -1)
 		{
 			perror("fork: ");
@@ -269,6 +277,7 @@ int	execute_multi(t_msh *msh)
 		}
 		else if (pid == 0) // Processo filho
 		{
+			set_signal(CHILD_MODE, msh); //initiate signal CHIL_MODE during child execution
 			//printf("-%s\n", current_token->name);
 			if (open_files(msh, current_token) != 0)
 			{
@@ -304,6 +313,7 @@ int	execute_multi(t_msh *msh)
 			exit(1);
 		}
 		// Processo pai
+		set_signal(COMMAND_MODE, msh); //parent process enter COMMAND_MODES and starts ignoring signals
 		if (prev_pipe != -1)
 			close(prev_pipe);
 		if (i < msh->data->pipes)
@@ -322,8 +332,15 @@ int	execute_multi(t_msh *msh)
 		i++;
 	}
 	waitpid(pid, &status, 0);
-	set_signal(COMMAND_MODE, msh);
-	if (WEXITSTATUS(status))
+	if (WIFSIGNALED(status))   //if it receives a signal in child
+	{	
+		g_exit = 128 + WTERMSIG(status); //manual change g_exit to 128 + signal number
+		if (WTERMSIG(status) == SIGINT) //manual handling error because SIGINT was not printing the line break 
+			write(1, "\n", 1);
+		if (WTERMSIG(status) == SIGQUIT)
+			ft_putstr_fd("Quit\n", 2);
+	}
+	else if(WIFEXITED(status))
 		g_exit = WEXITSTATUS(status);
 	if (msh->data->infile > 0)
 	{
@@ -339,6 +356,7 @@ int	execute_multi(t_msh *msh)
 		close(prev_pipe);
 	while (i-- > 0)
 		waitpid(-1, NULL, 0);
+	set_signal(SHELL_MODE, msh); //restores signal SHELL_MODE for parent process after child execution
 	return (0);
 }
 

@@ -16,7 +16,7 @@ SRC =	sources/main.c sources/init.c sources/readline.c sources/environ.c sources
 		sources/builtins/env.c sources/builtins/exit.c sources/builtins/export.c sources/builtins/pwd.c \
 		sources/builtins/unset.c sources/builtins/cd.c sources/builtins/echo.c sources/builtins/builtins_utils.c \
 		sources/executer/executer.c sources/executer/redirections.c \
-		sources/signals.c
+		sources/signals/signals.c
 #
 
 # Commands
