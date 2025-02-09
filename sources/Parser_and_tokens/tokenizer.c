@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 18:19:39 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/08 21:30:36 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/09 00:43:19 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,6 +260,9 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass a
 			temp->prev = prev;
 		if (temp->type == TKN_HEREDOC)	// Heredocs configs
 		{
+			//skip spaces tokens after heredoc '<<'
+			while (i + 1 < msh->data->argc && msh->data->args[i + 1][0] == ' ')
+				i++;
 			if (i + 1 >= msh->data->argc || get_type(msh, msh->data->args[i + 1], 1) != ARGUMENT)
 			{
 				ft_putstr_fd("syntax error near unexpected token 'newline'\n", 2);
