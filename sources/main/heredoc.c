@@ -48,7 +48,6 @@ void	get_expand_variable(char *line, t_msh *msh, t_expand *exp)
 	tmp = exp->end;
 	exp->end = ft_strjoin(tmp, exp->new);
 	free(tmp);
-
 	if (line[exp->i + 1] != '?')
 		content = ft_strdup(get_env_var_value(msh->envp, key));
 	else
@@ -61,7 +60,6 @@ void	get_expand_variable(char *line, t_msh *msh, t_expand *exp)
 		free(tmp);
 		free(content);
 	}
-
 	exp->i += exp->position;
 	exp->start = exp->i + 1;
 	free(exp->new);

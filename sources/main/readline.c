@@ -56,7 +56,7 @@ int syntax_redirs(t_msh *msh, t_tokens *tokens)
 	}
 	if (!temp)
 		return (0);
-	if (temp->next->type == TKN_SPACE)
+	if (temp->next && temp->next->type == TKN_SPACE)
 		temp = temp->next;
 	if (temp->next == NULL)
 	{

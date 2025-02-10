@@ -12,7 +12,7 @@
 
 #include "../../minishell.h"
 
-char *expand_env(char **envp, char *name)		// Expandir de acordo com variavel apos '$'
+char *expand_env(char **envp, char *name)
 {
 	if (!*envp)
 		return (NULL);
