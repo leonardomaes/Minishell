@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 00:09:07 by rda-cunh          #+#    #+#             */
-/*   Updated: 2025/01/22 23:50:03 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/10 02:54:01 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,8 +130,10 @@ void	handle_heredoc(t_tokens *token, t_msh *msh)
 			line = readline("> ");
 			if (!line)
 			{
+				close (fd);
 				ft_putstr_fd("warning: here-document delimited by end-of-file\n", 2);
-				break ;
+				ft_free_all(msh); 
+				exit(0);
 			}
 			if (!ft_strcmp(line, token->args[0]))
 			{
@@ -145,16 +147,17 @@ void	handle_heredoc(t_tokens *token, t_msh *msh)
 		}
 		close(fd);
 		ft_free_all(msh);
-		exit(0); 
+		exit(0);
 	}
 	else //parent process
 	{
 		set_signal(HEREDOC_PAUSE, msh);
 		waitpid(pid, &status, 0);
-		if (WIFSIGNALED(status)) //checks if the child process was terminated by a signal (SIGINT / Ctrl+C)
+		if (WIFSIGNALED(status) || WEXITSTATUS(status)) //checks if the child process was terminated by a signal (SIGINT / Ctrl+C)
 		{
 			g_exit = 130;
-			unlink(".heredoc_tmp");
+			close(fd);
+			return ;
 		}
 		close(fd);
 		set_signal(SHELL_MODE, msh);

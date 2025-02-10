@@ -174,7 +174,7 @@ int			open_files(t_msh *msh, t_tokens *token);
 int			close_files(t_msh *msh);
 /* EXECUTER */
 int			exec_builtin(t_msh *msh, t_tokens *tokens);
-void		handle_redirections(t_tokens *token);
+void		handle_redirections(t_msh *msh, t_tokens *token);
 void		setup_heredocs(t_tokens *tokens, t_msh *msh);
 int			execute_cmd(t_msh *msh, t_tokens *tokens, char **envp);
 int			execute_one(t_msh *msh, char **envp);

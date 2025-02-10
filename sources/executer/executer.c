@@ -31,7 +31,7 @@ int exec_builtin(t_msh *msh, t_tokens *tokens)
 	return (1);
 }
 
-void	handle_redirections(t_tokens *token) //added this to handle heredoc (must evaluate how to melt with redirections code from Leonardo)
+void	handle_redirections(t_msh *msh, t_tokens *token) //added this to handle heredoc (must evaluate how to melt with redirections code from Leonardo)
 {
 	int	fd;
 	
@@ -39,20 +39,29 @@ void	handle_redirections(t_tokens *token) //added this to handle heredoc (must e
 	{
 		if (token->type == TKN_HEREDOC)
 		{
-			fd = open(".heredoc_tmp", O_RDONLY); //opens heredoc file
-			if (fd < 0)
+			if (g_exit != 130)
 			{
-				perror("open heredoc_tmp");
-				exit(1);
+				fd = open(".heredoc_tmp", O_RDONLY); //opens heredoc file
+				if (fd < 0)
+				{
+					perror("open heredoc_tmp");
+					exit(1);
+				}
+				if (dup2(fd, STDIN_FILENO) == -1) //redirects stdin to read from the heredoc file
+				{
+					perror("dup2");
+					exit(1);
+				}
+				close(fd);
+				unlink(".heredoc_tmp"); //remove a link to a file in filesystem
+				break ; //only use the last heredoc (multi heredocs)
 			}
-			if (dup2(fd, STDIN_FILENO) == -1) //redirects stdin to read from the heredoc file
+			else
 			{
-				perror("dup2");
-				exit(1);
+				unlink(".heredoc_tmp");
+				ft_free_all(msh);
+				exit (130);
 			}
-			close(fd);
-			unlink(".heredoc_tmp"); //remove a link to a file in filesystem
-			break ; //only use the last heredoc (multi heredocs)
 		}
 		token = token->next;
 	}
@@ -81,10 +90,10 @@ int execute_one(t_msh *msh, char **envp)
 	struct stat filestat;
 
 	cwd = NULL;
+	g_exit = 0;
 	//introduced a first pass trought all tokens to handle heredocs (must he taken care first to input redirection)
 	setup_heredocs(msh->data->tokens, msh);
 	//for TKN_HEREDOC alone, just skip
-	g_exit = 0;
 	if (msh->data->tokens->type == TKN_HEREDOC)
 		return (0);
 	if (open_files(msh, msh->data->tokens) != 0)
@@ -109,7 +118,7 @@ int execute_one(t_msh *msh, char **envp)
 		else if (pid == 0)
 		{
 			set_signal(CHILD_MODE, msh);
-			handle_redirections(msh->data->tokens);
+			handle_redirections(msh, msh->data->tokens);
 			if (msh->data->tokens->type == TKN_BCMD && (msh->data->tokens->name[0] == '.' && msh->data->tokens->name[1] == '/'))
 			{
 				cwd = getcwd(NULL, 0);
