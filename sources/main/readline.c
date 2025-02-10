@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/09 18:02:56 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/10 00:14:33 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,7 @@ int	ft_readline(t_msh *msh)
 		return (ft_free_data(msh), free(line), 1); // Erro aqui quando return == 1, ocorre varios leaks
 	ft_get_args(msh);
 	//ft_print_params(msh); 	// Remover
-	ft_print_tokens(msh->data->tokens); 	// Remover
+	//ft_print_tokens(msh->data->tokens); 	// Remover
 	//printf("\n<--------------------------------->\n"); 	// Remover
 	free(line);
 	return (0);

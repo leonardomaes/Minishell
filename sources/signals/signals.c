@@ -6,13 +6,11 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 00:39:31 by rda-cunh          #+#    #+#             */
-/*   Updated: 2024/12/09 19:14:48 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/10 02:58:31 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
-
-//process signal handlers
 
 //used in interactive/shell mode to deal with SIGINT (Ctr+C)
 void	ft_sigint_shell(int sig)
@@ -25,6 +23,16 @@ void	ft_sigint_shell(int sig)
 	(void) sig;
 }
 
+//helper function to store *msh and pass it to child signal handler
+static t_msh	*get_msh(t_msh *msh)
+{
+	static t_msh	*stored_msh;
+
+	if (msh != NULL)
+		stored_msh = msh;
+	return (stored_msh);
+}
+
 //child signal handler for heredoc
 void	child_signal_handler(int sig)
 {
@@ -32,6 +40,7 @@ void	child_signal_handler(int sig)
 	{
 		g_exit = 130;
 		write(1, "\n", 1);
+		ft_free_all(get_msh(NULL));
 		exit(g_exit);
 	}
 }
@@ -59,6 +68,7 @@ static void	set_signal_mode(int sg)
 //manage different signals according with with operation mode
 void	set_signal(int sg, t_msh *msh)
 {
+	get_msh(msh);
 	if (sg == SHELL_MODE || sg == COMMAND_MODE || sg == CHILD_MODE)
 		set_signal_mode(sg);
 	if (sg == HEREDOC)
