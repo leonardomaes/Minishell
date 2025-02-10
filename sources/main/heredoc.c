@@ -19,7 +19,7 @@ int	has_expand(const char *line)
 
 	i = -1;
 	while (line[++i])
-		if (line[i] == '$' && line[i + 1] != '\0')
+		if (line[i] == '$' && (line[i + 1] != '\0' || line[i + 1] != ' '))
 			return (1);
 	return (0); //no variable found
 }
@@ -52,7 +52,6 @@ void	get_expand_variable(char *line, t_msh *msh, t_expand *exp)
 		content = ft_strdup(get_env_var_value(msh->envp, key));
 	else
 		content = ft_itoa(g_exit);
-
 	if (content)
 	{
 		tmp = exp->end;
@@ -82,7 +81,7 @@ char	*expand_line(char *line, t_msh *msh)
 	exp->end = ft_strdup("");
 	while (line[exp->i])
 	{
-		if (line[exp->i] == '$' && line[exp->i + 1] != '\0')
+		if (line[exp->i] == '$' && (line[exp->i + 1] != '\0' || line[exp->i + 1] != ' '))
 			get_expand_variable(line, msh, exp);
 		exp->i++;
 	}
