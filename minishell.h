@@ -58,6 +58,12 @@
 #define TKN_SPACE 118
 #define TKN_DIR 119
 
+// Exit messages
+#define ERR_DIR	201
+#define ERR_COMM_N_FOUND 202
+#define ERR_SUCH_FILE 203
+#define ERR_PERM_DENIED 204
+
 //macros for signal modes
 #define SHELL_MODE		1
 #define	COMMAND_MODE	2
@@ -135,7 +141,7 @@ void		ft_free_data(t_msh	*msh);
 void		free_array(char **str, unsigned int n);
 void		free_ptr(void **ptr);
 void		free_args(char **args);
-
+void		ft_exit(t_msh *msh, int exit_code, char *msg_err, char *arg);
 /****** PARSER AND TOKENS ******/
 /* TOKENIZER */
 char		**alloc_args(int words, int *len);

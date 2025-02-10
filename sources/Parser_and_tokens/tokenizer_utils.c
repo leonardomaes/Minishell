@@ -168,6 +168,6 @@ char *ft_chartrim(char **s, char set)
 		start++;
 	while (end > start && *end == set)
 		end--;
-	new_str = strndup(start, end - start + 1); // Trocar função
+	new_str = ft_strndup(start, end - start + 1); // Trocar função
 	return (new_str);
 }

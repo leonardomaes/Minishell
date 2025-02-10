@@ -35,7 +35,7 @@ void	handle_redirections(t_msh *msh, t_tokens *token) //added this to handle her
 {
 	int	fd;
 	
-	while (token)
+	while (token && token->type != TKN_PIPE)
 	{
 		if (token->type == TKN_HEREDOC)
 		{
@@ -45,15 +45,17 @@ void	handle_redirections(t_msh *msh, t_tokens *token) //added this to handle her
 				if (fd < 0)
 				{
 					perror("open heredoc_tmp");
+					ft_free_all(msh);
 					exit(1);
 				}
 				if (dup2(fd, STDIN_FILENO) == -1) //redirects stdin to read from the heredoc file
 				{
 					perror("dup2");
+					ft_free_all(msh);
 					exit(1);
 				}
 				close(fd);
-				unlink(".heredoc_tmp"); //remove a link to a file in filesystem
+				//unlink(".heredoc_tmp"); //remove a link to a file in filesystem
 				break ; //only use the last heredoc (multi heredocs)
 			}
 			else
@@ -73,7 +75,7 @@ void	setup_heredocs(t_tokens *tokens, t_msh *msh)
 	t_tokens	*current;
 
 	current = tokens;
-	while (current)
+	while (current && current->type != TKN_PIPE)
 	{
 		if (current->type == TKN_HEREDOC && g_exit != 130)
 			handle_heredoc(current, msh);
@@ -123,52 +125,52 @@ int execute_one(t_msh *msh, char **envp)
 			{
 				cwd = getcwd(NULL, 0);
 				comm = ft_strjoin(cwd, msh->data->tokens->name + 1);
+				free(cwd);
 			}
 			else
 				comm = ft_get_command(msh, msh->data->tokens->args[0], msh->data->cmd_paths);
 			if (stat(comm, &filestat) == 0 && S_ISDIR(filestat.st_mode))
 			{
-				ft_putstr_fd("bash: ", 2);
-				ft_putstr_fd(comm, 2);
-				ft_putstr_fd(": Is a directory\n", 2);
-				free(comm);
-				if (cwd)
-					free(cwd);
-				ft_free_all(msh);
-				exit(126);
+				ft_exit(msh, 126, ": Is a directory\n", comm);
+				//ft_putstr_fd("bash: ", 2);
+				//ft_putstr_fd(comm, 2);
+				//ft_putstr_fd(": Is a directory\n", 2);
+				//free(comm);
+				//ft_free_all(msh);
+				//exit(126);
 			}
 			if (!comm)
 			{
-				ft_putstr_fd("bash: ", 2);
+				ft_exit(msh, 127, ": command not found\n", ft_strdup(msh->data->tokens->args[0]));
+				/* ft_putstr_fd("bash: ", 2);
 				ft_putstr_fd(msh->data->tokens->args[0], 2);
 				ft_putstr_fd(": command not found\n", 2);
 				ft_free_all(msh);
-				exit(127);
+				exit(127); */
 			}
 			if (access(comm, F_OK) == -1)
 			{
-				ft_putstr_fd("bash: ", 2);
+				ft_exit(msh, 127, ": No such file or directory\n", comm);
+				/* ft_putstr_fd("bash: ", 2);
 				ft_putstr_fd(comm, 2);
 				ft_putstr_fd(": No such file or directory\n", 2);
-				free(cwd);
 				free(comm);
 				ft_free_all(msh);
-				exit(127);
+				exit(127); */
 			}
 			if (access(comm, X_OK) == -1)
 			{
-				ft_putstr_fd("bash: ", 2);
+				ft_exit(msh, 126, ": Permission denied\n", comm);
+				/* ft_putstr_fd("bash: ", 2);
 				ft_putstr_fd(comm, 2);
 				ft_putstr_fd(": Permission denied\n", 2);
-				free(cwd);
 				free(comm);
 				ft_free_all(msh);
-				exit(126);
+				exit(126); */
 			}
 			if (execve(comm, msh->data->tokens->args, envp) == -1)
 			{
 				perror("execve:");
-				free(cwd);
 				free(comm);
 				ft_free_all(msh);
 				exit(126);
@@ -215,28 +217,29 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 		{
 			cwd = getcwd(NULL, 0);
 			comm = ft_strjoin(cwd, tokens->name + 1);
-			//free(cwd);
+			free(cwd);
 		}
 		else
 			comm = ft_get_command(msh, tokens->args[0], msh->data->cmd_paths);
 		if (stat(comm, &filestat) == 0 && S_ISDIR(filestat.st_mode))
 		{
+			ft_exit(msh, 126, ": Is a directory\n", comm);
 			ft_putstr_fd("bash: ", 2);
 			ft_putstr_fd(comm, 2);
 			ft_putstr_fd(": Is a directory\n", 2);
 			free(comm);
-			free(cwd);
 			ft_free_all(msh);
 			exit(126);
 		}
 		if (!comm)
 		{
 			//printf("bash: %s: command not found\n", tokens->name);
-			ft_putstr_fd(" bash: ", 2);
+			ft_exit(msh, 127, ": command not found\n", ft_strdup(tokens->args[0]));
+			/* ft_putstr_fd(" bash: ", 2);
 			ft_putstr_fd(tokens->args[0], 2);
 			ft_putstr_fd(": command not found\n", 2);
 			ft_free_all(msh);
-			exit(127);
+			exit(127); */
 		}
 		if (execve(comm, tokens->args, envp) == -1)
 		{
@@ -268,6 +271,7 @@ int	execute_multi(t_msh *msh)
 	// Abre arquivos apenas no primeiro comando
 	while (i <= msh->data->pipes)
 	{
+		setup_heredocs(current_token, msh);
 		if (i < msh->data->pipes && pipe(pipefd) == -1) // Criando pipe para o próximo comando
 		{
 			perror("pipe: ");
@@ -315,6 +319,7 @@ int	execute_multi(t_msh *msh)
 				close(pipefd[0]);
 			}
 			// Executa o comando
+			handle_redirections(msh, current_token);
 			execute_cmd(msh, current_token, msh->envp);
 			exit(1);
 		}

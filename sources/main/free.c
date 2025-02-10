@@ -105,3 +105,13 @@ void	free_ptr(void **ptr)
 	free(*ptr);
 	*ptr = NULL;
 }
+
+void	ft_exit(t_msh *msh, int exit_code, char *msg_err, char *arg)
+{
+	ft_putstr_fd("bash: ", 2);
+	ft_putstr_fd(arg, 2);
+	ft_putstr_fd(msg_err, 2);
+	free(arg);
+	ft_free_all(msh);
+	exit(exit_code);
+}

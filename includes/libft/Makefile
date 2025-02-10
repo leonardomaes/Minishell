@@ -6,7 +6,7 @@ SOURCES = \
 	ft_strdup.c ft_striteri.c ft_strjoin.c ft_strlcat.c ft_strlcpy.c \
 	ft_strlen.c ft_strmapi.c ft_strncmp.c ft_strnstr.c ft_strrchr.c \
 	ft_strtrim.c ft_substr.c ft_tolower.c ft_toupper.c ft_uitoa.c \
-	ft_strstr.c  ft_strcat.c ft_strcpy.c \
+	ft_strstr.c  ft_strcat.c ft_strcpy.c ft_strndup.c \
 	get_next_line.c get_next_line_utils.c ft_strcmp.c ft_strextract.c 
 OBJS = $(SOURCES:.c=.o)
 
