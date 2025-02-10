@@ -75,7 +75,7 @@ void	setup_heredocs(t_tokens *tokens, t_msh *msh)
 	current = tokens;
 	while (current)
 	{
-		if (current->type == TKN_HEREDOC)
+		if (current->type == TKN_HEREDOC && g_exit != 130)
 			handle_heredoc(current, msh);
 		current = current->next;
 	}
@@ -139,11 +139,9 @@ int execute_one(t_msh *msh, char **envp)
 			}
 			if (!comm)
 			{
-				// perror("bash: ");
-				//printf("bash: %s: command not found\n", msh->data->tokens->name);
 				ft_putstr_fd("bash: ", 2);
 				ft_putstr_fd(msh->data->tokens->args[0], 2);
-				ft_putstr_fd(" command not found\n", 2);
+				ft_putstr_fd(": command not found\n", 2);
 				ft_free_all(msh);
 				exit(127);
 			}
@@ -167,7 +165,6 @@ int execute_one(t_msh *msh, char **envp)
 				ft_free_all(msh);
 				exit(126);
 			}
-			//printf("%s\n", comm); // Apagar
 			if (execve(comm, msh->data->tokens->args, envp) == -1)
 			{
 				perror("execve:");
@@ -266,8 +263,8 @@ int	execute_multi(t_msh *msh)
 
 	i = 0;
 	prev_pipe = -1;
+	g_exit = 0;
 	current_token = msh->data->tokens;
-
 	// Abre arquivos apenas no primeiro comando
 	while (i <= msh->data->pipes)
 	{
@@ -375,15 +372,6 @@ int execute(t_msh *msh)
 	int status;
 
 	status = 1;
-	/* if (open_files(msh) != 0)
-	{
-		g_exit = 1;
-		return (-1);
-	}
-	if (msh->data->infile > 0)	// Ta fazendo exit quando tem infile
-		dup2(msh->data->infile, STDIN_FILENO);
-	if (msh->data->outfile > 0)
-		dup2(msh->data->outfile, STDOUT_FILENO); */
 	if (msh->data->pipes == 0)
 		status = execute_one(msh, msh->envp);
 	else
