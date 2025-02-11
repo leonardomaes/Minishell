@@ -6,85 +6,39 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/10 19:41:59 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/11 19:02:35 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-//used a simple buble sort to sort envp array
-void	ft_sort_array(char **array, int count)
-{
-	int		i;
-	int		j;
-	char	*tmp;
-
-	i = 0;
-	while (i < count - 1)
-	{
-		j = 0;
-		while (j < count - i - 1)
-		{
-			if (ft_strncmp(array[j], array[j + 1], ft_strlen(array[j])) > 0)
-			{
-				tmp = array[j];
-				array[j] = array[j + 1];
-				array[j + 1] = tmp;
-			}
-			j++;
-		}
-		i++;
-	}
-}
-
-//function to print an array (added "declare..." to be used with export)
-void	ft_print_array(char **array)
+//helper funtion to count the number of env variables
+int	env_var_count(char **envp)
 {
 	int	i;
 
 	i = 0;
-	if (!array)
-		return ;
-	while (array[i])
-	{
-		printf("declare -x %s\n", array[i]);
+	while (envp && envp[i])
 		i++;
-	}
+	return (i);
 }
 
-//function to free an array (used whith envp)
-void	ft_free_array(char **array)
+//helper function that formats each line of envp to print
+static char	*format_env_var(char *env_var)
 {
-	int	i;
+	char	*eq_pos;
+	char	*name;
+	char	*value;
+	char	*formatted;
 
-	i = 0;
-	if (!array)
-		return ;
-	while (array[i])
-	{
-		free_ptr((void **)&array[i]);
-		i++;
-	}
-	free(array);
-}
-
-//check if env variable name is valid
-int	is_valid_var_name(char *name)
-{
-	int	i;
-
-	i = 0;
-	if (!name || !name[0])
-		return (0);
-	if (!(ft_isalpha(name[0]) || name[0] == '_'))
-		return (0); 
-	while (name[i] && name[i] != '=')
-	{
-		if (!(ft_isalnum(name[i]) || name[i] == '_'))
-			return (0);
-		i++;
-	}
-	return (1);
+	eq_pos = ft_strchr(env_var, '=');
+	if (!eq_pos)
+		return (ft_strdup(env_var));
+	name = ft_substr(env_var, 0, eq_pos - env_var);
+	value = eq_pos + 1;
+	formatted = ft_strjoin4(name, "=\"", value, "\"");
+	free(name);
+	return (formatted);
 }
 
 //sorted print of the env variable 
@@ -101,7 +55,7 @@ int	print_sorted_env(char **envp)
 	i = 0;
 	while (i < count)
 	{
-		sorted_envp[i] = ft_strdup(envp[i]);
+		sorted_envp[i] = format_env_var(envp[i]);
 		if (!sorted_envp[i])
 		{
 			ft_free_array(sorted_envp);
@@ -115,11 +69,39 @@ int	print_sorted_env(char **envp)
 	return (0);
 }
 
+static int	process_export_arg(t_msh *msh, char *arg, int *status)
+{
+	char	*name;
+	char	*value;
+
+	if (ft_strcmp(arg, "_") == 0)
+		return (0);
+	name = ft_strdup(arg);
+	value = ft_strchr(name, '=');
+	if (value)
+	{
+		*value = '\0';
+		value++;
+	}
+	if (!is_valid_var_name(name))
+	{
+		ft_putstr_fd("bash: export: `", 2);
+		ft_putstr_fd(arg, 2);
+		ft_putstr_fd("': not a valid identifier\n", 2);
+		*status = 1;
+		free_ptr((void **)&name);
+		return (0);
+	}
+	if (set_env_var(msh, name, value))
+		return ((free_ptr((void **)&name), 1));
+	free_ptr((void **)&name);
+	return (0);
+}
+
+//main function do deal with export builtin
 int	execute_export(t_msh *msh, char **args)
 {
 	int		i;
-	char	*name;
-	char	*value;
 	int		status;
 
 	i = 1;
@@ -129,36 +111,10 @@ int	execute_export(t_msh *msh, char **args)
 		print_sorted_env(msh->envp);
 		return (0);
 	}
-	while(args[i])
+	while (args[i])
 	{
-		if (ft_strcmp(args[i], "_") == 0) //special case for '_'
-		{
-			i++;
-			continue ;
-		}
-		name = ft_strdup(args[i]);
-		value = ft_strchr(name, '=');
-		if (value)
-		{
-			*value = '\0'; //if '=' exists, replace it with a '\0', splitting the string in two parts (name and value). Value kept as NULL if there's no '='
-			value++;
-		}
-		if (!is_valid_var_name(name))
-		{
-			ft_putstr_fd("bash: export: `", 2);
-			ft_putstr_fd(args[i], 2);
-			ft_putstr_fd("': not a valid identifier\n", 2);
-			status = 1;
-			free_ptr((void **)&name);
-			i++;
-			continue ;
-		}
-		if (set_env_var(msh, name, value))
-		{
-			free_ptr((void **)&name);
-			return (1); //funtion set_env_var returned error
-		}
-		free_ptr((void **)&name);
+		if (process_export_arg(msh, args[i], &status))
+			return (1);
 		i++;
 	}
 	g_exit = status;

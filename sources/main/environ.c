@@ -105,13 +105,6 @@ char *ft_get_command(t_msh *msh, char *cmd, char **path)
 	}
 	comm = ft_find_executable(cmd, path);
 	if (cmd[0] == '/')
-	{
 		ft_exit(msh, 127, ": No such file or directory\n", ft_strdup(cmd));
-		/* ft_putstr_fd("bash: ", 2);
-		ft_putstr_fd(cmd, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-		ft_free_all(msh);
-		exit(127); */
-	}
 	return (comm);
 }

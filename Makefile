@@ -16,7 +16,8 @@ SRC =	sources/main/main.c sources/main/init.c sources/main/readline.c sources/ma
 		sources/Parser_and_tokens/token_type.c sources/Parser_and_tokens/split_tokens.c sources/Parser_and_tokens/get_args.c \
 		sources/builtins/env.c sources/builtins/exit.c sources/builtins/export.c sources/builtins/pwd.c \
 		sources/builtins/unset.c sources/builtins/cd.c sources/builtins/echo.c sources/builtins/builtins_utils.c \
-		sources/executer/executer.c sources/executer/redirections.c
+		sources/executer/executer.c sources/executer/executer_pipes.c sources/executer/executer_utils.c \
+		sources/executer/redirections.c sources/builtins/builtins_utils2.c
 #
 
 # Commands

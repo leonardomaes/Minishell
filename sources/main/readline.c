@@ -60,14 +60,14 @@ int syntax_redirs(t_msh *msh, t_tokens *tokens)
 		temp = temp->next;
 	if (temp->next == NULL)
 	{
-		ft_putstr_fd("bash: syntax error near unexpected token 'newline'\n", 2);
+		ft_putstr_fd("bash: syntax error near unexpected token `newline'\n", 2);
 		//printf("bash: syntax error near unexpected token 'newline'\n");
 		g_exit = 2;
 		return (1);
 	}
 	if (get_delimiter(msh, temp->next->name) != 0) // Arrumar esta verificação
 	{
-		ft_putstr_fd("bash: syntax error near unexpected token '", 2);
+		ft_putstr_fd("bash: syntax error near unexpected token `", 2);
 		ft_putstr_fd(temp->next->name, 2);
 		ft_putstr_fd("'\n", 2);
 		//printf("bash: syntax error near unexpected token '%s'\n", temp->next->name);
@@ -146,7 +146,7 @@ int	syntax_check(t_msh *msh, t_data *data)
 {
 	if (data->tokens->type == TKN_PIPE)
 	{
-		ft_putstr_fd("bash: syntax error near unexpected token '", 2);
+		ft_putstr_fd("bash: syntax error near unexpected token `", 2);
 		ft_putstr_fd(data->tokens->name, 2);
 		ft_putstr_fd("'\n", 2);
 		//printf("bash: syntax error near unexpected token `%s'\n", data->tokens->name);
@@ -155,14 +155,14 @@ int	syntax_check(t_msh *msh, t_data *data)
 	}
 	if (data->tokens->type == TKN_HEREDOC)
 	{
-		ft_putstr_fd("bash: syntax error near unexpected token 'newline'\n", 2);
+		ft_putstr_fd("bash: syntax error near unexpected token `newline'\n", 2);
 		//printf("bash: syntax error near unexpected token 'newline'\n");
 		g_exit = 2;
 		return (1);
 	}
 	if (syntax_quotes(data->tokens))
 	{
-		ft_putstr_fd("bash: syntax error near unexpected token 'open quote'\n", 2);
+		ft_putstr_fd("bash: syntax error near unexpected token `open quote'\n", 2);
 		//printf("bash: syntax error near unexpected token 'open quote'\n");
 		g_exit = 2;
 		return (1);

@@ -14,7 +14,7 @@
 
 int	ft_isdelimiter(char c)
 {
-	return (c == '"' || c == '\'' || c == '\0');
+	return (c == '"' || c == '$' || c == '\'' || c == '\0');
 }
 
 int	ft_isredirection(char c)

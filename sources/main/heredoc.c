@@ -13,88 +13,83 @@
 #include "../../minishell.h"
 
 //checks if within a heredoc, there are variables to expand
-int	has_expand(const char *line)
-{
-	int	i;
 
-	i = -1;
-	while (line[++i])
-		if (line[i] == '$' && (line[i + 1] != '\0' || line[i + 1] != ' '))
-			return (1);
-	return (0); //no variable found
-}
-
-int	search_variable_end(const char *s, int i)
+int calculate_expanded_length(t_msh *msh, const char *line)
 {
-	while (s[++i])
+	int			i;
+	int			new_len;
+	const char	*var_start;
+	const char	*var_end;
+	const char	*var_value;
+	char		*var_name;
+
+	i = 0;
+	new_len = 0;
+	while (line[i])
 	{
-		if (s[i] == '?' && s[i - 1] == '$')
-			return (i + 1);
-		if (!ft_isalnum(s[i]))
-			return (i);
+		if (line[i] == '$' && isalnum(line[i + 1]))
+		{
+			var_start = &line[i + 1];
+			var_end = var_start;
+			while (*var_end && (isalnum(*var_end) || *var_end == '_'))
+				var_end++;
+			var_name = ft_strndup(var_start, var_end - var_start);
+			var_value = get_env_var_value(msh->envp, var_name);
+			free(var_name);
+ 
+			if (var_value)
+				new_len += ft_strlen(var_value);
+			i += (var_end - var_start) + 1;
+		}
+		else
+		{
+			new_len++;
+			i++;
+		}
 	}
-	return (i);
+	return new_len;
 }
 
-void	get_expand_variable(char *line, t_msh *msh, t_expand *exp)
+char *expand_env_variables(t_msh *msh, const char *line)
 {
-	char	*key;
-	char	*content;
-	char	*tmp;
-
-	exp->position = search_variable_end(line + exp->i + 1, -1);
-	key = ft_substr(line, exp->i + 1, exp->position);
-	exp->new = ft_substr(line, exp->start, exp->i);
-	tmp = exp->end;
-	exp->end = ft_strjoin(tmp, exp->new);
-	free(tmp);
-	if (line[exp->i + 1] != '?')
-		content = ft_strdup(get_env_var_value(msh->envp, key));
-	else
-		content = ft_itoa(g_exit);
-	if (content)
-	{
-		tmp = exp->end;
-		exp->end = ft_strjoin(tmp, content);
-		free(tmp);
-		free(content);
-	}
-	exp->i += exp->position;
-	exp->start = exp->i + 1;
-	free(exp->new);
-	free(key);
-}
-
-//processses input and replace the variables ($VAR)
-char	*expand_line(char *line, t_msh *msh)
-{
-	t_expand	*exp;
-	char		*tail;
+	int 		i;
+	int			j;
+	int 		new_len;
+	const char	*var_start;
+	const char	*var_end;
+	const char	*var_value;
+	char		*var_name;
 	char		*result;
-	char		*tmp;
 
-	exp = malloc(sizeof(t_expand));
-	if (!exp)
-		return (NULL);
-	exp->i = 0;
-	exp->start = 0;
-	exp->end = ft_strdup("");
-	while (line[exp->i])
+	i = 0;
+	j = 0;
+	new_len = calculate_expanded_length(msh, line);
+	result = malloc(new_len + 1);
+	if (!result)
+		return NULL;
+	while (line[i])
 	{
-		if (line[exp->i] == '$' && (line[exp->i + 1] != '\0' || line[exp->i + 1] != ' '))
-			get_expand_variable(line, msh, exp);
-		exp->i++;
+		if (line[i] == '$' && isalnum(line[i + 1]))
+		{
+			var_start = &line[i + 1];
+			var_end = var_start;
+			while (*var_end && (isalnum(*var_end) || *var_end == '_'))
+				var_end++;
+			var_name = ft_strndup(var_start, var_end - var_start);
+			var_value = get_env_var_value(msh->envp, var_name);
+			free(var_name);
+			if (var_value)
+			{
+				while (*var_value)
+					result[j++] = *var_value++;
+			}
+			i += (var_end - var_start) + 1;
+		}
+		else
+			result[j++] = line[i++];
 	}
-	tail = ft_substr(line, exp->start, exp->i - exp->start);
-	tmp = exp->end; 
-	exp->end = ft_strjoin(tmp, tail);
-	free(tmp);
-	result = ft_strdup(exp->end);
-	free(tail);
-	free(exp->end);
-	free(exp);
-	free(line);
-	return (result);
+	result[j] = '\0';
+	return result;
 }
 
 //functions that reads line until delimiter (end) is found, expands variables if delimiter is not quoted and stores the input in a file
@@ -105,21 +100,20 @@ void	handle_heredoc(t_tokens *token, t_msh *msh)
 	int 	status;
 	pid_t	pid;
 
-	//create heredoc file
 	fd = open(".heredoc_tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 	{
 		perror("heredoc");
 		return ;
 	}
-	pid = fork (); //create child process to handle heredoc
+	pid = fork ();
 	if (pid == -1)
 	{
 		close(fd);
 		perror("fork");
 		return ;
 	}
-	if (pid == 0) //child process
+	if (pid == 0)
 	{
 		set_signal(HEREDOC, msh);
 		while (1)
@@ -137,8 +131,8 @@ void	handle_heredoc(t_tokens *token, t_msh *msh)
 				free(line);
 				break ;
 			}
-			if (has_expand(line) && token->next->type != SNG_QUOTES && token->next->type != DBL_QUOTES)
-				line = expand_line(line, msh);
+			if (token->next->type != SNG_QUOTES && token->next->type != DBL_QUOTES)
+				line = expand_env_variables(msh, line);
 			ft_putendl_fd(line, fd);
 			free(line);
 		}

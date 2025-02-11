@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/10 19:47:07 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/11 18:46:03 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,7 @@ long long	ft_safe_atol(const char *str, int *error)
 		if ((result > LONG_MAX / 10)
 			|| (result == LONG_MAX / 10 && (*str - '0') > LONG_MAX % 10))
 		{
-			*error = 1;
-			return (0);
+			return (*error = 1, 0);
 		}
 		result = result * 10 + *str - '0';
 		str++;
@@ -82,7 +81,7 @@ int	execute_exit(t_msh *msh, char **args)
 	int			error;
 
 	ft_putstr_fd("exit\n", 1);
-	if (!args[1])
+	if (!args[1] || ft_strcmp(args[1], "--") == 0)
 	{
 		ft_free_all(msh);
 		exit(g_exit);

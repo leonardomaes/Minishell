@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 00:39:31 by rda-cunh          #+#    #+#             */
-/*   Updated: 2025/02/10 02:58:31 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/11 13:49:24 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static t_msh	*get_msh(t_msh *msh)
 }
 
 //child signal handler for heredoc
-void	child_signal_handler(int sig)
+void	ft_sigint_heredoc(int sig)
 {
 	g_exit = 130;
 	write(1, "\n", 1);
@@ -71,7 +71,7 @@ void	set_signal(int sg, t_msh *msh)
 		set_signal_mode(sg);
 	if (sg == HEREDOC)
 	{
-		signal(SIGINT, child_signal_handler);
+		signal(SIGINT, ft_sigint_heredoc);
 		signal(SIGQUIT, SIG_IGN);
 	}
 	if (sg == HEREDOC_PAUSE)

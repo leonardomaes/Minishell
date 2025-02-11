@@ -180,7 +180,7 @@ int			open_files(t_msh *msh, t_tokens *token);
 int			close_files(t_msh *msh);
 /* EXECUTER */
 int			exec_builtin(t_msh *msh, t_tokens *tokens);
-void		handle_redirections(t_msh *msh, t_tokens *token);
+void		handle_heredocs(t_msh *msh, t_tokens *token);
 void		setup_heredocs(t_tokens *tokens, t_msh *msh);
 int			execute_cmd(t_msh *msh, t_tokens *tokens, char **envp);
 int			execute_one(t_msh *msh, char **envp);
@@ -211,10 +211,7 @@ long long	ft_safe_atol(const char *str, int *error);
 int			execute_exit(t_msh *msh, char **args);
 
 /* BUILTINS | EXPORT */
-void		ft_sort_array(char **array, int count);
-void		ft_print_array(char **array);
-void		ft_free_array(char **array); //evaluate to change it to free.c
-int			is_valid_var_name(char *name);
+int			env_var_count(char **envp);
 int			print_sorted_env(char **envp);
 int			execute_export(t_msh *msh, char **args);
 
@@ -227,16 +224,20 @@ int			execute_unset(t_msh *msh, char **args);
 
 /* BUILTINS | UTILS */
 char		**realloc_env_vars(t_msh *msh, int size);
-int			env_var_count(char **envp);
 int			get_env_var_index(char **envp, char *var_name);
 char		*get_env_var_value(char **envp, char *var);
 int			set_env_var(t_msh *msh, char *var_name, char *var_value);
 
+/* BUILTINS | UTILS 2 - EXPORT*/
+void		ft_sort_array(char **array, int count);
+void		ft_print_array(char **array);
+void		ft_free_array(char **array);
+int			is_valid_var_name(char *name);
+char		*ft_strjoin4(char *s1, char *s2, char *s3, char *s4);
+
 /* SIGNAL HANDLING */
 void		ft_sigint_shell(int sig);
-void		ft_sigint_command(int sig);
-void		ft_sigquit(int sig);
-void		child_signal_handler(int sig);
+void		ft_sigint_heredoc(int sig);
 void		set_signal(int sg, t_msh *msg);
 
 /* TRASH */

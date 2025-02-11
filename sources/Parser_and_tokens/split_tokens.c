@@ -68,6 +68,11 @@ int	count_args(const char *s) // Conta quantidade de argumentos
 					i++;
 			}
 		}
+		else if (s[i] == '$' && s[i+1] == '\0')
+		{
+			i++;
+		}
+		
 		else if (ft_isredirection(s[i]))
 		{
 			while (ft_isredirection(s[i]))
@@ -119,6 +124,11 @@ int	*calculate_lengths(t_msh *msh, const char *s, int words) // Calcula tamanho 
 		}
 		else if (s[i] == '$' && !ft_isdelimiter(s[i+1]) && !ft_isspace(s[i+1])) // Dolar
 			len[word] = environ_lenght(msh, s, &i);
+		else if (s[i] == '$' && s[i+1] == '\0')
+		{
+			len[word] = 1;
+			i++;
+		}
 		else if (s[i] == '\'')
 			len[word] = single_quote_lenght(s, &i);
 		else if (s[i] == '"')
@@ -193,21 +203,16 @@ char **ft_split_args(t_msh *msh, const char *s)
 	l = 0;
 	while (s[l])
 	{
-		//printf("%c-", s[l]);
 		j = 0;
-		/* while (s[l] && ft_isspace(s[l]))
-			l++; */
 		if (s[l] == '\0')
 			break;
 		if (ft_isspace(s[l]) && (i == 0 || s[l - 1] == '|'))
 		{
 			while (ft_isspace(s[l]))
 				l++;
-			//i++;
 		}
 		if (ft_isspace(s[l])) // Se for espaços multiplos, adiciona apenas um espaço
 		{
-			//printf("-%c\n", s[l-1]);
 			str[i][j++] = s[l++];
 			str[i][j] = '\0';
 			while (ft_isspace(s[l]))
@@ -222,8 +227,13 @@ char **ft_split_args(t_msh *msh, const char *s)
 			j = handle_double_quote(msh, s, str[i], &l);
 		else if (s[l] == '\'')
 			j = handle_single_quote(s, str[i], &l);
-		else if (s[l] == '$' && !ft_isdelimiter(s[l+1]) && !ft_isspace(s[l+1])) // Se for apenas'$', nao entra aqui
+		else if (s[l] == '$' && !ft_isdelimiter(s[l+1]) && !ft_isspace(s[l+1]))
 			j = handle_environ(msh, s, str[i], &l);
+		else if (s[l] == '$' && s[l+1] == '\0')
+		{
+			str[i][j++] = s[l++];
+			str[i][j] = '\0';
+		}
 		else if (s[l] && ft_isredirection(s[l]))
 		{
 			while (ft_isredirection(s[l]))
