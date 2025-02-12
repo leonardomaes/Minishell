@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/12 12:13:54 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/12 22:48:43 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ int	ft_init_data(char *line, t_msh *msh)
 	msh->data->pipes = 0;
 	msh->data->infile = -2;
 	msh->data->outfile = -2;
+	msh->data->prev_pipe = -1;
 	return (0);
 }
 

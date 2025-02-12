@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/09 18:45:58 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/12 23:30:17 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ typedef struct s_data
 	int			stdout_backup;
 	int			infile;
 	int			outfile;
+	int			prev_pipe;
 	t_tokens	*tokens;
 }				t_data;
 
@@ -180,7 +181,7 @@ void		skip_spaces(const char *s, int *i);
 void		count_dollar(const char *s, int *i);
 int			count_args(const char *s);
 
-/* TOKEN UTILS */
+/* TOKENIZER UTILS */
 int			double_quote_lenght(t_msh *msh, const char *s, int *i);
 int			single_quote_lenght(const char *s, int *i);
 int			environ_lenght(t_msh *msh, const char *s, int *i);
@@ -198,15 +199,20 @@ int			get_type(t_msh *msh, char *name, int i);
 int			open_files(t_msh *msh, t_tokens *token);
 int			close_files(t_msh *msh);
 char		*find_last_arg(t_tokens *temp);
+
 /* EXECUTER */
 int			exec_builtin(t_msh *msh, t_tokens *tokens);
 void		handle_heredocs(t_msh *msh, t_tokens *token);
 void		setup_heredocs(t_tokens *tokens, t_msh *msh);
-int			execute_cmd(t_msh *msh, t_tokens *tokens, char **envp);
 int			execute_one(t_msh *msh, char **envp);
-int			execute_multi(t_msh *msh);
 int			execute(t_msh *msh);
 void		ft_exec(t_msh *msh, t_tokens *tokens, char **envp);
+
+/* EXECUTER PIPES*/
+int			execute_cmd(t_msh *msh, t_tokens *tokens, char **envp);
+void		ft_parent_multi2(t_msh *msh, pid_t pid, int prev_pipe);
+void		ft_child_process(t_msh *msh, t_tokens *cur, int *pipefd, int i);
+int			execute_multi(t_msh *msh);
 
 /* EXECUTER UTILS */
 void		handle_redirs(t_msh *msh, t_tokens *token, int prev_pipe);
