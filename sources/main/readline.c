@@ -6,39 +6,38 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/09 18:02:56 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/12 02:59:16 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-char *ft_prompt()
+char	*ft_prompt(void)
 {
-	char *line;
+	char	*line;
 
 	line = readline("\001\033[1;36m\002cmd>\001\033[0m\002");
 	if (!line)
-	{
-//		free(line);      //RM: validate do eliminate this free with Leo
 		return (NULL);
-	}
 	else if (*line != '\0')
-		add_history(line);								// Add ao historico
+		add_history(line);
 	return (line);
 }
 
 int	ft_countargs(char **args)
 {
-	int i;
+	int	i;
+
 	i = 0;
 	while (args[i])
 		i++;
-	return (i);	
+	return (i);
 }
 
 int	get_redir(t_tokens *temp)
 {
-	if (temp->type == TKN_APPEND || temp->type == TKN_INREDIR || temp->type == TKN_OUTREDIR || temp->type == TKN_HEREDOC)
+	if (temp->type == TKN_APPEND || temp->type == TKN_INREDIR
+		|| temp->type == TKN_OUTREDIR || temp->type == TKN_HEREDOC)
 		return (1);
 	return (0);
 }

@@ -6,103 +6,106 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/09 18:45:58 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/12 02:54:02 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <sys/ioctl.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <signal.h>
-#include <termcap.h>
-#include <termios.h>
-#include <signal.h>
-#include "includes/libft/libft.h"
-#include <fcntl.h>
+/************** LIBRARIES **************/
 
-/************* DEFINES *************/
-#define CMD
-#define IN
-#define OUT
+# include <stdio.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <sys/ioctl.h>
+# include <sys/wait.h>
+# include <sys/stat.h>
+# include <dirent.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <string.h>
+# include <signal.h>
+# include <termcap.h>
+# include <termios.h>
+# include <signal.h>
+# include "includes/libft/libft.h"
+# include <fcntl.h>
+
+/************** DEFINES **************/
+
+# define CMD
+# define IN
+# define OUT
 
 // Builtins defines
-#define BLT_ECHO 101
-#define BLT_CD 102
-#define BLT_PWD 103
-#define BLT_EXPORT 104
-#define BLT_UNSET 105
-#define BLT_ENV 106
-#define BLT_EXIT 107
+# define BLT_ECHO 101
+# define BLT_CD 102
+# define BLT_PWD 103
+# define BLT_EXPORT 104
+# define BLT_UNSET 105
+# define BLT_ENV 106
+# define BLT_EXIT 107
 
 // In type defines
-#define DBL_QUOTES 108
-#define SNG_QUOTES 109
-#define TKN_PIPE 110
-#define VAR_ENVIRON 111
-#define ARGUMENT 112
-#define TKN_OUTREDIR 113
-#define TKN_INREDIR 114
-#define TKN_APPEND 115
-#define TKN_HEREDOC 116
-#define TKN_BCMD 117
-#define TKN_SPACE 118
-#define TKN_DIR 119
+# define DBL_QUOTES 108
+# define SNG_QUOTES 109
+# define TKN_PIPE 110
+# define VAR_ENVIRON 111
+# define ARGUMENT 112
+# define TKN_OUTREDIR 113
+# define TKN_INREDIR 114
+# define TKN_APPEND 115
+# define TKN_HEREDOC 116
+# define TKN_BCMD 117
+# define TKN_SPACE 118
+# define TKN_DIR 119
 
 // Exit messages
-#define ERR_DIR	201
-#define ERR_COMM_N_FOUND 202
-#define ERR_SUCH_FILE 203
-#define ERR_PERM_DENIED 204
+# define ERR_DIR	201
+# define ERR_COMM_N_FOUND 202
+# define ERR_SUCH_FILE 203
+# define ERR_PERM_DENIED 204
 
-//macros for signal modes
-#define SHELL_MODE		1
-#define	COMMAND_MODE	2
-#define	CHILD_MODE		3
-#define EXIT			4
-#define HEREDOC			5
-#define HEREDOC_PAUSE	6
+// Macros for signal modes
+# define SHELL_MODE		1
+# define COMMAND_MODE	2
+# define CHILD_MODE		3
+# define EXIT			4
+# define HEREDOC		5
+# define HEREDOC_PAUSE	6
 
 /********** GLOBAL VARIABLE **********/
+
 extern int	g_exit;
 
-/************* STRUCTS *************/
-//msh->data->tokens
+/************** STRUCTS **************/
 
-typedef struct s_expand // struct to deal with the variable expansion in heredoc
+//struct for var expansion | start: after $ | end: first char after var name
+typedef struct s_pos
 {
-	char	*end;
-	char	*new;
-	int		i;
-	int		start;
-	int		position;
-}				t_expand;
+	const char	*start;
+	const char	*end;
+}	t_pos;
 
-typedef struct s_tokens			// Struct de tokens (Ainda a implementar)
+//token struct list
+typedef struct s_tokens
 {
 	char				*name;
 	char				**args;
 	int					type;
-	int					count; // A principio somente para imprimir, nenhum uso
+	int					count;
 	struct s_tokens		*prev;
 	struct s_tokens		*next;
 }				t_tokens;
 
-typedef struct s_data			// Info sobre argumentos recebidos
+//data struct to store info about args received
+typedef struct s_data
 {
 	char		**cmd_paths;
-	char		**args;			// Vetor de strings com agrs
-	int			argc;			// Quantidade de **args
-	int			pipes;			// Quantidade de pipes
+	char		**args;
+	int			argc;
+	int			pipes;
 	int			stdin_backup;
 	int			stdout_backup;
 	int			infile;
@@ -110,16 +113,17 @@ typedef struct s_data			// Info sobre argumentos recebidos
 	t_tokens	*tokens;
 }				t_data;
 
-typedef struct s_msh			// Main struct que contem tudo
+//main minishell struct
+typedef struct s_msh
 {
 	char	**envp;
 	t_data	*data;
-}               t_msh;
+}				t_msh;
 
 
 /************* FUNCTIONS *************/
 
-/* INIT */
+/* MAIN */
 void		ft_init_shell(t_msh **msh, char **envp);
 
 /* READLINE */
@@ -140,9 +144,11 @@ void		ft_free_all(t_msh *msh);
 void		ft_free_data(t_msh	*msh);
 void		free_array(char **str, unsigned int n);
 void		free_ptr(void **ptr);
+
+/* FREE 2 */
 void		free_args(char **args);
 void		ft_exit(t_msh *msh, int exit_code, char *msg_err, char *arg);
-/****** PARSER AND TOKENS ******/
+
 /* TOKENIZER */
 char		**alloc_args(int words, int *len);
 char		**get_args(char **data_args, int i, t_msh *msh);
@@ -155,6 +161,7 @@ int			get_delimiter(t_msh *msh, char *data_args);
 /* GET ARGS */
 void		ft_get_args(t_msh *msh);
 char		**getargs(t_msh *msh, t_tokens *token);
+
 /* SPLIT TOKENS */
 int			count_args(const char *s);
 int			*calculate_lengths(t_msh *msh, const char *s, int words);
@@ -178,6 +185,7 @@ int			get_type(t_msh *msh, char *name, int i);
 void		handle_redirs(t_msh *msh, int i, t_tokens *temp);
 int			open_files(t_msh *msh, t_tokens *token);
 int			close_files(t_msh *msh);
+
 /* EXECUTER */
 int			exec_builtin(t_msh *msh, t_tokens *tokens);
 void		handle_heredocs(t_msh *msh, t_tokens *token);
@@ -188,11 +196,11 @@ int			execute_multi(t_msh *msh);
 int			execute(t_msh *msh);
 
 /* HEREDOC */
-int			has_expand(const char *line);
-int			search_variable_end(const char *s, int i);
-void		get_expand_variable(char *line, t_msh *msh, t_expand *exp);
-char		*expand_line(char *line, t_msh *msh);
 void		handle_heredoc(t_tokens *token, t_msh *msh);
+
+/* HEREDOC EXPANDER */
+int			calculate_expanded_length(t_msh *msh, const char *line);
+char		*expand_env_variables(t_msh *msh, const char *line);
 
 /* BUILTINS | CD */
 int			update_env_change_dir(char *oldpwd, t_msh *msh);

@@ -9,9 +9,9 @@ LIBFT = includes/libft/libft.a
 PRINTF = includes/ft_printf/libftprintf.a
 
 #
-SRC =	sources/main/main.c sources/main/init.c sources/main/readline.c sources/main/environ.c sources/trash.c \
-		sources/main/free.c sources/main/heredoc.c \
-		sources/signals/signals.c \
+SRC =	sources/main/main.c sources/main/readline.c sources/main/environ.c sources/trash.c \
+		sources/exit_free/free.c sources/exit_free/free2.c\
+		sources/executer/heredoc.c sources/executer/heredoc_expander.c sources/signals/signals.c \
 		sources/Parser_and_tokens/tokenizer.c sources/Parser_and_tokens/tokenizer_utils.c \
 		sources/Parser_and_tokens/token_type.c sources/Parser_and_tokens/split_tokens.c sources/Parser_and_tokens/get_args.c \
 		sources/builtins/env.c sources/builtins/exit.c sources/builtins/export.c sources/builtins/pwd.c \
