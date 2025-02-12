@@ -12,7 +12,7 @@
 
 #include "../../minishell.h"
 
-int double_quote_lenght(t_msh *msh, const char *s, int *i) //Calculate size of strings in double quotes, including env vars
+int	double_quote_lenght(t_msh *msh, const char *s, int *i)
 {
 	int		j;
 
@@ -40,7 +40,7 @@ int double_quote_lenght(t_msh *msh, const char *s, int *i) //Calculate size of s
 	return (j);
 }
 
-int single_quote_lenght(const char *s, int *i) //Calculate size of strings in double quotes
+int single_quote_lenght(const char *s, int *i)
 {
 	int		j;
 
@@ -63,7 +63,7 @@ int single_quote_lenght(const char *s, int *i) //Calculate size of strings in do
 	return (j);
 }
 
-int	environ_lenght(t_msh *msh, const char *s, int *i) //Calculate size of extended env vars
+int	environ_lenght(t_msh *msh, const char *s, int *i)
 {
 	char *env;
 	char *env_val;
@@ -89,7 +89,7 @@ int	environ_lenght(t_msh *msh, const char *s, int *i) //Calculate size of extend
 	return (j);
 }
 
-int handle_environ(t_msh *msh, const char *s, char *str, int *l)	// Expand env vars
+int handle_environ(t_msh *msh, const char *s, char *str, int *l)
 {
 	const char *start = &s[++(*l)];
 	char var_name[999];
@@ -118,7 +118,7 @@ int handle_environ(t_msh *msh, const char *s, char *str, int *l)	// Expand env v
 	return (len);
 }
 
-int handle_single_quote(const char *s, char *str, int *l) // Identifies quotes and treat it
+int handle_single_quote(const char *s, char *str, int *l)
 {
 	int len = 0;
 
@@ -131,7 +131,7 @@ int handle_single_quote(const char *s, char *str, int *l) // Identifies quotes a
 	return (len);
 }
 
-int handle_double_quote(t_msh *msh, const char *s, char *str, int *l) // Identifies quotes and '$'
+int handle_double_quote(t_msh *msh, const char *s, char *str, int *l)
 {
 	int len = 0;
 	int i;

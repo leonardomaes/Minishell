@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   environ.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2024/11/25 19:03:46 by lmaes            ###   ########.fr       */
+/*   Updated: 2025/02/12 02:38:59 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-char *expand_env(char **envp, char *name)
+char	*expand_env(char **envp, char *name)
 {
 	if (!*envp)
 		return (NULL);
@@ -21,7 +21,7 @@ char *expand_env(char **envp, char *name)
 	return (*envp + ft_strlen(name));
 }
 
-char **ft_get_env(char **envp)
+char	**ft_get_env(char **envp)
 {
 	char	**env_copy;
 	int		i;
@@ -44,7 +44,7 @@ char **ft_get_env(char **envp)
 	return (env_copy);
 }
 
-char *ft_get_path(char **envp)
+char	*ft_get_path(char **envp)
 {
 	if (!*envp)
 		return (NULL);
@@ -57,7 +57,7 @@ char *ft_get_path(char **envp)
 	return (*envp + 5);
 }
 
-char *ft_find_executable(char *cmd, char **path)
+char	*ft_find_executable(char *cmd, char **path)
 {
 	char	*comm;
 	char	*temp;
@@ -85,7 +85,7 @@ char *ft_find_executable(char *cmd, char **path)
 	return (NULL);
 }
 
-char *ft_get_command(t_msh *msh, char *cmd, char **path)
+char	*ft_get_command(t_msh *msh, char *cmd, char **path)
 {
 	char	*comm;
 
@@ -100,7 +100,7 @@ char *ft_get_command(t_msh *msh, char *cmd, char **path)
 		return (ft_strdup(cmd));
 	if (cmd[0] == '/')
 	{
-		if(access(cmd, F_OK) == 0)
+		if (access(cmd, F_OK) == 0)
 			return (ft_strdup(cmd));
 	}
 	comm = ft_find_executable(cmd, path);

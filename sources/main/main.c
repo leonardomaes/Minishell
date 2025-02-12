@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:00 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/09 18:52:04 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/12 02:55:39 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,23 @@
 
 int	g_exit;
 
-int main(int argc, char *argv[], char **envp)
+void	ft_init_shell(t_msh **msh, char **envp)
 {
-	t_msh *msh;
+	g_exit = 0;
+	set_signal(SHELL_MODE, NULL);
+	(*msh) = malloc(sizeof(t_msh));
+	if (!*msh)
+		return ;
+	(*msh)->envp = ft_get_env(envp);
+}
+
+int	main(int argc, char *argv[], char **envp)
+{
+	t_msh	*msh;
 
 	(void)argv;
 	(void)argc;
-	ft_init_shell(&msh, envp);				// Inicia struct principal
+	ft_init_shell(&msh, envp);
 	while (1)
 	{
 		if (ft_readline(msh) == 0)
@@ -29,8 +39,8 @@ int main(int argc, char *argv[], char **envp)
 				execute(msh);
 			ft_free_data(msh);
 		}
-		else if (!msh->data) //included this check to implement EOF signal (Ctr+D)
-		{ // Entra aqui quando tem infile - solucionado, enterpretava como EOF
+		else if (!msh->data)
+		{
 			set_signal(EXIT, msh);
 			break ;
 		}

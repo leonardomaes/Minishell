@@ -22,11 +22,11 @@ int	ft_isredirection(char c)
 	return (c == '<' || c == '>');
 }
 
-void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)	// Pass agrs to linked list
+void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)
 {
 	t_tokens	*temp;
 
-	if (i < msh->data->argc && msh->data->args[i][0] == '\0')	// ???
+	if (i < msh->data->argc && msh->data->args[i][0] == '\0')
 		i++;
 	if (i < msh->data->argc)
 	{

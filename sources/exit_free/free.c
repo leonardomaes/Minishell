@@ -6,16 +6,16 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/07 19:16:04 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/12 02:49:29 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-void ft_free_tokens(t_tokens *tokens)
+void	ft_free_tokens(t_tokens *tokens)
 {
-	t_tokens *temp;
-	int i;
+	t_tokens	*temp;
+	int			i;
 
 	while (tokens != NULL)
 	{
@@ -28,14 +28,13 @@ void ft_free_tokens(t_tokens *tokens)
 				free(temp->args[i++]);
 			free(temp->args);
 		}
-		
 		free(temp);
 	}
 }
 
-void ft_free_all(t_msh *msh)
+void	ft_free_all(t_msh *msh)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (msh->envp[i])
@@ -45,9 +44,9 @@ void ft_free_all(t_msh *msh)
 	free(msh);
 }
 
-void ft_free_data(t_msh	*msh)
+void	ft_free_data(t_msh	*msh)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (msh->data)
@@ -95,23 +94,4 @@ void	free_array(char **str, unsigned int n)
 		i++;
 	}
 	free(str);
-}
-
-//standard funtion to free a pointer of any type and set it as NULL (avoids double free)
-void	free_ptr(void **ptr)
-{
-	if (!ptr || !*ptr)
-		return ;
-	free(*ptr);
-	*ptr = NULL;
-}
-
-void	ft_exit(t_msh *msh, int exit_code, char *msg_err, char *arg)
-{
-	ft_putstr_fd("bash: ", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putstr_fd(msg_err, 2);
-	free(arg);
-	ft_free_all(msh);
-	exit(exit_code);
 }

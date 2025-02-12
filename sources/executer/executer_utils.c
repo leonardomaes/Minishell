@@ -30,8 +30,8 @@ int exec_builtin(t_msh *msh, t_tokens *tokens)
 		return (execute_exit(msh, tokens->args));
 	return (1);
 }
-
-void	handle_heredocs(t_msh *msh, t_tokens *token) //added this to handle heredoc (must evaluate how to melt with redirections code from Leonardo)
+ //added this to handle heredoc (must evaluate how to melt with redirections code from Leonardo)
+void	handle_heredocs(t_msh *msh, t_tokens *token)
 {
 	int	fd;
 	
@@ -43,17 +43,9 @@ void	handle_heredocs(t_msh *msh, t_tokens *token) //added this to handle heredoc
 			{
 				fd = open(".heredoc_tmp", O_RDONLY); //opens heredoc file
 				if (fd < 0)
-				{
-					perror("open heredoc_tmp");
-					ft_free_all(msh);
-					exit(1);
-				}
+					ft_perror(msh, "open heredoc_tmp", 1);
 				if (dup2(fd, STDIN_FILENO) == -1) //redirects stdin to read from the heredoc file
-				{
-					perror("dup2");
-					ft_free_all(msh);
-					exit(1);
-				}
+					ft_perror(msh, "dup2", 1);
 				close(fd);
 				break ; //only use the last heredoc (multi heredocs)
 			}
@@ -78,5 +70,30 @@ void	setup_heredocs(t_tokens *tokens, t_msh *msh)
 		if (current->type == TKN_HEREDOC && g_exit != 130)
 			handle_heredoc(current, msh);
 		current = current->next;
+	}
+}
+
+void	handle_redirs(t_msh *msh, t_tokens *token, int prev_pipe)
+{
+	if (open_files(msh, token) != 0)
+	{
+		g_exit = 1;
+		ft_free_all(msh);
+		exit (1);
+	}
+	if (prev_pipe != -1) 
+	{
+		dup2(prev_pipe, STDIN_FILENO);
+		close(prev_pipe);
+	}
+	if (msh->data->infile > 0)
+	{
+		dup2(msh->data->infile, STDIN_FILENO);
+		close(msh->data->infile);
+	}
+	if (msh->data->outfile > 0)
+	{
+		dup2(msh->data->outfile, STDOUT_FILENO);
+		close(msh->data->outfile);
 	}
 }

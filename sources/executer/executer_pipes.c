@@ -12,15 +12,10 @@
 
 #include "../../minishell.h"
 
-
 int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 {
-	char 	*comm;
-	char 	*cwd;
 	int 	status;
-	struct stat filestat;
 
-	cwd = NULL;
 	if (tokens->type >= 101 && tokens->type <= 107)
 	{
 		status = exec_builtin(msh, tokens);
@@ -28,124 +23,19 @@ int execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 		exit(status);
 	}
 	else
-	{
-		if (tokens->type == TKN_BCMD && (tokens->name[0] == '.' || tokens->name[0] == '/'))
-		{
-			cwd = getcwd(NULL, 0);
-			comm = ft_strjoin(cwd, tokens->name + 1);
-			free(cwd);
-		}
-		else
-			comm = ft_get_command(msh, tokens->args[0], msh->data->cmd_paths);
-		if (stat(comm, &filestat) == 0 && S_ISDIR(filestat.st_mode))
-			ft_exit(msh, 126, ": Is a directory\n", comm);
-		if (!comm)
-			ft_exit(msh, 127, ": command not found\n", ft_strdup(tokens->args[0]));
-		if (execve(comm, tokens->args, envp) == -1)
-		{
-			perror("execve:");
-			free(comm);
-			ft_free_all(msh);
-			exit(126);
-		}
-		free(comm);
-	}
-	exit(1);
+		ft_exec(msh, tokens, envp);
 	return (0);
 }
 
-int	execute_multi(t_msh *msh)
+void	ft_parent_multi2(t_msh *msh, pid_t pid, int prev_pipe)
 {
-	int		pipefd[2];
-	int		prev_pipe;
-	int		status;
-	int		i;
-	pid_t 	pid;
-	t_tokens *current_token;
+	int status;
 
-	i = 0;
-	prev_pipe = -1;
-	g_exit = 0;
-	current_token = msh->data->tokens;
-	// Abre arquivos apenas no primeiro comando
-	while (i <= msh->data->pipes)
-	{
-		setup_heredocs(current_token, msh);
-		if (i < msh->data->pipes && pipe(pipefd) == -1) // Criando pipe para o próximo comando
-		{
-			perror("pipe: ");
-			ft_free_all(msh);
-			exit(1);
-		}
-		pid = fork();
-		if (pid == -1)
-		{
-			perror("fork: ");
-			ft_free_all(msh);
-			exit(1);
-		}
-		else if (pid == 0) // Processo filho
-		{
-			set_signal(CHILD_MODE, msh);
-			//printf("-%s\n", current_token->name);
-			if (open_files(msh, current_token) != 0)
-			{
-				g_exit = 1;
-				ft_free_all(msh);
-				exit(g_exit);
-			}
-			// Redirecionamento de Entrada (Se houver infile ou pipe anterior)
-			if (prev_pipe != -1) 
-			{
-				dup2(prev_pipe, STDIN_FILENO);
-				close(prev_pipe);
-			}
-			if (msh->data->infile > 0) // Se houver infile aberto
-			{
-				dup2(msh->data->infile, STDIN_FILENO);
-				close(msh->data->infile);
-			}
-			if (msh->data->outfile > 0) // Se houver outfile aberto
-			{
-				dup2(msh->data->outfile, STDOUT_FILENO);
-				close(msh->data->outfile);
-			}
-			// Redirecionamento de Saída (Se houver outfile ou próximo comando no pipeline)
-			if (i < msh->data->pipes && msh->data->outfile == -1) 
-			{
-				dup2(pipefd[1], STDOUT_FILENO);
-				close(pipefd[1]);
-				close(pipefd[0]);
-			}
-			// Executa o comando
-			handle_heredocs(msh, current_token);
-			execute_cmd(msh, current_token, msh->envp);
-			exit(1);
-		}
-		// Processo pai
-		set_signal(COMMAND_MODE, msh);
-		if (prev_pipe != -1)
-			close(prev_pipe);
-		if (i < msh->data->pipes)
-		{
-			close(pipefd[1]); // Fecha a escrita do pipe
-			prev_pipe = pipefd[0]; // Mantém a leitura do pipe para o próximo comando
-		}
-		close_files(msh);
-		// Avança para o próximo comando
-		while (current_token && current_token->type != TKN_PIPE)
-			current_token = current_token->next;
-		if (current_token && current_token->type == TKN_PIPE)
-			current_token = current_token->next;
-		if (current_token && current_token->type == TKN_SPACE)
-			current_token = current_token->next;
-		i++;
-	}
 	waitpid(pid, &status, 0);
-	if (WIFSIGNALED(status))   //if it receives a signal in child
+	if (WIFSIGNALED(status))
 	{	
-		g_exit = 128 + WTERMSIG(status); //manual change g_exit to 128 + signal number
-		if (WTERMSIG(status) == SIGINT) //manual handling error because SIGINT was not printing the line break 
+		g_exit = 128 + WTERMSIG(status);
+		if (WTERMSIG(status) == SIGINT)
 			write(1, "\n", 1);
 		if (WTERMSIG(status) == SIGQUIT)
 			ft_putstr_fd("Quit\n", 2);
@@ -164,8 +54,187 @@ int	execute_multi(t_msh *msh)
 	}
 	if (prev_pipe != -1)
 		close(prev_pipe);
+}
+
+void	ft_child_process(t_msh *msh, t_tokens *cur, int prev_pipe, int *pipefd, int i)
+{
+	set_signal(CHILD_MODE, msh);
+	handle_redirs(msh, cur, prev_pipe);
+	if (i < msh->data->pipes && msh->data->outfile == -1)
+	{
+		dup2(pipefd[1], STDOUT_FILENO);
+		close(pipefd[1]);
+		close(pipefd[0]);
+	}
+	close(pipefd[1]), close(pipefd[0]);
+	handle_heredocs(msh, cur);
+	execute_cmd(msh, cur, msh->envp);
+	exit(1);
+}
+
+int	execute_multi(t_msh *msh)
+{
+	int		pipefd[2], prev_pipe = -1, i = 0;
+	pid_t	pid;
+	t_tokens *cur = msh->data->tokens;
+
+	g_exit = 0;
+	while (i <= msh->data->pipes)
+	{
+		setup_heredocs(cur, msh);
+		if (i < msh->data->pipes && pipe(pipefd) == -1)
+			ft_perror(msh, "pipe: ", 1);
+		pid = fork();
+		if (pid == -1)
+			ft_perror(msh, "fork: ", 1);
+		else if (pid == 0)
+			ft_child_process(msh, cur, prev_pipe, pipefd, i);
+		set_signal(COMMAND_MODE, msh);
+		if (prev_pipe != -1)
+			close(prev_pipe);
+		if (i < msh->data->pipes)
+		{
+			close(pipefd[1]); // Fecha a escrita do pipe
+			prev_pipe = pipefd[0]; // Mantém a leitura do pipe para o próximo comando
+		}
+		close_files(msh);
+		while (cur && cur->type != TKN_PIPE)
+			cur = cur->next;
+		if (cur && cur->type == TKN_PIPE)
+			cur = cur->next;
+		if (cur && cur->type == TKN_SPACE)
+			cur = cur->next;
+		i++;
+	}
+	ft_parent_multi2(msh, pid, prev_pipe);
 	while (i-- > 0)
 		waitpid(-1, NULL, 0);
 	set_signal(SHELL_MODE, msh);
 	return (0);
 }
+/* 
+int	execute_multi(t_msh *msh)
+{
+	int		pipefd[2];
+	int		prev_pipe;
+	int		i;
+	pid_t 	pid;
+	t_tokens *current_token;
+
+	i = 0;
+	prev_pipe = -1;
+	g_exit = 0;
+	current_token = msh->data->tokens;
+	while (i <= msh->data->pipes)
+	{
+		setup_heredocs(current_token, msh);
+		if (i < msh->data->pipes && pipe(pipefd) == -1) // Criando pipe para o próximo comando
+			ft_perror(msh, "pipe: ", 1);
+		pid = fork();
+		if (pid == -1)
+			ft_perror(msh, "fork: ", 1);
+		else if (pid == 0) // Processo filho
+		{
+			// -------------------------
+			set_signal(CHILD_MODE, msh);
+			handle_redirs(msh, current_token, prev_pipe);
+			if (i < msh->data->pipes && msh->data->outfile == -1) 
+			{
+				dup2(pipefd[1], STDOUT_FILENO);
+				close(pipefd[1]);
+				close(pipefd[0]);
+			}
+			// Executa o comando
+			handle_heredocs(msh, current_token);
+			execute_cmd(msh, current_token, msh->envp);
+			exit(1);
+			// -------------------------
+		}
+		// -------------------------
+		set_signal(COMMAND_MODE, msh);
+		if (prev_pipe != -1)
+			close(prev_pipe);
+		if (i < msh->data->pipes)
+		{
+			close(pipefd[1]); // Fecha a escrita do pipe
+			prev_pipe = pipefd[0]; // Mantém a leitura do pipe para o próximo comando
+		}
+		close_files(msh);
+		// Avança para o próximo comando
+		while (current_token && current_token->type != TKN_PIPE)
+			current_token = current_token->next;
+		if (current_token && current_token->type == TKN_PIPE)
+			current_token = current_token->next;
+		if (current_token && current_token->type == TKN_SPACE)
+			current_token = current_token->next;
+		i++;
+		// -------------------------
+	}
+	ft_parent_multi2(msh, pid, prev_pipe);
+	while (i-- > 0)
+		waitpid(-1, NULL, 0);
+	set_signal(SHELL_MODE, msh);
+	return (0);
+}
+
+
+
+
+int	execute_multi(t_msh *msh)
+{
+	int		pipefd[2];
+	int		prev_pipe;
+	int		i;
+	pid_t 	pid;
+	t_tokens *current_token;
+
+	i = 0;
+	prev_pipe = -1;
+	g_exit = 0;
+	current_token = msh->data->tokens;
+	// Abre arquivos apenas no primeiro comando
+	while (i <= msh->data->pipes)
+	{
+		setup_heredocs(current_token, msh);
+		if (i < msh->data->pipes && pipe(pipefd) == -1) // Criando pipe para o próximo comando
+			ft_perror(msh, "pipe: ", 1);
+	
+		pid = fork();
+		if (pid == -1)
+			ft_perror(msh, "fork: ", 1);
+		else if (pid == 0) // Processo filho
+		{
+			// -------------------------
+			set_signal(CHILD_MODE, msh);
+			handle_redirs(msh, current_token, prev_pipe);
+			if (i < msh->data->pipes && msh->data->outfile == -1) 
+			{
+				dup2(pipefd[1], STDOUT_FILENO);
+				close(pipefd[1]);
+				close(pipefd[0]);
+			}
+			// Executa o comando
+			handle_heredocs(msh, current_token);
+			execute_cmd(msh, current_token, msh->envp);
+			exit(1);
+			// -------------------------
+		}
+		ft_parent_multi1(msh, prev_pipe, pipefd, i);
+		// -------------------------
+		close_files(msh);
+		// Avança para o próximo comando
+		while (current_token && current_token->type != TKN_PIPE)
+			current_token = current_token->next;
+		if (current_token && current_token->type == TKN_PIPE)
+			current_token = current_token->next;
+		if (current_token && current_token->type == TKN_SPACE)
+			current_token = current_token->next;
+		i++;
+		// -------------------------
+	}
+	ft_parent_multi2(msh, pid, prev_pipe);
+	while (i-- > 0)
+		waitpid(-1, NULL, 0);
+	set_signal(SHELL_MODE, msh);
+	return (0);
+} */
