@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/12 02:54:02 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/12 12:02:10 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,10 +127,16 @@ typedef struct s_msh
 void		ft_init_shell(t_msh **msh, char **envp);
 
 /* READLINE */
-int			ft_readline(t_msh *msh);
-int			syntax_check(t_msh *msh, t_data *data);
-int			ft_countargs(char **args);
 char		*ft_prompt(void);
+int			get_redir(t_tokens *temp);
+int			ft_init_data(char *line, t_msh *msh);
+int			ft_readline(t_msh *msh);
+
+/* SYNTAX CHECK */
+int			syntax_redirs(t_msh *msh, t_tokens *tokens);
+int			syntax_pipes(t_tokens *tokens);
+int			syntax_quotes(t_tokens *tokens);
+int			syntax_check(t_msh *msh, t_data *data);
 
 /* ENVIRON */
 char		*expand_env(char **envp, char *name);
@@ -148,6 +154,8 @@ void		free_ptr(void **ptr);
 /* FREE 2 */
 void		free_args(char **args);
 void		ft_exit(t_msh *msh, int exit_code, char *msg_err, char *arg);
+void		ft_print_error(char *msg_err, char	*arg, int should_free);
+int			ft_countargs(char **args);
 
 /* TOKENIZER */
 char		**alloc_args(int words, int *len);
