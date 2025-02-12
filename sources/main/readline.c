@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/12 11:53:03 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/12 12:13:54 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ int	get_redir(t_tokens *temp)
 
 int	ft_init_data(char *line, t_msh *msh)
 {
-	int	i;
-
 	msh->data->cmd_paths = NULL;
 	msh->data->cmd_paths = ft_split(ft_get_path((*msh).envp), ':');
 	msh->data->args = ft_split_args(msh, line);
@@ -84,13 +82,8 @@ int	ft_readline(t_msh *msh)
 		msh->data = NULL;
 		return (1);
 	}
-	else if (*line == '\0')
-	{
-		free(msh->data);
-		msh->data = NULL;
-		free(line);
+	if (handle_empty_line(msh, line))
 		return (0);
-	}
 	if (ft_init_data(line, msh) != 0)
 		return (free(msh->data), free(line), 1);
 	//ft_print_params(msh); 	// Remover
