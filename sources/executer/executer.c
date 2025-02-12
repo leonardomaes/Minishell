@@ -12,7 +12,7 @@
 
 #include "../../minishell.h"
 
-int	ft_isdirectory(t_msh *msh, t_tokens *tokens)
+/* int	ft_isdirectory(t_msh *msh, t_tokens *tokens)
 {
 	struct stat filestat;
 	char *comm;
@@ -21,7 +21,7 @@ int	ft_isdirectory(t_msh *msh, t_tokens *tokens)
 
 	cwd = getcwd(NULL, 0);
 	
-}
+} */
 
 void	ft_exec(t_msh *msh, t_tokens *tokens, char **envp)
 {
@@ -35,11 +35,8 @@ void	ft_exec(t_msh *msh, t_tokens *tokens, char **envp)
 		comm = ft_strjoin(cwd, tokens->name + 1);
 		free(cwd);
 	}
-	else if (ft_isdirectory(msh, tokens) != 0)
-		ft_exit(msh, 126, ": Is a directory\n", comm);
 	else
 		comm = ft_get_command(msh, tokens->args[0], msh->data->cmd_paths);
-	printf("comm: %s\n", comm);
 	if (stat(comm, &filestat) == 0 && S_ISDIR(filestat.st_mode))
 		ft_exit(msh, 126, ": Is a directory\n", comm);
 	if (!comm)

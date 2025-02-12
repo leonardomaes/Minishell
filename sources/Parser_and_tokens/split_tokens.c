@@ -52,7 +52,7 @@ void	split_arg(t_msh *msh, char ***str, const char *s, int *l, int *i)
 		j = handle_single_quote(s, (*str)[*i], l);
 	else if (s[*l] == '$' && !ft_isdelimiter(s[*l+1]) && !ft_isspace(s[*l+1]))
 		j = handle_environ(msh, s, (*str)[*i], l);
-	else if (s[*l] == '$' && s[*l+1] == '\0')
+	else if (s[*l] == '$' && (s[*l+1] == '\0' || s[*l+1] == ' '))
 		add_one(str, s, i, &j, l);
 	else if (s[*l] && ft_isredirection(s[*l]))
 		split_redirs(str, s, i, &j, l);

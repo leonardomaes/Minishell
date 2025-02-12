@@ -46,7 +46,7 @@ void	calculate_length(t_msh *msh, const char *s, int word, int *i, int **len)
 		sum_one(word, i, len);
 	else if (s[*i] == '$' && !ft_isdelimiter(s[*i + 1]) && !ft_isspace(s[*i + 1]))
 		(*len)[word] = environ_lenght(msh, s, i);
-	else if (s[*i] == '$' && s[*i + 1] == '\0')
+	else if (s[*i] == '$' && (s[*i + 1] == '\0' || s[*i + 1] == ' '))
 		sum_one(word, i, len);
 	else if (s[*i] == '\'' || s[*i] == '"')
 		calculate_quotes(msh, s, word, i, len);

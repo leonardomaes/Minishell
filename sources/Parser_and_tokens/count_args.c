@@ -14,7 +14,7 @@
 
 void	skip_spaces(const char *s, int *i)
 {
-	while (ft_isspace(s[*i]))
+	while (s[*i] && ft_isspace(s[*i]))
 	{
 		(*i)++;
 	}
@@ -33,7 +33,7 @@ void	count_dollar(const char *s, int *i)
 				(*i)++;
 		}
 	}
-	else if (s[*i] == '$' && s[*i + 1] == '\0')
+	else if (s[*i] == '$' && (s[*i + 1] == '\0' || s[*i + 1] == ' '))
 	{
 		(*i)++;
 	}
@@ -94,7 +94,7 @@ int	count_args(const char *s)
 		if (s[i] == '\0')
 			break;
 		word++;
-		if (ft_isspace(s[i]) && (word == 1 || s[i-1] == '|' )) // Trocar para identificar após primeiro argumento
+		if (s[i+1] && ft_isspace(s[i]) && (word == 1 || s[i-1] == '|' )) // Trocar para identificar após primeiro argumento
 			skip_spaces(s, &i);
 		count_arg(s, &i);
 	}
