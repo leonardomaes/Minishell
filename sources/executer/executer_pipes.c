@@ -59,14 +59,13 @@ void	ft_parent_multi2(t_msh *msh, pid_t pid, int prev_pipe)
 void	ft_child_process(t_msh *msh, t_tokens *cur, int prev_pipe, int *pipefd, int i)
 {
 	set_signal(CHILD_MODE, msh);
-	handle_redirs(msh, cur, prev_pipe);
 	if (i < msh->data->pipes && msh->data->outfile == -1)
 	{
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
 		close(pipefd[0]);
 	}
-	close(pipefd[1]), close(pipefd[0]);
+	handle_redirs(msh, cur, prev_pipe);
 	handle_heredocs(msh, cur);
 	execute_cmd(msh, cur, msh->envp);
 	exit(1);
