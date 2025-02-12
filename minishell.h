@@ -110,6 +110,7 @@ typedef struct s_data
 	int			stdout_backup;
 	int			infile;
 	int			outfile;
+	int			prev_pipe;
 	t_tokens	*tokens;
 }				t_data;
 
@@ -170,6 +171,14 @@ int			get_delimiter(t_msh *msh, char *data_args);
 /* GET ARGS */
 void		ft_get_args(t_msh *msh);
 char		**getargs(t_msh *msh, t_tokens *token);
+
+/* GET ARGS 2 */
+int			alloc_getargs(t_msh *msh, t_tokens *token);
+int			get_delimiter(t_msh *msh, char *data_args);
+char		*return_arg(t_tokens *token);
+void		skip_delimiters(t_tokens **temp);
+char		*merge_args(t_tokens **temp);
+
 /* SPLIT TOKENS */
 int			*calculate_lengths(t_msh *msh, const char *s, int words);
 char		**ft_split_args(t_msh *msh, const char *s);
@@ -202,11 +211,16 @@ char		*find_last_arg(t_tokens *temp);
 int			exec_builtin(t_msh *msh, t_tokens *tokens);
 void		handle_heredocs(t_msh *msh, t_tokens *token);
 void		setup_heredocs(t_tokens *tokens, t_msh *msh);
-int			execute_cmd(t_msh *msh, t_tokens *tokens, char **envp);
 int			execute_one(t_msh *msh, char **envp);
 int			execute_multi(t_msh *msh);
 int			execute(t_msh *msh);
 void		ft_exec(t_msh *msh, t_tokens *tokens, char **envp);
+
+/* EXECUTER PIPES*/
+int			execute_cmd(t_msh *msh, t_tokens *tokens, char **envp);
+void		ft_parent_multi2(t_msh *msh, pid_t pid, int prev_pipe);
+void		ft_child_process(t_msh *msh, t_tokens *cur, int *pipefd, int i);
+int			execute_multi(t_msh *msh);
 
 /* EXECUTER UTILS */
 void		handle_redirs(t_msh *msh, t_tokens *token, int prev_pipe);

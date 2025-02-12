@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmaes <lmaes@student.42porto.com>          +#+  +:+       +#+        */
+/*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 20:16:20 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/12 20:16:21 by lmaes            ###   ########.fr       */
+/*   Updated: 2025/02/12 21:46:23 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,10 @@ char	*get_joined_value(char *joined_str, char *file, char *temp_str)
 	return (joined_str);
 }
 
-int	ft_isredir(int	type)
+int	ft_isredir(int type)
 {
-	if (type == TKN_PIPE || type == TKN_OUTREDIR || type == TKN_INREDIR || type == TKN_APPEND)
+	if (type == TKN_PIPE || type == TKN_OUTREDIR || type == TKN_INREDIR
+		|| type == TKN_APPEND)
 		return (1);
 	return (0);
 }
@@ -69,7 +70,8 @@ char	*find_last_arg(t_tokens *temp)
 	while (tmp && tmp->next && ft_isredir(tmp->next->type) == 0)
 	{
 		tmp = tmp->next;
-		if (tmp->type == ARGUMENT || tmp->type == DBL_QUOTES || tmp->type == SNG_QUOTES)
+		if (tmp->type == ARGUMENT || tmp->type == DBL_QUOTES
+			|| tmp->type == SNG_QUOTES)
 		{
 			temp_str = get_token_value(tmp);
 			if (!file)
