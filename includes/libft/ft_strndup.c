@@ -14,8 +14,8 @@
 
 char	*ft_strndup(const char *s, size_t n)
 {
-	char    *dup;
-	size_t  i;
+	char	*dup;
+	size_t	i;
 
 	dup = (char *)malloc((n + 1) * sizeof(char));
 	if (!dup)

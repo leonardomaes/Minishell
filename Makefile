@@ -25,6 +25,9 @@ SRC =	sources/main/main.c sources/main/readline.c \
 		sources/main/syntax_check.c sources/main/environ.c \
 		sources/trash.c sources/exit_free/free.c sources/exit_free/free2.c\
 		sources/executer/heredoc.c sources/executer/heredoc_expander.c \
+		sources/executer/executer.c sources/executer/executer_pipes.c \
+		sources/executer/executer_utils.c sources/executer/redirections.c \
+		sources/executer/redirections2.c \
 		sources/signals/signals.c sources/Parser_and_tokens/tokenizer.c \
 		sources/Parser_and_tokens/tokenizer_utils.c \
 		sources/Parser_and_tokens/token_type.c \
@@ -37,8 +40,6 @@ SRC =	sources/main/main.c sources/main/readline.c \
 		sources/builtins/export.c sources/builtins/pwd.c \
 		sources/builtins/unset.c sources/builtins/cd.c \
 		sources/builtins/echo.c sources/builtins/builtins_utils.c \
-		sources/executer/executer.c sources/executer/executer_pipes.c \
-		sources/executer/executer_utils.c sources/executer/redirections.c \
 		sources/builtins/builtins_utils2.c
 
 # Valgrind readline leaks ignore vars

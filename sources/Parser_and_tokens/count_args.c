@@ -22,7 +22,7 @@ void	skip_spaces(const char *s, int *i)
 
 void	count_dollar(const char *s, int *i)
 {
-	if (s[*i] == '$' && !ft_isdelimiter(s[*i+1]) && !ft_isspace(s[*i+1]))
+	if (s[*i] == '$' && !ft_isdelimiter(s[*i + 1]) && !ft_isspace(s[*i + 1]))
 	{
 		(*i)++;
 		if (s[*i] == '?')
@@ -57,7 +57,6 @@ void	count_quotes(const char *s, int *i)
 		if (s[*i] == '\'')
 			(*i)++;
 	}
-	
 }
 
 void	count_arg(const char *s, int *i)
@@ -77,7 +76,8 @@ void	count_arg(const char *s, int *i)
 	}
 	else
 	{
-		while (!ft_isspace(s[*i]) && s[*i] != '|' && s[*i] && !ft_isdelimiter(s[*i]) && !ft_isredirection(s[*i]))
+		while (!ft_isspace(s[*i]) && s[*i] != '|' && s[*i]
+			&& !ft_isdelimiter(s[*i]) && !ft_isredirection(s[*i]))
 			(*i)++;
 	}
 }
@@ -92,12 +92,11 @@ int	count_args(const char *s)
 	while (s[i])
 	{
 		if (s[i] == '\0')
-			break;
+			break ;
 		word++;
-		if (s[i+1] && ft_isspace(s[i]) && (word == 1 || s[i-1] == '|' )) // Trocar para identificar após primeiro argumento
+		if (s[i + 1] && ft_isspace(s[i]) && (word == 1 || s[i - 1] == '|'))
 			skip_spaces(s, &i);
 		count_arg(s, &i);
 	}
 	return (word);
 }
-

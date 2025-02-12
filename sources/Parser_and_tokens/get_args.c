@@ -12,35 +12,31 @@
 
 #include "../../minishell.h"
 
-int get_delimiter(t_msh *msh, char *data_args)
+int	get_delimiter(t_msh *msh, char *data_args)
 {
 	if (get_type(msh, data_args, 1) == TKN_PIPE)
 		return (TKN_PIPE);
-	else if(get_type(msh, data_args, 1) == TKN_INREDIR)
+	else if (get_type(msh, data_args, 1) == TKN_INREDIR)
 		return (TKN_INREDIR);
-	else if(get_type(msh, data_args, 1) == TKN_OUTREDIR)
+	else if (get_type(msh, data_args, 1) == TKN_OUTREDIR)
 		return (TKN_OUTREDIR);
-	else if(get_type(msh, data_args, 1) == TKN_APPEND)
+	else if (get_type(msh, data_args, 1) == TKN_APPEND)
 		return (TKN_APPEND);
 	else if (get_meta_type(msh, data_args, 1) == TKN_HEREDOC)
 		return (TKN_HEREDOC);
 	return (0);
 }
 
-char	**getargs(t_msh *msh, t_tokens *token)
+int	alloc_getargs(t_msh *msh, t_tokens *token)
 {
-	int		i;
-	char	**args;
-	char	*merged;
-	char	*next_arg;
-	char	*str;
-	t_tokens *temp;
+	int			i;
+	t_tokens	*temp;
 
-	temp = token;
 	i = 0;
+	temp = token;
 	while (temp && temp->type != TKN_PIPE)
 	{
-		if (get_delimiter(msh, temp->name) != 0) // Avança redirects
+		if (get_delimiter(msh, temp->name) != 0)
 		{
 			temp = temp->next;
 			if (temp->type == TKN_SPACE)
@@ -55,6 +51,21 @@ char	**getargs(t_msh *msh, t_tokens *token)
 	}
 	if (i == 0)
 		i++;
+	return (i);
+}
+
+char	**getargs(t_msh *msh, t_tokens *token)
+{
+	int			i;
+	char		**args;
+	char		*merged;
+	char		*next_arg;
+	char		*str;
+	t_tokens	*temp;
+
+	temp = token;
+
+	i = alloc_getargs(msh, token);
 	args = malloc(sizeof(char *) * (i + 1));
 	if (!args)
 	{
@@ -66,7 +77,7 @@ char	**getargs(t_msh *msh, t_tokens *token)
 	temp = token;
 	while (temp && temp->type != TKN_PIPE)
 	{
-		if (get_delimiter(msh, temp->name) != 0) // Caso seja um redirect ou pipe apenas os avança
+		if (get_delimiter(msh, temp->name) != 0)
 		{
 			temp = temp->next;
 			if (temp && temp->type == TKN_SPACE)
@@ -120,7 +131,7 @@ void	ft_get_args(t_msh *msh)
 			i = temp->next;
 			temp->args = malloc(sizeof(char *) * 2);
 			if (!temp->args)
-			{// Talvez arrumar esta saida
+			{
 				free(temp);
 				temp = NULL;
 				return ;

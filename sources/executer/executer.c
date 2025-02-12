@@ -12,28 +12,26 @@
 
 #include "../../minishell.h"
 
-/* int	ft_isdirectory(t_msh *msh, t_tokens *tokens)
+char	*ft_get_bcmd(char *cmd)
 {
-	struct stat filestat;
-	char *comm;
-	char *cwd;
-	char	*temp;
+	char	*cwd;
+	char	*comm;
 
 	cwd = getcwd(NULL, 0);
-	
-} */
+	comm = ft_strjoin(cwd, cmd);
+	free(cwd);
+	return (comm);
+}
 
 void	ft_exec(t_msh *msh, t_tokens *tokens, char **envp)
 {
-	char	*comm;
-	char	*cwd;
-	struct stat filestat;
+	char		*comm;
+	struct stat	filestat;
 
-	if (tokens->type == TKN_BCMD && (tokens->name[0] == '.' && tokens->name[1] == '/'))
+	if (tokens->type == TKN_BCMD && (tokens->name[0] == '.'
+			&& tokens->name[1] == '/'))
 	{
-		cwd = getcwd(NULL, 0);
-		comm = ft_strjoin(cwd, tokens->name + 1);
-		free(cwd);
+		comm = ft_get_bcmd(tokens->name + 1);
 	}
 	else
 		comm = ft_get_command(msh, tokens->args[0], msh->data->cmd_paths);
@@ -54,14 +52,14 @@ void	ft_exec(t_msh *msh, t_tokens *tokens, char **envp)
 
 void	ft_parent(t_msh *msh, pid_t pid)
 {
-	int status;
+	int	status;
 
 	set_signal(COMMAND_MODE, msh);
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status))
-	{	
-		g_exit = 128 + WTERMSIG(status); //manual change g_exit to 128 + signal number
-		if (WTERMSIG(status) == SIGINT) //manual handling error because SIGINT was not printing the line break 
+	{
+		g_exit = 128 + WTERMSIG(status);
+		if (WTERMSIG(status) == SIGINT)
 			write(1, "\n", 1);
 		if (WTERMSIG(status) == SIGQUIT)
 			ft_putstr_fd("Quit\n", 2);
@@ -71,9 +69,9 @@ void	ft_parent(t_msh *msh, pid_t pid)
 	set_signal(SHELL_MODE, msh);
 }
 
-int execute_one(t_msh *msh, char **envp)
+int	execute_one(t_msh *msh, char **envp)
 {
-	pid_t 	pid;
+	pid_t	pid;
 
 	g_exit = 0;
 	setup_heredocs(msh->data->tokens, msh);
@@ -99,9 +97,9 @@ int execute_one(t_msh *msh, char **envp)
 	return (0);
 }
 
-int execute(t_msh *msh)
+int	execute(t_msh *msh)
 {
-	int status;
+	int	status;
 
 	status = 1;
 	if (msh->data->pipes == 0)
@@ -109,5 +107,10 @@ int execute(t_msh *msh)
 	else
 		status = execute_multi(msh);
 	close_files(msh);
+	if (access(".heredoc_tmp", F_OK) == 0)
+	{
+		if (unlink(".heredoc_tmp") == -1)
+			perror("heredoc cleanup failed");
+	}
 	return (status);
 }

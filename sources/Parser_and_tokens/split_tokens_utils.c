@@ -12,10 +12,10 @@
 
 #include "../../minishell.h"
 
-char **alloc_args(int words, int *len)
+char	**alloc_args(int words, int *len)
 {
-	char **str;
-	int i;
+	char	**str;
+	int		i;
 
 	str = (char **)malloc(sizeof(char *) * (words + 1));
 	if (!str)
@@ -35,5 +35,3 @@ char **alloc_args(int words, int *len)
 	str[i] = NULL;
 	return (str);
 }
-
-

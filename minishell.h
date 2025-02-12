@@ -120,9 +120,7 @@ typedef struct s_msh
 	t_data	*data;
 }				t_msh;
 
-
 /************* FUNCTIONS *************/
-
 
 /* MAIN */
 void		ft_init_shell(t_msh **msh, char **envp);
@@ -199,7 +197,7 @@ int			get_type(t_msh *msh, char *name, int i);
 /* REDIRECTIONS */
 int			open_files(t_msh *msh, t_tokens *token);
 int			close_files(t_msh *msh);
-
+char		*find_last_arg(t_tokens *temp);
 /* EXECUTER */
 int			exec_builtin(t_msh *msh, t_tokens *tokens);
 void		handle_heredocs(t_msh *msh, t_tokens *token);
@@ -219,7 +217,6 @@ void		handle_heredoc(t_tokens *token, t_msh *msh);
 /* HEREDOC EXPANDER */
 int			calculate_expanded_length(t_msh *msh, const char *line);
 char		*expand_env_variables(t_msh *msh, const char *line);
-
 
 /* BUILTINS | CD */
 int			update_env_change_dir(char *oldpwd, t_msh *msh);

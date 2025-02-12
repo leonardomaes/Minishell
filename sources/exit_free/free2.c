@@ -49,14 +49,3 @@ void	ft_print_error(char *msg_err, char	*arg, int should_free)
 	if (should_free)
 		free(arg);
 }
-
-//counts the number of args in a array
-int	ft_countargs(char **args)
-{
-	int	i;
-
-	i = 0;
-	while (args[i])
-		i++;
-	return (i);
-}

@@ -61,7 +61,7 @@ void	handle_heredoc(t_tokens *token, t_msh *msh)
 	int		fd;
 	pid_t	pid;
 
-	fd = open(".heredoc_tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd = open(".heredoc_tmp", O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	if (fd < 0)
 	{
 		perror("heredoc");

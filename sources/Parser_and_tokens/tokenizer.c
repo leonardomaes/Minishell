@@ -22,6 +22,16 @@ int	ft_isredirection(char c)
 	return (c == '<' || c == '>');
 }
 
+//counts the number of args in a array
+int	ft_countargs(char **args)
+{
+	int	i;
+
+	i = 0;
+	while (args[i])
+		i++;
+	return (i);
+}
 void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)
 {
 	t_tokens	*temp;
@@ -44,17 +54,16 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)
 		temp->args = NULL;
 		if (prev == NULL || prev->type == TKN_PIPE)
 			temp->type = get_type(msh, msh->data->args[i], i);
-		else // Somente entra em get_type se for primeiro argumento
+		else
 			temp->type = get_meta_type(msh, msh->data->args[i], 1);
-		// Handle heredoc case
-		if (temp->type == TKN_PIPE) //Se for pipe incrementa soma
+		if (temp->type == TKN_PIPE)
 			msh->data->pipes++;
-		temp->count = msh->data->pipes; // Contagem do token no conjunto
-		if (prev != NULL)				// Aponta para o token anterior
+		temp->count = msh->data->pipes;
+		if (prev != NULL)
 			temp->prev = prev;
 		else
 			temp->prev = NULL;
-		if (temp->type == TKN_HEREDOC)	// Heredocs configs
+		if (temp->type == TKN_HEREDOC)
 		{
 			while (i + 1 < msh->data->argc && msh->data->args[i + 1][0] == ' ')
 				i++;

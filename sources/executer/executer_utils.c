@@ -12,48 +12,48 @@
 
 #include "../../minishell.h"
 
-int exec_builtin(t_msh *msh, t_tokens *tokens)
+int	exec_builtin(t_msh *msh, t_tokens *tokens)
 {
 	if (tokens->type == BLT_ECHO)
 		return (execute_echo(msh, tokens->args));
-	else if(tokens->type == BLT_CD)
+	else if (tokens->type == BLT_CD)
 		return (execute_cd(msh, tokens->args));
-	else if(tokens->type == BLT_PWD)
+	else if (tokens->type == BLT_PWD)
 		return (execute_pwd());
-	else if(tokens->type == BLT_EXPORT)
+	else if (tokens->type == BLT_EXPORT)
 		return (execute_export(msh, tokens->args));
-	else if(tokens->type == BLT_UNSET)
+	else if (tokens->type == BLT_UNSET)
 		return (execute_unset(msh, tokens->args));
-	else if(tokens->type == BLT_ENV)
+	else if (tokens->type == BLT_ENV)
 		return (execute_env(tokens->args, msh->envp));
-	else if(tokens->type == BLT_EXIT)
+	else if (tokens->type == BLT_EXIT)
 		return (execute_exit(msh, tokens->args));
 	return (1);
 }
- //added this to handle heredoc (must evaluate how to melt with redirections code from Leonardo)
+
 void	handle_heredocs(t_msh *msh, t_tokens *token)
 {
 	int	fd;
-	
+
 	while (token && token->type != TKN_PIPE)
 	{
 		if (token->type == TKN_HEREDOC)
 		{
 			if (g_exit != 130)
 			{
-				fd = open(".heredoc_tmp", O_RDONLY); //opens heredoc file
+				fd = open(".heredoc_tmp", O_RDONLY);
 				if (fd < 0)
 					ft_perror(msh, "open heredoc_tmp", 1);
-				if (dup2(fd, STDIN_FILENO) == -1) //redirects stdin to read from the heredoc file
+				if (dup2(fd, STDIN_FILENO) == -1)
 					ft_perror(msh, "dup2", 1);
 				close(fd);
-				break ; //only use the last heredoc (multi heredocs)
+				break ;
 			}
 			else
 			{
 				unlink(".heredoc_tmp");
 				ft_free_all(msh);
-				exit (130);
+				exit(130);
 			}
 		}
 		token = token->next;
@@ -79,9 +79,9 @@ void	handle_redirs(t_msh *msh, t_tokens *token, int prev_pipe)
 	{
 		g_exit = 1;
 		ft_free_all(msh);
-		exit (1);
+		exit(1);
 	}
-	if (prev_pipe != -1) 
+	if (prev_pipe != -1)
 	{
 		dup2(prev_pipe, STDIN_FILENO);
 		close(prev_pipe);

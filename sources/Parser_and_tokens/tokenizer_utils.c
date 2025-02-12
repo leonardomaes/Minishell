@@ -14,7 +14,7 @@
 
 int	double_quote_lenght(t_msh *msh, const char *s, int *i)
 {
-	int		j;
+	int	j;
 
 	j = 0;
 	if (s[*i] == '"')
@@ -24,7 +24,8 @@ int	double_quote_lenght(t_msh *msh, const char *s, int *i)
 	}
 	while (s[*i] && s[*i] != '"')
 	{
-		if (s[*i] == '$' && !ft_isdelimiter(s[*i+1]) && !ft_isspace(s[*i+1])) // Dolar
+		if (s[*i] == '$' && !ft_isdelimiter(s[*i + 1]) && !ft_isspace(s[*i
+					+ 1]))
 			j += environ_lenght(msh, s, i);
 		else
 		{
@@ -40,9 +41,9 @@ int	double_quote_lenght(t_msh *msh, const char *s, int *i)
 	return (j);
 }
 
-int single_quote_lenght(const char *s, int *i)
+int	single_quote_lenght(const char *s, int *i)
 {
-	int		j;
+	int	j;
 
 	j = 0;
 	if (s[*i] == '\'')
@@ -65,15 +66,15 @@ int single_quote_lenght(const char *s, int *i)
 
 int	environ_lenght(t_msh *msh, const char *s, int *i)
 {
-	char *env;
-	char *env_val;
+	char	*env;
+	char	*env_val;
 	int		j;
-	
+
 	if (s[*i] == '$')
 		(*i)++;
 	j = *i;
 	if (s[j] == '?')
-		return (j=3, j);
+		return (j = 3, j);
 	while (s[*i] && (ft_isalnum(s[*i]) || s[*i] == '_'))
 		(*i)++;
 	env = (char *)malloc(sizeof(char) * ((*i - j) + 1));
@@ -89,20 +90,21 @@ int	environ_lenght(t_msh *msh, const char *s, int *i)
 	return (j);
 }
 
-int handle_environ(t_msh *msh, const char *s, char *str, int *l)
+int	handle_environ(t_msh *msh, const char *s, char *str, int *l)
 {
-	const char *start = &s[++(*l)];
-	char var_name[999];
-	char *env_value;
-	int len = 0;
+	const char	*start = &s[++(*l)];
+	char		var_name[999];
+	char		*env_value;
+	int			len;
 
+	len = 0;
 	if (*start == '?')
 	{
 		env_value = ft_itoa(g_exit);
 		len = ft_strlen(env_value);
 		ft_strlcpy(str, env_value, len + 1);
 		free(env_value);
-		(*l)++;	// Avançar '?'
+		(*l)++;
 		return (len);
 	}
 	while (s[*l] && (ft_isalnum(s[*l]) || s[*l] == '_'))
@@ -118,10 +120,11 @@ int handle_environ(t_msh *msh, const char *s, char *str, int *l)
 	return (len);
 }
 
-int handle_single_quote(const char *s, char *str, int *l)
+int	handle_single_quote(const char *s, char *str, int *l)
 {
-	int len = 0;
+	int	len;
 
+	len = 0;
 	str[len++] = s[(*l)++];
 	while (s[*l] && s[*l] != '\'')
 		str[len++] = s[(*l)++];
@@ -131,15 +134,17 @@ int handle_single_quote(const char *s, char *str, int *l)
 	return (len);
 }
 
-int handle_double_quote(t_msh *msh, const char *s, char *str, int *l)
+int	handle_double_quote(t_msh *msh, const char *s, char *str, int *l)
 {
-	int len = 0;
-	int i;
+	int	len;
+	int	i;
 
+	len = 0;
 	str[len++] = s[(*l)++];
 	while (s[*l] && s[*l] != '"')
 	{
-		if (s[*l] == '$' && !ft_isdelimiter(s[*l+1]) && !ft_isspace(s[*l+1])) // Dolar
+		if (s[*l] == '$' && !ft_isdelimiter(s[*l + 1]) && !ft_isspace(s[*l
+				+ 1]))
 		{
 			i = handle_environ(msh, s, &str[len], l);
 			len += i;
@@ -153,21 +158,20 @@ int handle_double_quote(t_msh *msh, const char *s, char *str, int *l)
 	return (len);
 }
 
-char *ft_chartrim(char **s, char set)
+char	*ft_chartrim(char **s, char set)
 {
-	char *start;
-	char *end;
-	char *new_str;
+	char	*start;
+	char	*end;
+	char	*new_str;
 
-	if (!s || !*s) // Verifica se a string é válida
-		return NULL;
-
+	if (!s || !*s)
+		return (NULL);
 	start = *s;
 	end = *s + strlen(*s) - 1;
 	while (*start == set)
 		start++;
 	while (end > start && *end == set)
 		end--;
-	new_str = ft_strndup(start, end - start + 1); // Trocar função
+	new_str = ft_strndup(start, end - start + 1);
 	return (new_str);
 }

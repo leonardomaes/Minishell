@@ -86,15 +86,11 @@ int	ft_readline(t_msh *msh)
 		return (0);
 	if (ft_init_data(line, msh) != 0)
 		return (free(msh->data), free(line), 1);
-	//ft_print_params(msh); 	// Remover
 	split_tokens(msh, &msh->data->tokens, NULL, i);
-	//ft_print_tokens(msh->data->tokens); 	// Remover
 	if (syntax_check(msh, msh->data) != 0)
 		return (ft_free_data(msh), free(line), 1);
 	ft_get_args(msh);
 	//ft_print_params(msh); 	// Remover
 	//ft_print_tokens(msh->data->tokens); 	// Remover
-	//printf("\n<--------------------------------->\n"); 	// Remover
-	free(line);
-	return (0);
+	return (free(line), 0);
 }

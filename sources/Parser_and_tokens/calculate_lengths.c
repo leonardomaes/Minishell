@@ -44,7 +44,8 @@ void	calculate_length(t_msh *msh, const char *s, int word, int *i, int **len)
 	}
 	else if (s[*i] == '|')
 		sum_one(word, i, len);
-	else if (s[*i] == '$' && !ft_isdelimiter(s[*i + 1]) && !ft_isspace(s[*i + 1]))
+	else if (s[*i] == '$' && !ft_isdelimiter(s[*i + 1]) && !ft_isspace(s[*i
+				+ 1]))
 		(*len)[word] = environ_lenght(msh, s, i);
 	else if (s[*i] == '$' && (s[*i + 1] == '\0' || s[*i + 1] == ' '))
 		sum_one(word, i, len);
@@ -54,7 +55,8 @@ void	calculate_length(t_msh *msh, const char *s, int word, int *i, int **len)
 		calculate_redir(s, word, i, len);
 	else
 	{
-		while (s[*i] && s[*i] != '|' && !ft_isspace(s[*i]) && !ft_isdelimiter(s[*i]) && !ft_isredirection(s[*i]))
+		while (s[*i] && s[*i] != '|' && !ft_isspace(s[*i])
+			&& !ft_isdelimiter(s[*i]) && !ft_isredirection(s[*i]))
 		{
 			(*len)[word]++;
 			(*i)++;
@@ -64,21 +66,21 @@ void	calculate_length(t_msh *msh, const char *s, int word, int *i, int **len)
 
 int	*calculate_lengths(t_msh *msh, const char *s, int words)
 {
-	int *len;
-	int i;
-	int word;
+	int	*len;
+	int	i;
+	int	word;
 
 	i = 0;
 	word = 0;
 	len = (int *)malloc(sizeof(int) * words);
 	if (!len)
-		return NULL;
+		return (NULL);
 	while (s[i] && word < words)
 	{
 		len[word] = 0;
 		if (s[i] == '\0')
-			break;
-		if (ft_isspace(s[i]) && (word == 0 || s[i-1] == '|'))
+			break ;
+		if (ft_isspace(s[i]) && (word == 0 || s[i - 1] == '|'))
 			skip_spaces(s, &i);
 		calculate_length(msh, s, word, &i, &len);
 		word++;

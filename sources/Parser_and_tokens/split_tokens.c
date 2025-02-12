@@ -27,7 +27,8 @@ void	split_redirs(char ***str, const char *s, int *i, int *j, int *l)
 
 void	split_else(char ***str, const char *s, int *i, int *j, int *l)
 {
-	while (s[*l] && s[*l] != '|' && !ft_isspace(s[*l]) && !ft_isdelimiter(s[*l]) && !ft_isredirection(s[*l]))
+	while (s[*l] && s[*l] != '|' && !ft_isspace(s[*l]) && !ft_isdelimiter(s[*l])
+		&& !ft_isredirection(s[*l]))
 		(*str)[*i][(*j)++] = s[(*l)++];
 	(*str)[*i][*j] = '\0';
 }
@@ -50,9 +51,10 @@ void	split_arg(t_msh *msh, char ***str, const char *s, int *l, int *i)
 		j = handle_double_quote(msh, s, (*str)[*i], l);
 	else if (s[*l] == '\'')
 		j = handle_single_quote(s, (*str)[*i], l);
-	else if (s[*l] == '$' && !ft_isdelimiter(s[*l+1]) && !ft_isspace(s[*l+1]))
+	else if (s[*l] == '$' && !ft_isdelimiter(s[*l + 1]) && !ft_isspace(s[*l
+				+ 1]))
 		j = handle_environ(msh, s, (*str)[*i], l);
-	else if (s[*l] == '$' && (s[*l+1] == '\0' || s[*l+1] == ' '))
+	else if (s[*l] == '$' && (s[*l + 1] == '\0' || s[*l + 1] == ' '))
 		add_one(str, s, i, &j, l);
 	else if (s[*l] && ft_isredirection(s[*l]))
 		split_redirs(str, s, i, &j, l);
@@ -61,7 +63,7 @@ void	split_arg(t_msh *msh, char ***str, const char *s, int *l, int *i)
 	(*i)++;
 }
 
-char **ft_split_args(t_msh *msh, const char *s)
+char	**ft_split_args(t_msh *msh, const char *s)
 {
 	char	**str;
 	int		*len;

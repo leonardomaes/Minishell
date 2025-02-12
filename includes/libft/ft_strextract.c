@@ -14,9 +14,9 @@
 
 char	*ft_strextract(const char *str, char delimiter)
 {
-	char 	*start;
-	char 	*end;
-	char 	*result;
+	char	*start;
+	char	*end;
+	char	*result;
 	size_t	len;
 
 	start = ft_strchr(str, delimiter);
