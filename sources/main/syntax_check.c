@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   synthax_check.c                                    :+:      :+:    :+:   */
+/*   syntax_check.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/12 11:49:00 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/12 13:40:47 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,11 +109,11 @@ int	syntax_check(t_msh *msh, t_data *data)
 		ft_putstr_fd("'\n", 2);
 		return (g_exit = 2, 1);
 	}
-	if (data->tokens->type == TKN_HEREDOC)
-	{
-		ft_putstr_fd("bash: syntax error near unexpected token `newline'\n", 2);
-		return (g_exit = 2, 1);
-	}
+//	if (data->tokens->type == TKN_HEREDOC)
+//	{
+//		ft_putstr_fd("bash: syntax error near unexpected token `newline'\n", 2);
+//		return (g_exit = 2, 1);
+//	}
 	if (syntax_quotes(data->tokens))
 	{
 		ft_putstr_fd("bash: syntax error near unexpected token `open quote'\n",
