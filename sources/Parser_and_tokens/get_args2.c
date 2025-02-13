@@ -80,23 +80,18 @@ char	*merge_args(t_tokens **temp)
 	char	*str;
 
 	merged = return_arg(*temp);
-	while ((*temp)->next && (*temp)->next->type != TKN_PIPE
-		&& (*temp)->next->type != TKN_SPACE)
+	*temp = (*temp)->next;
+	while ((*temp) && (*temp)->type != TKN_PIPE && (*temp)->type != TKN_SPACE)
 	{
-		*temp = (*temp)->next;
 		next_arg = return_arg(*temp);
 		str = merged;
 		merged = ft_strjoin(merged, next_arg);
 		free(str);
 		free(next_arg);
+		*temp = (*temp)->next;
 	}
 	return (merged);
 }
-
-
-
-
-
 
 /*
 void	getargs_cycle(t_msh *msh, t_tokens *temp, char ***args)
@@ -114,4 +109,80 @@ void	getargs_cycle(t_msh *msh, t_tokens *temp, char ***args)
 	}
 	(*args)[i] = NULL;
 }
+
+
+void	getargs_cycle(t_msh *msh, t_tokens *temp, char ***args)
+{
+	int		i;
+	char	*merged;
+	char	*next_arg;
+	char	*str;
+
+	i = 0;
+	while (temp && temp->type != TKN_PIPE)
+	{
+		if (get_delimiter(msh, temp->name) != 0)
+			skip_delimiters(&temp);
+		else if (temp && temp->type != TKN_SPACE)
+		{
+			merged = return_arg(temp);
+			temp = temp->next;
+			while (temp && temp->type != TKN_PIPE && temp->type != TKN_SPACE)
+			{
+				next_arg = return_arg(temp);
+				str = merged;
+				merged = ft_strjoin(merged, next_arg);
+				free(str);
+				free(next_arg);
+				temp = temp->next;
+			}
+			(*args)[i++] = merged;
+		}
+		else
+			temp = temp->next;
+	}
+	(*args)[i] = NULL;
+}
+
+
+void	getargs_cycle(t_msh *msh, t_tokens *temp, char ***args)
+{
+	int		i;
+	char	*merged;
+	char	*next_arg;
+	char	*str;
+
+	i = 0;
+	while (temp && temp->type != TKN_PIPE)
+	{
+		if (get_delimiter(msh, temp->name) != 0)
+		{
+			temp = temp->next;
+			if (temp && temp->type == TKN_SPACE)
+				temp = temp->next;
+			while (temp && temp->type != TKN_SPACE && temp->type != TKN_PIPE)
+				temp = temp->next;
+			continue;
+		}
+		else if (temp && temp->type != TKN_SPACE)
+		{
+			merged = return_arg(temp);
+			temp = temp->next;
+			while (temp && temp->type != TKN_PIPE && temp->type != TKN_SPACE)
+			{
+				next_arg = return_arg(temp);
+				str = merged;
+				merged = ft_strjoin(merged, next_arg);
+				free(str);
+				free(next_arg);
+				temp = temp->next;
+			}
+			(*args)[i++] = merged;
+		}
+		else
+			temp = temp->next;
+	}
+	(*args)[i] = NULL;
+}
+
 */

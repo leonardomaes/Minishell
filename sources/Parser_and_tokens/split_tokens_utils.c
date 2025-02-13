@@ -35,3 +35,30 @@ char	**alloc_args(int words, int *len)
 	str[i] = NULL;
 	return (str);
 }
+
+char	**ft_split_args(t_msh *msh, const char *s)
+{
+	char	**str;
+	int		*len;
+	t_split	nums;
+
+	if (!s)
+		return (NULL);
+	nums.words = count_args(s);
+	len = calculate_lengths(msh, s, nums.words);
+	if (!len)
+		return (NULL);
+	str = alloc_args(nums.words, len);
+	if (!str)
+	{
+		free(len);
+		return (NULL);
+	}
+	nums.i = 0;
+	nums.l = 0;
+	while (s[nums.l])
+		split_arg(msh, &str, s, &nums);
+	str[nums.i] = NULL;
+	free(len);
+	return (str);
+}

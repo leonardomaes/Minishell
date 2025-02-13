@@ -15,42 +15,21 @@
 void	getargs_cycle(t_msh *msh, t_tokens *temp, char ***args)
 {
 	int		i;
-	char	*merged;
-	char	*next_arg;
-	char	*str;
 
 	i = 0;
 	while (temp && temp->type != TKN_PIPE)
 	{
 		if (get_delimiter(msh, temp->name) != 0)
-		{
-			temp = temp->next;
-			if (temp && temp->type == TKN_SPACE)
-				temp = temp->next;
-			while (temp && temp->type != TKN_SPACE && temp->type != TKN_PIPE)
-				temp = temp->next;
-			continue;
-		}
+			skip_delimiters(&temp);
 		else if (temp && temp->type != TKN_SPACE)
 		{
-			merged = return_arg(temp);
-			temp = temp->next;
-			while (temp && temp->type != TKN_PIPE && temp->type != TKN_SPACE)
-			{
-				next_arg = return_arg(temp);
-				str = merged;
-				merged = ft_strjoin(merged, next_arg);
-				free(str);
-				free(next_arg);
-				temp = temp->next;
-			}
-			(*args)[i++] = merged;
+			(*args)[i++] = merge_args(&temp);
 		}
 		else
 			temp = temp->next;
 	}
 	(*args)[i] = NULL;
-} 
+}
 
 char	**getargs(t_msh *msh, t_tokens *token)
 {

@@ -12,12 +12,12 @@
 
 #include "../../minishell.h"
 
-void	calculate_quotes(t_msh *msh, const char *s, int word, int *i, int **len)
+void	calculate_quotes(t_msh *msh, const char *s, t_split *nums, int **len)
 {
-	if (s[*i] == '\'')
-		(*len)[word] = single_quote_lenght(s, i);
-	else if (s[*i] == '"')
-		(*len)[word] = double_quote_lenght(msh, s, i);
+	if (s[nums->i] == '\'')
+		(*len)[nums->words] = single_quote_lenght(s, &nums->i);
+	else if (s[nums->i] == '"')
+		(*len)[nums->words] = double_quote_lenght(msh, s, &nums->i);
 }
 
 void	calculate_redir(const char *s, int word, int *i, int **len)
@@ -35,55 +35,35 @@ void	sum_one(int word, int *i, int **len)
 	(*i)++;
 }
 
-void	calculate_length(t_msh *msh, const char *s, int word, int *i, int **len)
+void	calculate_else(const char *s, t_split *nums, int **len)
 {
-	if (ft_isspace(s[*i]))
+	while (s[nums->i] && s[nums->i] != '|' && !ft_isspace(s[nums->i])
+		&& !ft_isdelimiter(s[nums->i]) && !ft_isredirection(s[nums->i]))
 	{
-		(*len)[word] = 1;
-		skip_spaces(s, i);
-	}
-	else if (s[*i] == '|')
-		sum_one(word, i, len);
-	else if (s[*i] == '$' && !ft_isdelimiter(s[*i + 1]) && !ft_isspace(s[*i
-				+ 1]))
-		(*len)[word] = environ_lenght(msh, s, i);
-	else if (s[*i] == '$' && (s[*i + 1] == '\0' || s[*i + 1] == ' '))
-		sum_one(word, i, len);
-	else if (s[*i] == '\'' || s[*i] == '"')
-		calculate_quotes(msh, s, word, i, len);
-	else if (ft_isredirection(s[*i]))
-		calculate_redir(s, word, i, len);
-	else
-	{
-		while (s[*i] && s[*i] != '|' && !ft_isspace(s[*i])
-			&& !ft_isdelimiter(s[*i]) && !ft_isredirection(s[*i]))
-		{
-			(*len)[word]++;
-			(*i)++;
-		}
+		(*len)[nums->words]++;
+		(nums->i)++;
 	}
 }
 
-int	*calculate_lengths(t_msh *msh, const char *s, int words)
+void	calculate_length(t_msh *msh, const char *s, t_split *nums, int **len)
 {
-	int	*len;
-	int	i;
-	int	word;
-
-	i = 0;
-	word = 0;
-	len = (int *)malloc(sizeof(int) * words);
-	if (!len)
-		return (NULL);
-	while (s[i] && word < words)
+	if (ft_isspace(s[nums->i]))
 	{
-		len[word] = 0;
-		if (s[i] == '\0')
-			break ;
-		if (ft_isspace(s[i]) && (word == 0 || s[i - 1] == '|'))
-			skip_spaces(s, &i);
-		calculate_length(msh, s, word, &i, &len);
-		word++;
+		(*len)[nums->words] = 1;
+		skip_spaces(s, &nums->i);
 	}
-	return (len);
+	else if (s[nums->i] == '|')
+		sum_one(nums->words, &nums->i, len);
+	else if (s[nums->i] == '$' && !ft_isdelimiter(s[nums->i + 1])
+		&& !ft_isspace(s[nums->i + 1]))
+		(*len)[nums->words] = environ_lenght(msh, s, &nums->i);
+	else if (s[nums->i] == '$' && (s[nums->i + 1] == '\0'
+			|| s[nums->i + 1] == ' '))
+		sum_one(nums->words, &nums->i, len);
+	else if (s[nums->i] == '\'' || s[nums->i] == '"')
+		calculate_quotes(msh, s, nums, len);
+	else if (ft_isredirection(s[nums->i]))
+		calculate_redir(s, nums->words, &nums->i, len);
+	else
+		calculate_else(s, nums, len);
 }

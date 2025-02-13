@@ -88,6 +88,14 @@ typedef struct s_pos
 	const char	*end;
 }	t_pos;
 
+// Split tokens struct
+typedef struct s_split
+{
+	int	words;
+	int	i;
+	int	l;
+}				t_split;
+
 //token struct list
 typedef struct s_tokens
 {
@@ -181,7 +189,10 @@ char		*merge_args(t_tokens **temp);
 
 /* SPLIT TOKENS */
 int			*calculate_lengths(t_msh *msh, const char *s, int words);
+void		calculate_length(t_msh *msh, const char *s,
+				t_split *nums, int **len);
 char		**ft_split_args(t_msh *msh, const char *s);
+void		split_arg(t_msh *msh, char ***str, const char *s, t_split *nums);
 
 /* COUNT ARGS */
 void		count_quotes(const char *s, int *i);
@@ -223,7 +234,8 @@ void		ft_child_process(t_msh *msh, t_tokens *cur, int *pipefd, int i);
 int			execute_multi(t_msh *msh);
 
 /* EXECUTER UTILS */
-void		handle_redirs(t_msh *msh, t_tokens *token, int prev_pipe);
+int			handle_redirs_one(t_msh *msh, t_tokens *token);
+int			handle_redirs_multi(t_msh *msh, t_tokens *token, int prev_pipe);
 
 /* HEREDOC */
 void		handle_heredoc(t_tokens *token, t_msh *msh);

@@ -90,7 +90,5 @@ int	ft_readline(t_msh *msh)
 	if (syntax_check(msh, msh->data) != 0)
 		return (ft_free_data(msh), free(line), 1);
 	ft_get_args(msh);
-	//ft_print_params(msh); 	// Remover
-	//ft_print_tokens(msh->data->tokens); 	// Remover
 	return (free(line), 0);
 }

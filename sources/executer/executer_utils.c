@@ -73,7 +73,21 @@ void	setup_heredocs(t_tokens *tokens, t_msh *msh)
 	}
 }
 
-void	handle_redirs(t_msh *msh, t_tokens *token, int prev_pipe)
+int	handle_redirs_one(t_msh *msh, t_tokens *token)
+{
+	if (open_files(msh, token) != 0)
+	{
+		g_exit = 1;
+		return (-1);
+	}
+	if (msh->data->infile > 0)
+		dup2(msh->data->infile, STDIN_FILENO);
+	if (msh->data->outfile > 0)
+		dup2(msh->data->outfile, STDOUT_FILENO);
+	return (0);
+}
+
+int	handle_redirs_multi(t_msh *msh, t_tokens *token, int prev_pipe)
 {
 	if (open_files(msh, token) != 0)
 	{
@@ -96,4 +110,5 @@ void	handle_redirs(t_msh *msh, t_tokens *token, int prev_pipe)
 		dup2(msh->data->outfile, STDOUT_FILENO);
 		close(msh->data->outfile);
 	}
+	return (0);
 }

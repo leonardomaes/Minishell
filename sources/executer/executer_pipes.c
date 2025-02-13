@@ -27,7 +27,7 @@ static int	process_child(t_msh *msh, t_tokens *cur, int *pipefd, int i)
 		ft_perror(msh, "fork: ", 1);
 	else if (pid == 0)
 	{
-		handle_redirs(msh, cur, msh->data->prev_pipe);
+		handle_redirs_multi(msh, cur, msh->data->prev_pipe);
 		ft_child_process(msh, cur, pipefd, i);
 	}
 	return (pid);

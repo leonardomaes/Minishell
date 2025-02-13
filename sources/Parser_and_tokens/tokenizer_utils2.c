@@ -12,6 +12,29 @@
 
 #include "../../minishell.h"
 
+int	*calculate_lengths(t_msh *msh, const char *s, int words)
+{
+	int		*len;
+	t_split	nums;
+
+	nums.i = 0;
+	nums.words = 0;
+	len = (int *)malloc(sizeof(int) * words);
+	if (!len)
+		return (NULL);
+	while (s[nums.i] && nums.words < words)
+	{
+		len[nums.words] = 0;
+		if (s[nums.i] == '\0')
+			break ;
+		if (ft_isspace(s[nums.i]) && (nums.words == 0 || s[nums.i - 1] == '|'))
+			skip_spaces(s, &nums.i);
+		calculate_length(msh, s, &nums, &len);
+		nums.words++;
+	}
+	return (len);
+}
+
 int	handle_double_quote(t_msh *msh, const char *s, char *str, int *l)
 {
 	int	len;

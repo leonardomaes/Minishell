@@ -77,7 +77,8 @@ int	execute_one(t_msh *msh, char **envp)
 	setup_heredocs(msh->data->tokens, msh);
 	if (msh->data->tokens->type == TKN_HEREDOC)
 		return (0);
-	handle_redirs(msh, msh->data->tokens, -1);
+	if (handle_redirs_one(msh, msh->data->tokens))
+		return (-1);
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
 		g_exit = exec_builtin(msh, msh->data->tokens);
 	else

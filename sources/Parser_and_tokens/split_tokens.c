@@ -12,82 +12,61 @@
 
 #include "../../minishell.h"
 
-void	add_one(char ***str, const char *s, int *i, int *j, int *l)
+void	add_one(char ***str, const char *s, int *j, t_split *nums)
 {
-	(*str)[*i][(*j)++] = s[(*l)++];
-	(*str)[*i][*j] = '\0';
+	(*str)[nums->i][(*j)++] = s[(nums->l)++];
+	(*str)[nums->i][*j] = '\0';
 }
 
-void	split_redirs(char ***str, const char *s, int *i, int *j, int *l)
+void	split_redirs(char ***str, const char *s, int *j, t_split *nums)
 {
-	while (ft_isredirection(s[*l]))
-		(*str)[*i][(*j)++] = s[(*l)++];
-	(*str)[*i][*j] = '\0';
+	while (ft_isredirection(s[nums->l]))
+		(*str)[nums->i][(*j)++] = s[(nums->l)++];
+	(*str)[nums->i][*j] = '\0';
 }
 
-void	split_else(char ***str, const char *s, int *i, int *j, int *l)
+void	split_else(char ***str, const char *s, int *j, t_split *nums)
 {
-	while (s[*l] && s[*l] != '|' && !ft_isspace(s[*l]) && !ft_isdelimiter(s[*l])
-		&& !ft_isredirection(s[*l]))
-		(*str)[*i][(*j)++] = s[(*l)++];
-	(*str)[*i][*j] = '\0';
+	while (s[nums->l] && s[nums->l] != '|' && !ft_isspace(s[nums->l])
+		&& !ft_isdelimiter(s[nums->l]) && !ft_isredirection(s[nums->l]))
+		(*str)[nums->i][(*j)++] = s[(nums->l)++];
+	(*str)[nums->i][*j] = '\0';
 }
 
-void	split_arg(t_msh *msh, char ***str, const char *s, int *l, int *i)
+int	split_quotes(t_msh *msh, const char *s, char ***str, t_split *nums)
+{
+	if (s[nums->l] == '"')
+		return (handle_double_quote(msh, s, (*str)[nums->i], &nums->l));
+	else if (s[nums->l] == '\'')
+		return (handle_single_quote(s, (*str)[nums->i], &nums->l));
+	return (0);
+}
+
+void	split_arg(t_msh *msh, char ***str, const char *s, t_split *nums)
 {
 	int	j;
 
 	j = 0;
-	if (ft_isspace(s[*l]) && (*i == 0 || s[*l - 1] == '|'))
-		skip_spaces(s, l);
-	if (ft_isspace(s[*l]))
+	if (ft_isspace(s[nums->l]) && (nums->i == 0 || s[nums->l - 1] == '|'))
+		skip_spaces(s, &nums->l);
+	if (ft_isspace(s[nums->l]))
 	{
-		add_one(str, s, i, &j, l);
-		skip_spaces(s, l);
+		add_one(str, s, &j, nums);
+		skip_spaces(s, &nums->l);
 	}
-	else if (s[*l] == '|')
-		add_one(str, s, i, &j, l);
-	else if (s[*l] == '"')
-		j = handle_double_quote(msh, s, (*str)[*i], l);
-	else if (s[*l] == '\'')
-		j = handle_single_quote(s, (*str)[*i], l);
-	else if (s[*l] == '$' && !ft_isdelimiter(s[*l + 1]) && !ft_isspace(s[*l
-				+ 1]))
-		j = handle_environ(msh, s, (*str)[*i], l);
-	else if (s[*l] == '$' && (s[*l + 1] == '\0' || s[*l + 1] == ' '))
-		add_one(str, s, i, &j, l);
-	else if (s[*l] && ft_isredirection(s[*l]))
-		split_redirs(str, s, i, &j, l);
+	else if (s[nums->l] == '|')
+		add_one(str, s, &j, nums);
+	else if (s[nums->l] == '"' || s[nums->l] == '\'')
+		j = split_quotes(msh, s, str, nums);
+	else if (s[nums->l] == '$' && !ft_isdelimiter(s[nums->l + 1])
+		&& !ft_isspace(s[nums->l + 1]))
+		j = handle_environ(msh, s, (*str)[nums->i], &nums->l);
+	else if (s[nums->l] == '$' && (s[nums->l + 1] == '\0'
+			|| s[nums->l + 1] == ' '))
+		add_one(str, s, &j, nums);
+	else if (s[nums->l] && ft_isredirection(s[nums->l]))
+		split_redirs(str, s, &j, nums);
 	else
-		split_else(str, s, i, &j, l);
-	(*i)++;
-}
-
-char	**ft_split_args(t_msh *msh, const char *s)
-{
-	char	**str;
-	int		*len;
-	int		words;
-	int		i;
-	int		l;
-
-	if (!s)
-		return (NULL);
-	words = count_args(s);
-	len = calculate_lengths(msh, s, words);
-	if (!len)
-		return (NULL);
-	str = alloc_args(words, len);
-	if (!str)
-	{
-		free(len);
-		return (NULL);
-	}
-	i = 0;
-	l = 0;
-	while (s[l])
-		split_arg(msh, &str, s, &l, &i);
-	str[i] = NULL;
-	free(len);
-	return (str);
+		split_else(str, s, &j, nums);
+	nums->i++;
 }
