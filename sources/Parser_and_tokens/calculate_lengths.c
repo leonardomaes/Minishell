@@ -62,7 +62,7 @@ void	calculate_length(t_msh *msh, const char *s, t_split *nums, int **len)
 		sum_one(nums->words, &nums->i, len);
 	else if (s[nums->i] == '\'' || s[nums->i] == '"')
 		calculate_quotes(msh, s, nums, len);
-	else if (ft_isredirection(s[nums->i]))
+	else if (ft_isredirection(s[nums->i])) 						// Redirection
 		calculate_redir(s, nums->words, &nums->i, len);
 	else
 		calculate_else(s, nums, len);

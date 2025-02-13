@@ -55,15 +55,27 @@ void	ft_get_args(t_msh *msh)
 	{
 		if (temp->type == TKN_HEREDOC)
 		{
-			i = temp->next;
-			temp->args = malloc(sizeof(char *) * 2);
-			if (!temp->args)
-				ft_perror(msh, "malloc:", 1);
-			temp->args[0] = NULL;
-			if (i && i->type == TKN_SPACE)
-				i = i->next;
-			temp->args[0] = return_arg(i);
-			temp->args[1] = NULL;
+			if (temp->prev == NULL)
+			{
+				while (temp && temp->type != TKN_SPACE)
+					temp = temp->next;
+				if (temp && temp->type == TKN_SPACE)
+					temp = temp->next;
+				
+			}
+			else
+			{
+				i = temp->next;
+				temp->args = malloc(sizeof(char *) * 2);
+				if (!temp->args)
+					ft_perror(msh, "malloc:", 1);
+				temp->args[0] = NULL;
+				if (i && i->type == TKN_SPACE)
+					i = i->next;
+				temp->args[0] = return_arg(i);
+				temp->args[1] = NULL;
+			}
+			
 		}
 		else if (!temp->prev || temp->prev->type == TKN_PIPE)
 			temp->args = getargs(msh, temp);

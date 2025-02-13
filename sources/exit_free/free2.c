@@ -39,13 +39,25 @@ void	ft_perror(t_msh *msh, char *msg, int exit_code)
 	exit(exit_code);
 }
 
-//print error (do not free and exit)
-void	ft_print_error(char *msg_err, char	*arg, int should_free)
+void	free_args(char **args)
 {
-	ft_putstr_fd("bash: ", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putstr_fd(msg_err, 2);
-	ft_putstr_fd("\n", 2);
-	if (should_free)
-		free(arg);
+	int	i;
+
+	i = 0;
+	while (args[i])
+		free(args[i++]);
+	free(args);
+}
+
+void	free_array(char **str, unsigned int n)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < n)
+	{
+		free(str[i]);
+		i++;
+	}
+	free(str);
 }

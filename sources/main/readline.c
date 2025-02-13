@@ -51,6 +51,8 @@ int	ft_init_data(char *line, t_msh *msh)
 	msh->data->pipes = 0;
 	msh->data->infile = -2;
 	msh->data->outfile = -2;
+	msh->data->stdin_backup = -2;
+	msh->data->stdout_backup = -2;
 	return (0);
 }
 
@@ -89,6 +91,7 @@ int	ft_readline(t_msh *msh)
 	split_tokens(msh, &msh->data->tokens, NULL, i);
 	if (syntax_check(msh, msh->data) != 0)
 		return (ft_free_data(msh), free(line), 1);
+	ft_print_tokens(msh->data->tokens);
 	ft_get_args(msh);
 	return (free(line), 0);
 }

@@ -46,7 +46,7 @@ SRC =	sources/main/main.c sources/main/readline.c \
 		sources/builtins/builtins_utils2.c
 
 # Valgrind readline leaks ignore vars
-RUN_MS 			= valgrind --leak-check=full --show-leak-kinds=all \
+RUN_MS 			= valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes \
 					--suppressions=.ignore_readline -q ./$(NAME)
 VAL_SUPP		= .ignore_readline
 

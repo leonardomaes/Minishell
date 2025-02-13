@@ -64,7 +64,7 @@ void	split_arg(t_msh *msh, char ***str, const char *s, t_split *nums)
 	else if (s[nums->l] == '$' && (s[nums->l + 1] == '\0'
 			|| s[nums->l + 1] == ' '))
 		add_one(str, s, &j, nums);
-	else if (s[nums->l] && ft_isredirection(s[nums->l]))
+	else if (s[nums->l] && ft_isredirection(s[nums->l]))				// Redirection
 		split_redirs(str, s, &j, nums);
 	else
 		split_else(str, s, &j, nums);

@@ -32,6 +32,17 @@ void	ft_free_tokens(t_tokens *tokens)
 	}
 }
 
+//print error (do not free and exit)
+void	ft_print_error(char *msg_err, char	*arg, int should_free)
+{
+	ft_putstr_fd("bash: ", 2);
+	ft_putstr_fd(arg, 2);
+	ft_putstr_fd(msg_err, 2);
+	ft_putstr_fd("\n", 2);
+	if (should_free)
+		free(arg);
+}
+
 void	ft_free_all(t_msh *msh)
 {
 	int	i;
@@ -42,6 +53,18 @@ void	ft_free_all(t_msh *msh)
 	free(msh->envp);
 	ft_free_data(msh);
 	free(msh);
+}
+
+void	close_backup_files(t_msh *msh)
+{
+	if (msh->data->infile > 0)
+		close(msh->data->infile);
+	if (msh->data->outfile > 0)
+		close(msh->data->outfile);
+	if (msh->data->stdin_backup > 0)
+		close(msh->data->stdin_backup);
+	if (msh->data->stdout_backup > 0)
+		close(msh->data->stdout_backup);
 }
 
 void	ft_free_data(t_msh	*msh)
@@ -65,33 +88,7 @@ void	ft_free_data(t_msh	*msh)
 		while (msh->data->args[i])
 			free(msh->data->args[i++]);
 		free(msh->data->args);
-		if (msh->data->infile > 0)
-			close(msh->data->infile);
-		else if (msh->data->outfile > 0)
-			close(msh->data->outfile);
+		close_backup_files(msh);
 		free(msh->data);
 	}
-}
-
-void	free_args(char **args)
-{
-	int	i;
-
-	i = 0;
-	while (args[i])
-		free(args[i++]);
-	free(args);
-}
-
-void	free_array(char **str, unsigned int n)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < n)
-	{
-		free(str[i]);
-		i++;
-	}
-	free(str);
 }

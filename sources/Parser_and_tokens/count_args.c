@@ -69,7 +69,7 @@ void	count_arg(const char *s, int *i)
 		count_quotes(s, i);
 	else if (s[*i] == '$')
 		count_dollar(s, i);
-	else if (ft_isredirection(s[*i]))
+	else if (ft_isredirection(s[*i]))		// Redirection
 	{
 		while (ft_isredirection(s[*i]))
 			(*i)++;
