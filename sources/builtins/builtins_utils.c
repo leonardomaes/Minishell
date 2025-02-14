@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 23:57:54 by rda-cunh          #+#    #+#             */
-/*   Updated: 2025/02/11 17:10:14 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/14 00:47:47 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,16 @@ char	**realloc_env_vars(t_msh *msh, int size)
 //helper function to get the index of a env variable
 int	get_env_var_index(char **envp, char *var_name)
 {
-	int		i;
-	size_t	var_name_len;
+	int				i;
+	size_t			var_name_len;
 
 	i = 0;
 	var_name_len = ft_strlen(var_name);
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], var_name, var_name_len) == 0
-			&& envp[i][var_name_len] == '=')
+			&& (envp[i][var_name_len] == '='
+			|| envp[i][var_name_len] == '\0'))
 			return (i);
 		i++;
 	}

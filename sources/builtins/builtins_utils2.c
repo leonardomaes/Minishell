@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 01:25:10 by rda-cunh          #+#    #+#             */
-/*   Updated: 2025/02/11 01:45:45 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/14 00:16:49 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ void	ft_sort_array(char **array, int count)
 	int		j;
 	char	*tmp;
 
-	printf("enter04\n");
 	i = 0;
 	while (i < count - 1)
 	{
