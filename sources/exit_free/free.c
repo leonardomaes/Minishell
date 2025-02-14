@@ -58,13 +58,30 @@ void	ft_free_all(t_msh *msh)
 void	close_backup_files(t_msh *msh)
 {
 	if (msh->data->infile > 0)
+	{
 		close(msh->data->infile);
+		msh->data->infile = -1;
+	}
 	if (msh->data->outfile > 0)
+	{
 		close(msh->data->outfile);
+		msh->data->outfile = -1;
+	}
 	if (msh->data->stdin_backup > 0)
+	{
 		close(msh->data->stdin_backup);
+		msh->data->stdin_backup = -1;
+	}
 	if (msh->data->stdout_backup > 0)
+	{
 		close(msh->data->stdout_backup);
+		msh->data->stdout_backup = -1;
+	}
+	if (msh->data->prev_pipe > 0)
+	{
+		close(msh->data->prev_pipe);
+		msh->data->prev_pipe = -1;
+	}
 }
 
 void	ft_free_data(t_msh	*msh)

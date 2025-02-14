@@ -22,9 +22,7 @@ void	getargs_cycle(t_msh *msh, t_tokens *temp, char ***args)
 		if (get_delimiter(msh, temp->name) != 0)
 			skip_delimiters(&temp);
 		else if (temp && temp->type != TKN_SPACE)
-		{
 			(*args)[i++] = merge_args(&temp);
-		}
 		else
 			temp = temp->next;
 	}
@@ -45,42 +43,46 @@ char	**getargs(t_msh *msh, t_tokens *token)
 	return (args);
 }
 
+void	get_heredoc_args(t_msh *msh, t_tokens **temp)
+{
+	t_tokens	*i;
+
+	i = (*temp)->next;
+	(*temp)->args = malloc(sizeof(char *) * 2);
+	if (!(*temp)->args)
+		ft_perror(msh, "malloc:", 1);
+	(*temp)->args[0] = NULL;
+	if (i && i->type == TKN_SPACE)
+		i = i->next;
+	if (i)
+		(*temp)->args[0] = merge_args(&i);
+	(*temp)->args[1] = NULL;
+	if (i && i->next)
+	{
+		*temp = i->next;
+		if ((*temp)->type == TKN_SPACE)
+			*temp = (*temp)->next;
+		if (*temp)
+			(*temp)->args = getargs(msh, *temp);
+	}
+}
+
 void	ft_get_args(t_msh *msh)
 {
 	t_tokens	*temp;
-	t_tokens	*i;
 
 	temp = msh->data->tokens;
 	while (temp)
 	{
 		if (temp->type == TKN_HEREDOC)
 		{
-			if (temp->prev == NULL)
-			{
-				while (temp && temp->type != TKN_SPACE)
-					temp = temp->next;
-				if (temp && temp->type == TKN_SPACE)
-					temp = temp->next;
-				
-			}
-			else
-			{
-				i = temp->next;
-				temp->args = malloc(sizeof(char *) * 2);
-				if (!temp->args)
-					ft_perror(msh, "malloc:", 1);
-				temp->args[0] = NULL;
-				if (i && i->type == TKN_SPACE)
-					i = i->next;
-				temp->args[0] = return_arg(i);
-				temp->args[1] = NULL;
-			}
-			
+			get_heredoc_args(msh, &temp);
 		}
 		else if (!temp->prev || temp->prev->type == TKN_PIPE)
 			temp->args = getargs(msh, temp);
 		else
 			temp->args = NULL;
-		temp = temp->next;
+		if (temp)
+			temp = temp->next;
 	}
 }

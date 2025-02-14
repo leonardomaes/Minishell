@@ -50,10 +50,10 @@ int	get_meta_type(t_msh *msh, char *name, int i)
 		return (TKN_OUTREDIR);
 	else if (name[0] == '<')
 		return (TKN_INREDIR);
+	else if (name[0] == ' ' || name[0] == '\0')
+		return (TKN_SPACE);
 	else if (i == 0 || msh->data->args[i - 1][0] == '|')
 		return (TKN_BCMD);
-	else if (name[0] == ' ')
-		return (TKN_SPACE);
 	else
 		return (ARGUMENT);
 }

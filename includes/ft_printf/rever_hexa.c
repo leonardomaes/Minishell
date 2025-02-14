@@ -18,7 +18,7 @@ int	rever_hexa(char *src1, char format)
 	int		j;
 	char	*src2;
 
-	i = strlen(src1) - 1;
+	i = ft_strlen(src1) - 1;
 	src2 = malloc(i + 2 * sizeof(char));
 	if (!src2)
 		return (-1);

@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/14 00:09:17 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/12 12:13:54 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ int	ft_init_data(char *line, t_msh *msh)
 	msh->data->outfile = -2;
 	msh->data->stdin_backup = -2;
 	msh->data->stdout_backup = -2;
+	msh->data->prev_pipe = -1;
 	return (0);
 }
 
@@ -91,7 +92,6 @@ int	ft_readline(t_msh *msh)
 	split_tokens(msh, &msh->data->tokens, NULL, i);
 	if (syntax_check(msh, msh->data) != 0)
 		return (ft_free_data(msh), free(line), 1);
-	//ft_print_tokens(msh->data->tokens);
 	ft_get_args(msh);
 	return (free(line), 0);
 }

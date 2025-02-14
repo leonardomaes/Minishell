@@ -24,9 +24,9 @@ int	alloc_getargs(t_msh *msh, t_tokens *token)
 		if (get_delimiter(msh, temp->name) != 0)
 		{
 			temp = temp->next;
-			if (temp->type == TKN_SPACE)
+			if (temp && temp->type == TKN_SPACE)
 				temp = temp->next;
-			if (temp->type != TKN_PIPE)
+			if (temp && temp->type != TKN_PIPE)
 				temp = temp->next;
 			continue ;
 		}

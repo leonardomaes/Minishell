@@ -23,7 +23,7 @@ static int	copy_env_vars(char **new_envp, char **old_envp, char *var, int *j)
 	len = ft_strlen(var);
 	while (old_envp[i])
 	{
-		if (!(strncmp(old_envp[i], var, len) == 0
+		if (!(ft_strncmp(old_envp[i], var, len) == 0
 				&& (old_envp[i][len] == '=' || old_envp[i][len] == '\0')))
 		{
 			new_envp[*j] = ft_strdup(old_envp[i]);

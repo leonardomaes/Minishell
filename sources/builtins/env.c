@@ -29,7 +29,7 @@ int	execute_env(char **args, char **envp)
 	}
 	while (envp && envp[i])
 	{
-		if (strchr(envp[i], '='))
+		if (ft_strchr(envp[i], '='))
 			printf("%s\n", envp[i]);
 		i++;
 	}

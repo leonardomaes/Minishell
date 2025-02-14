@@ -22,7 +22,9 @@ void	calculate_quotes(t_msh *msh, const char *s, t_split *nums, int **len)
 
 void	calculate_redir(const char *s, int word, int *i, int **len)
 {
-	while (ft_isredirection(s[*i]))
+	(*len)[word]++;
+	(*i)++;
+	if (ft_isredirection(s[*i]))
 	{
 		(*len)[word]++;
 		(*i)++;
@@ -58,11 +60,11 @@ void	calculate_length(t_msh *msh, const char *s, t_split *nums, int **len)
 		&& !ft_isspace(s[nums->i + 1]))
 		(*len)[nums->words] = environ_lenght(msh, s, &nums->i);
 	else if (s[nums->i] == '$' && (s[nums->i + 1] == '\0'
-			|| s[nums->i + 1] == ' '))
+			|| ft_isspace(s[nums->i + 1]) || ft_isdelimiter(s[nums->i + 1])))
 		sum_one(nums->words, &nums->i, len);
 	else if (s[nums->i] == '\'' || s[nums->i] == '"')
 		calculate_quotes(msh, s, nums, len);
-	else if (ft_isredirection(s[nums->i])) 						// Redirection
+	else if (ft_isredirection(s[nums->i]))
 		calculate_redir(s, nums->words, &nums->i, len);
 	else
 		calculate_else(s, nums, len);

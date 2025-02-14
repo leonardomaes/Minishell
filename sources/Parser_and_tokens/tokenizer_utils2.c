@@ -68,7 +68,7 @@ char	*ft_chartrim(char **s, char set)
 	if (!s || !*s)
 		return (NULL);
 	start = *s;
-	end = *s + strlen(*s) - 1;
+	end = *s + ft_strlen(*s) - 1;
 	while (*start == set)
 		start++;
 	while (end > start && *end == set)

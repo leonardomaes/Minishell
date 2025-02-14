@@ -34,9 +34,9 @@ int	syntax_redirs(t_msh *msh, t_tokens *tokens)
 	}
 	if (get_delimiter(msh, temp->next->name) != 0)
 	{
-		ft_print_error("syntax error near unexpected token `",
-			ft_strjoin(temp->next->name, "'\n"), 1);
-		return (g_exit = 2, 1);
+		ft_putstr_fd("bash: syntax error near unexpected token `", 2);
+		ft_putstr_fd(temp->next->name, 2);
+		return (ft_putstr_fd("'\n", 2), g_exit = 2, 1);
 	}
 	return (0);
 }

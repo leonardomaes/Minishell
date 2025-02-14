@@ -218,6 +218,7 @@ int			get_type(t_msh *msh, char *name, int i);
 int			open_files(t_msh *msh, t_tokens *token);
 int			close_files(t_msh *msh);
 char		*find_last_arg(t_tokens *temp);
+
 /* EXECUTER */
 int			exec_builtin(t_msh *msh, t_tokens *tokens);
 void		handle_heredocs(t_msh *msh, t_tokens *token);
@@ -226,6 +227,8 @@ int			execute_one(t_msh *msh, char **envp);
 int			execute_multi(t_msh *msh);
 int			execute(t_msh *msh);
 void		ft_exec(t_msh *msh, t_tokens *tokens, char **envp);
+void		skip_redirs(t_tokens **temp);
+char		*ft_get_bcmd(char *cmd);
 
 /* EXECUTER PIPES*/
 int			execute_cmd(t_msh *msh, t_tokens *tokens, char **envp);

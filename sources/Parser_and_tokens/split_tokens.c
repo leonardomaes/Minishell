@@ -20,7 +20,8 @@ void	add_one(char ***str, const char *s, int *j, t_split *nums)
 
 void	split_redirs(char ***str, const char *s, int *j, t_split *nums)
 {
-	while (ft_isredirection(s[nums->l]))
+	(*str)[nums->i][(*j)++] = s[(nums->l)++];
+	if (ft_isredirection(s[nums->l]))
 		(*str)[nums->i][(*j)++] = s[(nums->l)++];
 	(*str)[nums->i][*j] = '\0';
 }
@@ -62,9 +63,9 @@ void	split_arg(t_msh *msh, char ***str, const char *s, t_split *nums)
 		&& !ft_isspace(s[nums->l + 1]))
 		j = handle_environ(msh, s, (*str)[nums->i], &nums->l);
 	else if (s[nums->l] == '$' && (s[nums->l + 1] == '\0'
-			|| s[nums->l + 1] == ' '))
+			|| ft_isspace(s[nums->l + 1]) || ft_isdelimiter(s[nums->l + 1])))
 		add_one(str, s, &j, nums);
-	else if (s[nums->l] && ft_isredirection(s[nums->l]))				// Redirection
+	else if (s[nums->l] && ft_isredirection(s[nums->l]))
 		split_redirs(str, s, &j, nums);
 	else
 		split_else(str, s, &j, nums);

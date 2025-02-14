@@ -23,31 +23,15 @@ char	*ft_get_bcmd(char *cmd)
 	return (comm);
 }
 
-void	ft_exec(t_msh *msh, t_tokens *tokens, char **envp)
+void	skip_redirs(t_tokens **temp)
 {
-	char		*comm;
-	struct stat	filestat;
-
-	if (tokens->type == TKN_BCMD && (tokens->name[0] == '.'
-			&& tokens->name[1] == '/'))
-	{
-		comm = ft_get_bcmd(tokens->name + 1);
-	}
-	else
-		comm = ft_get_command(msh, tokens->args[0], msh->data->cmd_paths);
-	if (stat(comm, &filestat) == 0 && S_ISDIR(filestat.st_mode))
-		ft_exit(msh, 126, ": Is a directory\n", comm);
-	if (!comm)
-		ft_exit(msh, 127, ": command not found\n", ft_strdup(tokens->args[0]));
-	if (access(comm, F_OK) == -1)
-		ft_exit(msh, 127, ": No such file or directory\n", comm);
-	if (access(comm, X_OK) == -1)
-		ft_exit(msh, 126, ": Permission denied\n", comm);
-	if (execve(comm, tokens->args, envp) == -1)
-	{
-		free(comm);
-		ft_perror(msh, "execve:", 126);
-	}
+	*temp = (*temp)->next;
+	if (*temp && (*temp)->type == TKN_SPACE)
+		*temp = (*temp)->next;
+	while (*temp && (*temp)->type != TKN_SPACE && (*temp)->type != TKN_PIPE)
+		*temp = (*temp)->next;
+	if (*temp && (*temp)->type == TKN_SPACE)
+		*temp = (*temp)->next;
 }
 
 void	ft_parent(t_msh *msh, pid_t pid)
@@ -75,8 +59,6 @@ int	execute_one(t_msh *msh, char **envp)
 
 	g_exit = 0;
 	setup_heredocs(msh->data->tokens, msh);
-	if (msh->data->tokens->type == TKN_HEREDOC)
-		return (0);
 	if (handle_redirs_one(msh, msh->data->tokens))
 		return (-1);
 	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
