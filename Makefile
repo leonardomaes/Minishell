@@ -6,7 +6,7 @@
 #    By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/12 15:52:26 by rda-cunh          #+#    #+#              #
-#    Updated: 2025/02/15 01:09:16 by rda-cunh         ###   ########.fr        #
+#    Updated: 2025/02/12 16:39:48 by rda-cunh         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,22 +23,23 @@ PRINTF = includes/ft_printf/libftprintf.a
 # Sources
 SRC =	sources/main/main.c sources/main/readline.c \
 		sources/main/syntax_check.c sources/main/environ.c \
-		sources/trash.c sources/exit_free/free.c sources/exit_free/free2.c\
+		sources/exit_free/free.c sources/exit_free/free2.c\
 		sources/executer/heredoc.c sources/executer/heredoc_expander.c \
 		sources/executer/executer.c \
 		sources/executer/executer_pipes.c sources/executer/executer_pipes2.c \
 		sources/executer/executer_utils.c sources/executer/redirections.c \
 		sources/executer/redirections2.c \
-		sources/signals/signals.c sources/Parser_and_tokens/tokenizer.c \
-		sources/Parser_and_tokens/tokenizer_utils.c \
-		sources/Parser_and_tokens/tokenizer_utils2.c \
-		sources/Parser_and_tokens/token_type.c \
-		sources/Parser_and_tokens/split_tokens.c \
-		sources/Parser_and_tokens/split_tokens_utils.c \
-		sources/Parser_and_tokens/calculate_lengths.c \
-		sources/Parser_and_tokens/count_args.c \
-		sources/Parser_and_tokens/get_args.c \
-		sources/Parser_and_tokens/get_args2.c \
+		sources/signals/signals.c sources/signals/signals2.c \
+		sources/parser_and_tokens/tokenizer.c \
+		sources/parser_and_tokens/tokenizer_utils.c \
+		sources/parser_and_tokens/tokenizer_utils2.c \
+		sources/parser_and_tokens/token_type.c \
+		sources/parser_and_tokens/split_tokens.c \
+		sources/parser_and_tokens/split_tokens_utils.c \
+		sources/parser_and_tokens/calculate_lengths.c \
+		sources/parser_and_tokens/count_args.c \
+		sources/parser_and_tokens/get_args.c \
+		sources/parser_and_tokens/get_args2.c \
 		sources/builtins/env.c sources/builtins/exit.c \
 		sources/builtins/export.c sources/builtins/pwd.c \
 		sources/builtins/unset.c sources/builtins/cd.c \

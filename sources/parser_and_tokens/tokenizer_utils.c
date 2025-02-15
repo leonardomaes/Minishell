@@ -74,7 +74,7 @@ int	environ_lenght(t_msh *msh, const char *s, int *i)
 		(*i)++;
 	j = *i;
 	if (s[j] == '?')
-		return (j = 3, j);
+		return ((*i)++, j = 3, j);
 	while (s[*i] && (ft_isalnum(s[*i]) || s[*i] == '_'))
 		(*i)++;
 	env = (char *)malloc(sizeof(char) * ((*i - j) + 1));
@@ -92,20 +92,20 @@ int	environ_lenght(t_msh *msh, const char *s, int *i)
 
 int	handle_environ(t_msh *msh, const char *s, char *str, int *l)
 {
-	const char	*start = &s[++(*l)];
+	const char	*start;
 	char		var_name[999];
 	char		*env_value;
 	int			len;
 
 	len = 0;
+	start = &s[++(*l)];
 	if (*start == '?')
 	{
 		env_value = ft_itoa(g_exit);
 		len = ft_strlen(env_value);
-		ft_strlcpy(str, env_value, len + 1);
-		free(env_value);
+		ft_strcpy(str, env_value);
 		(*l)++;
-		return (len);
+		return (free(env_value), len);
 	}
 	while (s[*l] && (ft_isalnum(s[*l]) || s[*l] == '_'))
 		(*l)++;

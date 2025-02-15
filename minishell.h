@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/15 01:00:37 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/09 18:45:58 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,20 +280,21 @@ int			get_env_var_index(char **envp, char *var_name);
 char		*get_env_var_value(char **envp, char *var);
 int			set_env_var(t_msh *msh, char *var_name, char *var_value);
 
-/* BUILTINS | UTILS 2 - EXPORT*/
+/* BUILTINS | UTILS 2 - EXPORT */
 void		ft_sort_array(char **array, int count);
 void		ft_print_array(char **array);
 void		ft_free_array(char **array);
 int			is_valid_var_name(char *name);
 char		*ft_strjoin4(char *s1, char *s2, char *s3, char *s4);
 
-/* BUILTINS | UTILS 3 - EXIT*/
+/* BUILTINS | UTILS 3 - EXIT */
 int			ft_isnumber(const char *str);
 
 /* SIGNAL HANDLING */
 void		ft_sigint_shell(int sig);
 void		ft_sigint_heredoc(int sig);
 void		set_signal(int sg, t_msh *msg);
+void		ft_sigint_child(int sig);
 
 /* TRASH */
 void		ft_print_splitargs(char **args);

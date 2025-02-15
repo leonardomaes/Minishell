@@ -43,8 +43,6 @@ void	ft_parent(t_msh *msh, pid_t pid)
 	if (WIFSIGNALED(status))
 	{
 		g_exit = 128 + WTERMSIG(status);
-		if (WTERMSIG(status) == SIGINT)
-			write(1, "\n", 1);
 		if (WTERMSIG(status) == SIGQUIT)
 			ft_putstr_fd("Quit\n", 2);
 	}

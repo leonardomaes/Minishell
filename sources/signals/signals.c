@@ -12,17 +12,6 @@
 
 #include "../../minishell.h"
 
-//used in interactive/shell mode to deal with SIGINT (Ctr+C)
-void	ft_sigint_shell(int sig)
-{
-	g_exit = 130;
-	write(1, "\n", 1);
-	rl_replace_line("", 0);
-	rl_on_new_line();
-	rl_redisplay();
-	(void) sig;
-}
-
 //helper function to store *msh and pass it to child signal handler
 static t_msh	*get_msh(t_msh *msh)
 {
@@ -53,7 +42,7 @@ static void	set_signal_mode(int sg)
 	}
 	if (sg == COMMAND_MODE)
 	{
-		signal(SIGINT, SIG_IGN);
+		signal(SIGINT, ft_sigint_child);
 		signal(SIGQUIT, SIG_IGN);
 	}
 	if (sg == CHILD_MODE)
