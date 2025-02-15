@@ -43,6 +43,7 @@ void	ft_exec(t_msh *msh, t_tokens *tokens, char **envp)
 		comm = ft_get_bcmd(tokens->name + 1);
 	else
 		comm = ft_get_command(msh, tokens->args[0], msh->data->cmd_paths);
+	printf("%s\n", comm);
 	if (stat(comm, &filestat) == 0 && S_ISDIR(filestat.st_mode))
 		ft_exit(msh, 126, ": Is a directory\n", comm);
 	if (!comm)
