@@ -6,29 +6,24 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/11 18:46:03 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/15 01:07:23 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-//check if string contains a valid number
-int	ft_isnumber(const char *str)
+//helper function to check overflow
+static int	check_overflow(long long res, char next, int sign)
 {
-	int	i;
+	int	max_rem;
 
-	i = 0;
-	if (!str || !*str)
-		return (0);
-	if (str[i] == '+' || str[i] == '-')
-		i++;
-	while (str[i])
-	{
-		if (str[i] < '0' || str[i] > '9')
-			return (0);
-		i++;
-	}
-	return (1);
+	if (sign == -1)
+		max_rem = -(LONG_MIN % 10);
+	else
+		max_rem = LONG_MAX % 10;
+	if (res > LONG_MAX / 10 || (res == LONG_MAX / 10 && (next - '0') > max_rem))
+		return (1);
+	return (0);
 }
 
 //atol function that handles long long overflow
@@ -50,15 +45,14 @@ long long	ft_safe_atol(const char *str, int *error)
 	}
 	while (*str >= '0' && *str <= '9')
 	{
-		if ((result > LONG_MAX / 10)
-			|| (result == LONG_MAX / 10 && (*str - '0') > LONG_MAX % 10))
+		if (check_overflow(result, *str, sign))
 		{
-			return (*error = 1, 0);
+			*error = 1;
+			return (sign * (long long)LONG_MAX + (sign == -1));
 		}
-		result = result * 10 + *str - '0';
-		str++;
+		result = result * 10 + (*str++ - '0');
 	}
-	return (sign * result);
+	return (result * sign);
 }
 
 //get the exit code insuring its between 0-255

@@ -6,7 +6,7 @@
 #    By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/12 15:52:26 by rda-cunh          #+#    #+#              #
-#    Updated: 2025/02/12 16:39:48 by rda-cunh         ###   ########.fr        #
+#    Updated: 2025/02/15 01:09:16 by rda-cunh         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,7 +43,8 @@ SRC =	sources/main/main.c sources/main/readline.c \
 		sources/builtins/export.c sources/builtins/pwd.c \
 		sources/builtins/unset.c sources/builtins/cd.c \
 		sources/builtins/echo.c sources/builtins/builtins_utils.c \
-		sources/builtins/builtins_utils2.c
+		sources/builtins/builtins_utils2.c \
+		sources/builtins/builtins_utils3.c
 
 # Valgrind readline leaks ignore vars
 RUN_MS 			= valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes \

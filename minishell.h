@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2024/12/09 18:45:58 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/15 01:00:37 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,7 +259,6 @@ int			execute_echo(t_msh *msh, char **args);
 int			execute_env(char **args, char **envp);
 
 /* BUILTINS | EXIT */
-int			ft_isnumber(const char *str);
 long long	ft_safe_atol(const char *str, int *error);
 int			execute_exit(t_msh *msh, char **args);
 
@@ -287,6 +286,9 @@ void		ft_print_array(char **array);
 void		ft_free_array(char **array);
 int			is_valid_var_name(char *name);
 char		*ft_strjoin4(char *s1, char *s2, char *s3, char *s4);
+
+/* BUILTINS | UTILS 3 - EXIT*/
+int			ft_isnumber(const char *str);
 
 /* SIGNAL HANDLING */
 void		ft_sigint_shell(int sig);
