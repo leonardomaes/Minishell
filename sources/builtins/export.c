@@ -69,13 +69,70 @@ int	print_sorted_env(char **envp)
 	return (0);
 }
 
+//export: helper function to identify appending operations
+int	is_append_operation(const char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i] && str[i] != '=')
+	{
+		if (str[i] == '+' && str[i] == '=')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+//export: helper function to extract the name of var from a str
+char	*get_var_name(const char *str)
+{
+	int 	i;
+	char	*name;
+
+	i = 0;
+	while (str[i] && str[i] != '+' && str[i] != '=')
+		i++:
+	name = ft_substr(str, 0, i);
+	return (name); 
+}
+
+//export: helper function to extract the value to append to a var
+char	*get_append_value(const char *str)
+{
+	while (*str && *str != '=')
+		str++;
+	if (*str == '=')
+		str++;
+	return (ft_strdup(str));
+}
+
+//helper function to process export arguments
 static int	process_export_arg(t_msh *msh, char *arg, int *status)
 {
 	char	*name;
 	char	*value;
+	char	*current_value;
+	char	*new_value; 
 
 	if (ft_strcmp(arg, "_") == 0)
 		return (0);
+	if (is_append_operation(arg))
+	{
+		name = get_var_name(arg);
+		value = get_append_value(arg);
+		current_value = get_env_var_value(msh->envp);
+		if (current_value)
+			ft_strjoin(current_value, value)
+		else
+			new_value = ft_strdup(value);
+		free (value);
+		if (set_env_var(msh, name, new_value))
+			return (free(name), free(new_value), 1)
+		free (name);
+		free (new_value);
+		return (0); 
+	}
 	name = ft_strdup(arg);
 	value = ft_strchr(name, '=');
 	if (value)
