@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 19:20:00 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/12 23:08:12 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/17 23:53:40 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	ft_exec(t_msh *msh, t_tokens *tokens, char **envp)
 		comm = ft_get_bcmd(tokens->name + 1);
 	else
 		comm = ft_get_command(msh, tokens->args[0], msh->data->cmd_paths);
-	printf("%s\n", comm);
+	//printf("%s\n", comm);
 	if (stat(comm, &filestat) == 0 && S_ISDIR(filestat.st_mode))
 		ft_exit(msh, 126, ": Is a directory\n", comm);
 	if (!comm)

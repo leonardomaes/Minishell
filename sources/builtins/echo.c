@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/10 18:28:12 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/17 23:20:11 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	execute_echo(t_msh *msh, char **args)
 
 	no_newline = 0;
 	i = 1;
-	if (args[1] && is_valid_n_flag(args[i]))
+	while (args[1] && is_valid_n_flag(args[i]))
 	{
 		no_newline = 1;
 		i++;
