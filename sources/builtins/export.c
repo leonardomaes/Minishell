@@ -6,22 +6,11 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:03:45 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/11 19:02:35 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2025/02/20 00:04:19 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
-
-//helper funtion to count the number of env variables
-int	env_var_count(char **envp)
-{
-	int	i;
-
-	i = 0;
-	while (envp && envp[i])
-		i++;
-	return (i);
-}
 
 //helper function that formats each line of envp to print
 static char	*format_env_var(char *env_var)
@@ -48,6 +37,8 @@ int	print_sorted_env(char **envp)
 	char	**sorted_envp;
 	int		i;
 
+	if (!envp)
+		return (0);
 	count = env_var_count(envp);
 	sorted_envp = ft_calloc(count + 1, sizeof(*sorted_envp));
 	if (!sorted_envp)
@@ -69,6 +60,36 @@ int	print_sorted_env(char **envp)
 	return (0);
 }
 
+//helper function to process export append feature
+static int	handle_append(t_msh *msh, char *arg, int *status)
+{
+	char	*name;
+	char	*value;
+	char	*current_value;
+	char	*new_value;
+	char	*temp;
+
+	name = get_var_name(arg);
+	value = get_append_value(arg);
+	current_value = get_env_var_value(msh->envp, name);
+	if (current_value)
+	{
+		temp = ft_strjoin(current_value, value);
+		new_value = ft_strdup(temp);
+		free(temp);
+	}
+	else
+		new_value = ft_strdup(value);
+	free (value);
+	if (set_env_var(msh, name, new_value))
+		return (free(name), free(new_value), 1);
+	free (name);
+	free (new_value);
+	(void)status;
+	return (0);
+}
+
+//helper function to process export arguments
 static int	process_export_arg(t_msh *msh, char *arg, int *status)
 {
 	char	*name;
@@ -76,6 +97,8 @@ static int	process_export_arg(t_msh *msh, char *arg, int *status)
 
 	if (ft_strcmp(arg, "_") == 0)
 		return (0);
+	if (is_append_operation(arg))
+		return (handle_append(msh, arg, status));
 	name = ft_strdup(arg);
 	value = ft_strchr(name, '=');
 	if (value)
@@ -89,13 +112,11 @@ static int	process_export_arg(t_msh *msh, char *arg, int *status)
 		ft_putstr_fd(arg, 2);
 		ft_putstr_fd("': not a valid identifier\n", 2);
 		*status = 1;
-		free_ptr((void **)&name);
-		return (0);
+		return (free_ptr((void **)&name), 0);
 	}
 	if (set_env_var(msh, name, value))
 		return ((free_ptr((void **)&name), 1));
-	free_ptr((void **)&name);
-	return (0);
+	return (free_ptr((void **)&name), 0);
 }
 
 //main function do deal with export builtin
@@ -108,6 +129,8 @@ int	execute_export(t_msh *msh, char **args)
 	status = 0;
 	if (!args[1])
 	{
+		if (!msh->envp)
+			return (0);
 		print_sorted_env(msh->envp);
 		return (0);
 	}
