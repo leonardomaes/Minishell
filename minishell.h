@@ -6,7 +6,7 @@
 /*   By: rda-cunh <rda-cunh@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 12:50:14 by lmaes             #+#    #+#             */
-/*   Updated: 2025/02/19 23:09:27 by rda-cunh         ###   ########.fr       */
+/*   Updated: 2024/12/09 18:45:58 by rda-cunh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,8 +168,6 @@ void		ft_perror(t_msh *msh, char *msg, int exit_code);
 
 /****** PARSER AND TOKENS ******/
 /* TOKENIZER */
-char		**alloc_args(int words, int *len);
-char		**get_args(char **data_args, int i, t_msh *msh);
 void		split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i);
 int			ft_isdelimiter(char c);
 int			ft_isredirection(char c);
@@ -178,7 +176,9 @@ int			get_delimiter(t_msh *msh, char *data_args);
 
 /* GET ARGS */
 void		ft_get_args(t_msh *msh);
-char		**getargs(t_msh *msh, t_tokens *token);
+void		getargs(t_msh *msh, t_tokens **token);
+char		**alloc_args(int words, int *len);
+void		get_args(t_msh *msh, t_tokens	**tokens);
 
 /* GET ARGS 2 */
 int			alloc_getargs(t_msh *msh, t_tokens *token);

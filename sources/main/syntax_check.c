@@ -32,7 +32,7 @@ int	syntax_redirs(t_msh *msh, t_tokens *tokens)
 		ft_putstr_fd("bash: syntax error near unexpected token `newline'\n", 2);
 		return (g_exit = 2, 1);
 	}
-	if (get_delimiter(msh, temp->next->name) != 0)
+	if (get_delimiter(msh, temp->next->name) != 0 || temp->next->type == TKN_HEREDOC)
 	{
 		ft_putstr_fd("bash: syntax error near unexpected token `", 2);
 		ft_putstr_fd(temp->next->name, 2);

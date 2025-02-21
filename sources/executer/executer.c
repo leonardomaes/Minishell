@@ -15,13 +15,21 @@
 char	*ft_get_bcmd(char *cmd)
 {
 	char	*cwd;
+	char	*temp;
 	char	*comm;
 
 	cwd = getcwd(NULL, 0);
-	comm = ft_strjoin(cwd, cmd);
+	if (!cwd)
+		return (NULL);
+	temp = ft_strjoin(cwd, "/");
 	free(cwd);
+	if (!temp)
+		return (NULL);
+	comm = ft_strjoin(temp, cmd);
+	free(temp);
 	return (comm);
 }
+
 
 void	skip_redirs(t_tokens **temp)
 {
@@ -30,7 +38,7 @@ void	skip_redirs(t_tokens **temp)
 		*temp = (*temp)->next;
 	while (*temp && (*temp)->type != TKN_SPACE && (*temp)->type != TKN_PIPE)
 		*temp = (*temp)->next;
-	if (*temp && (*temp)->type == TKN_SPACE)
+	while (*temp && (*temp)->type == TKN_SPACE)
 		*temp = (*temp)->next;
 }
 
@@ -53,14 +61,22 @@ void	ft_parent(t_msh *msh, pid_t pid)
 
 int	execute_one(t_msh *msh, char **envp)
 {
-	pid_t	pid;
+	pid_t		pid;
+	t_tokens	*tokens;
 
+	tokens = msh->data->tokens;
 	g_exit = 0;
 	setup_heredocs(msh->data->tokens, msh);
 	if (handle_redirs_one(msh, msh->data->tokens))
 		return (-1);
-	if (msh->data->tokens->type >= 101 && msh->data->tokens->type <= 107)
-		g_exit = exec_builtin(msh, msh->data->tokens);
+	while (tokens && get_delimiter(msh, tokens->name) != 0)
+		skip_redirs(&tokens);
+	while (tokens && tokens->type == TKN_SPACE)
+		tokens = tokens->next;
+	if (!tokens)
+		return (0);
+	if (tokens->type >= 101 && tokens->type <= 107)
+		g_exit = exec_builtin(msh, tokens);
 	else
 	{
 		pid = fork();
@@ -70,7 +86,7 @@ int	execute_one(t_msh *msh, char **envp)
 		{
 			set_signal(CHILD_MODE, msh);
 			handle_heredocs(msh, msh->data->tokens);
-			ft_exec(msh, msh->data->tokens, envp);
+			ft_exec(msh, tokens, envp);
 		}
 		else
 			ft_parent(msh, pid);

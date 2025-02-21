@@ -103,6 +103,13 @@ char	*ft_get_command(t_msh *msh, char *cmd, char **path)
 		if (access(cmd, F_OK) == 0)
 			return (ft_strdup(cmd));
 	}
+	else
+	{
+		comm = ft_get_bcmd(cmd);
+		if (access(comm, F_OK) == 0)
+			return (comm);
+		free(comm);
+	}
 	comm = ft_find_executable(cmd, path);
 	if (cmd[0] == '/')
 		ft_exit(msh, 127, ": No such file or directory\n", ft_strdup(cmd));

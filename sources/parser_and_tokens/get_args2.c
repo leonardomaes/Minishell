@@ -12,33 +12,6 @@
 
 #include "../../minishell.h"
 
-int	alloc_getargs(t_msh *msh, t_tokens *token)
-{
-	int			i;
-	t_tokens	*temp;
-
-	i = 0;
-	temp = token;
-	while (temp && temp->type != TKN_PIPE)
-	{
-		if (get_delimiter(msh, temp->name) != 0)
-		{
-			temp = temp->next;
-			if (temp && temp->type == TKN_SPACE)
-				temp = temp->next;
-			if (temp && temp->type != TKN_PIPE)
-				temp = temp->next;
-			continue ;
-		}
-		if (temp && temp->type != TKN_SPACE)
-			i++;
-		temp = temp->next;
-	}
-	if (i == 0)
-		i++;
-	return (i);
-}
-
 int	get_delimiter(t_msh *msh, char *data_args)
 {
 	if (get_type(msh, data_args, 1) == TKN_PIPE)
