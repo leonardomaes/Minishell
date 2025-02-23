@@ -89,11 +89,10 @@ int	ft_readline(t_msh *msh)
 		return (0);
 	if (ft_init_data(line, msh) != 0)
 		return (free(msh->data), free(line), 1);
-	//ft_print_params(msh);
 	split_tokens(msh, &msh->data->tokens, NULL, i);
 	if (syntax_check(msh, msh->data) != 0)
 		return (ft_free_data(msh), free(line), 1);
 	ft_get_args(msh);
-	//ft_print_tokens(msh->data->tokens);
+	ft_print_tokens(msh->data->tokens);
 	return (free(line), 0);
 }

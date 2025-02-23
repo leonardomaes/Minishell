@@ -58,8 +58,8 @@ void	split_tokens(t_msh *msh, t_tokens **token, t_tokens *prev, int i)
 
 	if (i >= msh->data->argc || !msh || !msh->data)
 		return ;
-	/* if (i < msh->data->argc && msh->data->args[i][0] == '\0')
-		i++; */
+	if (i < msh->data->argc && msh->data->args[i][0] == '\0')
+		i++;
 	*token = malloc(sizeof(t_tokens));
 	if (!*token)
 	{

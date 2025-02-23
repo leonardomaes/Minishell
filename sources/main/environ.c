@@ -106,7 +106,7 @@ char	*ft_get_command(t_msh *msh, char *cmd, char **path)
 	else
 	{
 		comm = ft_get_bcmd(cmd);
-		if (access(comm, F_OK) == 0)
+		if (ft_strchr(cmd, '/') && access(comm, F_OK) == 0)
 			return (comm);
 		free(comm);
 	}

@@ -30,7 +30,6 @@ char	*ft_get_bcmd(char *cmd)
 	return (comm);
 }
 
-
 void	skip_redirs(t_tokens **temp)
 {
 	*temp = (*temp)->next;

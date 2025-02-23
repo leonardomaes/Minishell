@@ -12,44 +12,6 @@
 
 #include "../../minishell.h"
 
-/*void	getargs_cycle(t_msh *msh, t_tokens **temp)
-{
-	int		i;
-
-	i = 0;
-	while ((*temp) && (*temp)->type != TKN_PIPE)
-	{
-		if (get_delimiter(msh, (*temp)->name) != 0)
-			skip_delimiters(temp);
-		else if ((*temp) && (*temp)->type != TKN_SPACE)
-			(*temp)->args[i++] = merge_args(temp);// Alterar este
-		else
-			*temp = (*temp)->next;
-	}
-	(*temp)->args[i] = NULL;
-}
-
-void	getargs(t_msh *msh, t_tokens **token)
-{
-	int			i;
-	t_tokens	*temp;
-
-	temp = *token;
-	while (get_delimiter(msh, temp->name) != 0)	// Avança primeiros delimitadores
-	{
-		while (temp && temp->type != TKN_SPACE)
-			temp = temp->next;
-		if (temp->type == TKN_SPACE)
-			temp = temp->next;
-	}
-	temp->args = NULL;
-	i = alloc_getargs(msh, temp);
-	temp->args = malloc(sizeof(char *) * (i + 1));
-	if (!temp->args)
-		ft_perror(msh, "malloc:", 1);
-	getargs_cycle(msh, &temp);
-} */
-
 int	alloc_getargs(t_msh *msh, t_tokens *token)
 {
 	int			i;
@@ -61,15 +23,15 @@ int	alloc_getargs(t_msh *msh, t_tokens *token)
 	{
 		if (get_delimiter(msh, temp->name) != 0)
 		{
-			if (temp->next)							// Avança delimiter
+			if (temp->next)
 				temp = temp->next;
 			if (token && (token)->type == TKN_SPACE)
 				token = token->next;
-			while (temp && temp->type != TKN_SPACE)	// Avança arg
+			while (temp && temp->type != TKN_SPACE)
 				temp = temp->next;
-			while (temp && temp->type == TKN_SPACE)	// Avança espaço
+			while (temp && temp->type == TKN_SPACE)
 				temp = temp->next;
-			continue;
+			continue ;
 		}
 		if (temp && temp->type != TKN_SPACE)
 			i++;
@@ -87,8 +49,8 @@ void	getargs_cycle(t_msh *msh, t_tokens **temp, int size)
 	t_tokens	*tmp;
 	int			i;
 
-	if (!temp || !(*temp)) // Verificação de ponteiro NULL antes de acessar
-		return;
+	if (!temp || !(*temp))
+		return ;
 	token = *temp;
 	while (token && get_delimiter(msh, token->name) != 0)
 	{
@@ -120,7 +82,7 @@ void	getargs_cycle(t_msh *msh, t_tokens **temp, int size)
 				token = token->next;
 			while (token && token->type == TKN_SPACE)
 				token = token->next;
-			continue;
+			continue ;
 		}
 		else if (token && token->type != TKN_SPACE)
 			tmp->args[i++] = merge_args(&token);
@@ -129,7 +91,6 @@ void	getargs_cycle(t_msh *msh, t_tokens **temp, int size)
 	}
 	tmp->args[i] = NULL;
 }
-
 
 void	get_args(t_msh *msh, t_tokens	**tokens)
 {
@@ -140,7 +101,6 @@ void	get_args(t_msh *msh, t_tokens	**tokens)
 	temp = *tokens;
 	i = alloc_getargs(msh, temp);
 	getargs_cycle(msh, tokens, i);
-	
 }
 
 void	get_heredoc_args(t_msh *msh, t_tokens **temp)
@@ -166,7 +126,7 @@ void	ft_get_args(t_msh *msh)
 	temp = msh->data->tokens;
 	while (temp)
 	{
-		if (temp->type == TKN_HEREDOC)			// Associa os heredocs
+		if (temp->type == TKN_HEREDOC)
 			get_heredoc_args(msh, &temp);
 		else
 			temp->args = NULL;
