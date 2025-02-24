@@ -37,7 +37,7 @@ void	skip_redirs(t_tokens **temp)
 		*temp = (*temp)->next;
 	while (*temp && (*temp)->type != TKN_SPACE && (*temp)->type != TKN_PIPE)
 		*temp = (*temp)->next;
-	while (*temp && (*temp)->type == TKN_SPACE)
+	while (*temp && (*temp)->type == TKN_SPACE && (*temp)->type != TKN_PIPE)
 		*temp = (*temp)->next;
 }
 
@@ -52,6 +52,8 @@ void	ft_parent(t_msh *msh, pid_t pid)
 		g_exit = 128 + WTERMSIG(status);
 		if (WTERMSIG(status) == SIGQUIT)
 			ft_putstr_fd("Quit\n", 2);
+		if (WTERMSIG(status) == SIGINT)
+			ft_putstr_fd("\n", 2);
 	}
 	else if (WIFEXITED(status))
 		g_exit = WEXITSTATUS(status);
@@ -68,10 +70,7 @@ int	execute_one(t_msh *msh, char **envp)
 	setup_heredocs(msh->data->tokens, msh);
 	if (handle_redirs_one(msh, msh->data->tokens))
 		return (-1);
-	while (tokens && get_delimiter(msh, tokens->name) != 0)
-		skip_redirs(&tokens);
-	while (tokens && tokens->type == TKN_SPACE)
-		tokens = tokens->next;
+	ft_skip_delimiters(msh, &tokens);
 	if (!tokens)
 		return (0);
 	if (tokens->type >= 101 && tokens->type <= 107)

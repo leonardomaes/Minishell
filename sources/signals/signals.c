@@ -42,7 +42,7 @@ static void	set_signal_mode(int sg)
 	}
 	if (sg == COMMAND_MODE)
 	{
-		signal(SIGINT, ft_sigint_child);
+		signal(SIGINT, SIG_IGN);
 		signal(SIGQUIT, SIG_IGN);
 	}
 	if (sg == CHILD_MODE)

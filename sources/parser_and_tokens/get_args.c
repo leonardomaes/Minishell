@@ -38,8 +38,6 @@ int	alloc_getargs(t_msh *msh, t_tokens *token)
 		if (temp)
 			temp = temp->next;
 	}
-	if (i == 0)
-		i++;
 	return (i);
 }
 
@@ -52,18 +50,7 @@ void	getargs_cycle(t_msh *msh, t_tokens **temp, int size)
 	if (!temp || !(*temp))
 		return ;
 	token = *temp;
-	while (token && get_delimiter(msh, token->name) != 0)
-	{
-		token = token->next;
-		if (token && (token)->type == TKN_SPACE)
-			token = token->next;
-		while (token && (token)->type != TKN_SPACE)
-			token = token->next;
-		while (token && (token)->type == TKN_SPACE)
-			token = token->next;
-	}
-	while (token && (token)->type == TKN_SPACE)
-		token = token->next;
+	ft_skip_delimiters(msh, &token);
 	tmp = token;
 	if (!tmp)
 		return ;
@@ -74,16 +61,7 @@ void	getargs_cycle(t_msh *msh, t_tokens **temp, int size)
 	while (token && token->type != TKN_PIPE)
 	{
 		if (get_delimiter(msh, token->name) != 0)
-		{
-			token = token->next;
-			if (token && (token)->type == TKN_SPACE)
-				token = token->next;
-			while (token && token->type != TKN_SPACE)
-				token = token->next;
-			while (token && token->type == TKN_SPACE)
-				token = token->next;
-			continue ;
-		}
+			skip_redirs(&token);
 		else if (token && token->type != TKN_SPACE)
 			tmp->args[i++] = merge_args(&token);
 		else
@@ -100,6 +78,8 @@ void	get_args(t_msh *msh, t_tokens	**tokens)
 	i = 0;
 	temp = *tokens;
 	i = alloc_getargs(msh, temp);
+	if (i == 0)
+		i++;
 	getargs_cycle(msh, tokens, i);
 }
 

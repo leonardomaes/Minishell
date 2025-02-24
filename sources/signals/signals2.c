@@ -22,10 +22,3 @@ void	ft_sigint_shell(int sig)
 	rl_redisplay();
 	(void) sig;
 }
-
-//child signal handler for heredoc
-void	ft_sigint_child(int sig)
-{
-	write(1, "\n", 1);
-	(void)sig;
-}

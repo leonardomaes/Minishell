@@ -71,7 +71,7 @@ static int	handle_empty_line(t_msh *msh, char *line)
 
 int	ft_readline(t_msh *msh)
 {
-	char	*line;
+	char	*line;	
 	int		i;
 
 	i = 0;
@@ -93,6 +93,6 @@ int	ft_readline(t_msh *msh)
 	if (syntax_check(msh, msh->data) != 0)
 		return (ft_free_data(msh), free(line), 1);
 	ft_get_args(msh);
-	ft_print_tokens(msh->data->tokens);
+	//ft_print_tokens(msh->data->tokens);
 	return (free(line), 0);
 }

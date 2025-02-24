@@ -184,8 +184,8 @@ void		get_args(t_msh *msh, t_tokens	**tokens);
 int			alloc_getargs(t_msh *msh, t_tokens *token);
 int			get_delimiter(t_msh *msh, char *data_args);
 char		*return_arg(t_tokens *token);
-void		skip_delimiters(t_tokens **temp);
 char		*merge_args(t_tokens **temp);
+void		ft_skip_delimiters(t_msh *msh, t_tokens **temp);
 
 /* SPLIT TOKENS */
 int			*calculate_lengths(t_msh *msh, const char *s, int words);

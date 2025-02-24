@@ -66,6 +66,8 @@ void	ft_parent_multi2(t_msh *msh, pid_t pid, int prev_pipe)
 		g_exit = 128 + WTERMSIG(status);
 		if (WTERMSIG(status) == SIGQUIT)
 			ft_putstr_fd("Quit\n", 2);
+		if (WTERMSIG(status) == SIGINT)
+			ft_putstr_fd("\n", 2);
 	}
 	else if (WIFEXITED(status))
 		g_exit = WEXITSTATUS(status);
@@ -95,6 +97,10 @@ void	ft_child_process(t_msh *msh, t_tokens *cur, int *pipefd, int i)
 	if (msh->data->prev_pipe != -1)
 		close(msh->data->prev_pipe);
 	handle_heredocs(msh, cur);
+	while (cur && get_delimiter(msh, cur->name) != 0)
+		skip_redirs(&cur);
+	while (cur && cur->type == TKN_SPACE)
+		cur = cur->next;
 	execute_cmd(msh, cur, msh->envp);
 	exit(1);
 }

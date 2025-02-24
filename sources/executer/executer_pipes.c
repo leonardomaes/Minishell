@@ -28,12 +28,8 @@ static int	process_child(t_msh *msh, t_tokens *cur, int *pipefd, int i)
 	else if (pid == 0)
 	{
 		handle_redirs_multi(msh, cur, msh->data->prev_pipe);
-		while (cur && get_delimiter(msh, cur->name) != 0)
-			skip_redirs(&cur);
-		while (cur && cur->type == TKN_SPACE)
-			cur = cur->next;
 		if (!cur)
-			exit (0);
+			ft_exit(msh, 0, NULL, NULL);
 		ft_child_process(msh, cur, pipefd, i);
 	}
 	return (pid);
