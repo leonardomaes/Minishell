@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 //helper function to check overflow
 static int	check_overflow(long long res, char next, int sign)

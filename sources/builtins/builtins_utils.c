@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"    
+#include "../../includes/minishell.h"
 
 //reallocate memory for a new env list and returns a pointer to it
 char	**realloc_env_vars(t_msh *msh, int size)

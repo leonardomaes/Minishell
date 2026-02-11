@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 //helper function to store *msh and pass it to child signal handler
 static t_msh	*get_msh(t_msh *msh)

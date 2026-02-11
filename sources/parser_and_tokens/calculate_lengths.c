@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 void	calculate_quotes(t_msh *msh, const char *s, t_split *nums, int **len)
 {

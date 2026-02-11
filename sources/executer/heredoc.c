@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 //child process: reads lines until delimiter and expands env vars
 static void	heredoc_child(t_tokens *t, t_msh *msh, int fd)

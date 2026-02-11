@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 static int	copy_env_vars(char **new_envp, char **old_envp, char *var, int *j)
 {

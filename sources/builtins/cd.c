@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 //helper funtion to update env variables when changing dir
 int	update_env_change_dir(char *oldpwd, t_msh *msh)

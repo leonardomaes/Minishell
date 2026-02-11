@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 //main funtion do deal with env builtin
 int	execute_env(char **args, char **envp)

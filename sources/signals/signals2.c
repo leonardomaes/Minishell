@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 //used in interactive/shell mode to deal with SIGINT (Ctr+C)
 void	ft_sigint_shell(int sig)

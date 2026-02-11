@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 //helper function calculates expanded lenght after variable expansion 
 static int	get_var_value_length(t_msh *msh, const char *var_start,

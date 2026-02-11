@@ -29,7 +29,7 @@
 # include <termcap.h>
 # include <termios.h>
 # include <signal.h>
-# include "includes/libft/libft.h"
+# include "libft/libft.h"
 # include <fcntl.h>
 
 /************** DEFINES **************/

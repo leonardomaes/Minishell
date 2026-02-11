@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 //helper function to validade the n flag (no newline)
 static int	is_valid_n_flag(const char *arg)

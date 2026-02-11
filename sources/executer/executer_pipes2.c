@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 int	execute_cmd(t_msh *msh, t_tokens *tokens, char **envp)
 {

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 static void	handle_pipe_creation(t_msh *msh, int *pipefd, int i)
 {

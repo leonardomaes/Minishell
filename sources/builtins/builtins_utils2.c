@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 //used a simple buble sort to sort envp array (e.g. export builtin)
 void	ft_sort_array(char **array, int count)

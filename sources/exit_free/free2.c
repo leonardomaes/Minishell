@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../../includes/minishell.h"
 
 //standard funtion to free a pointer of any type (avoids double free)
 void	free_ptr(void **ptr)
