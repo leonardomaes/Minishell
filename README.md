@@ -174,10 +174,6 @@ This shell is a learning project and doesn't implement:
 
 This project was developed in collaboration with [Ricardo Mendes](https://github.com/rda-cunh) as part of the 42 Porto curriculum.
 
-## 📝 License
-
-This project is part of the 42 School curriculum and follows their academic policies.
-
 ---
 
 **42 Porto** | [Leonardo Maes](https://linkedin.com/in/leonardo-maes)
